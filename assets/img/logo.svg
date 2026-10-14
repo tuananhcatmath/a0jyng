@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" width="220" height="60">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E40AF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background pill -->
+  <rect x="0" y="5" width="220" height="50" rx="12" fill="url(#logoGrad)" opacity="0.08"/>
+  <!-- "a0" in primary blue -->
+  <text x="12" y="46"
+    font-family="'Playfair Display', 'Elephant', Georgia, serif"
+    font-size="42"
+    font-weight="900"
+    fill="#1E40AF"
+    letter-spacing="-1">a0</text>
+  <!-- "jyng" in orange accent -->
+  <text x="82" y="46"
+    font-family="'Playfair Display', 'Elephant', Georgia, serif"
+    font-size="42"
+    font-weight="900"
+    fill="#F97316"
+    letter-spacing="-1">jyng</text>
+  <!-- Decorative dot -->
+  <circle cx="208" cy="14" r="6" fill="#F97316" opacity="0.9"/>
+  <circle cx="208" cy="14" r="3" fill="#fff"/>
+</svg>

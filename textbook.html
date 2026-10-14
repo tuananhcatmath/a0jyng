@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giải bài tập SGK — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] }, svg: { fontCache:'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📚</span> Môn học</a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="schedule.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🗓️</span> Lịch học</a>
+    <a href="roadmap.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧭</span> Lộ trình</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>💬</span> Diễn đàn</a>
+    <a href="textbook.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📗</span> Giải SGK</a>
+    <a href="theorems.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧮</span> Định lý</a>
+    <a href="summaries.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📝</span> Tóm tắt</a>
+    <a href="reports.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📈</span> Báo cáo</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center gap-4 flex-shrink-0">
+    <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <h1 class="text-xl font-bold text-slate-800">📗 Giải bài tập Sách giáo khoa</h1>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-5xl mx-auto">
+
+      <!-- Selector row -->
+      <div class="bg-white rounded-2xl shadow-sm border p-5 mb-6">
+        <div class="grid md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Môn học</label>
+            <select id="selSubject" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+              <option value="toan">📐 Toán 10</option>
+              <option value="ly">⚛️ Vật lý 10</option>
+              <option value="hoa">🧪 Hóa học 10</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Chương</label>
+            <select id="selChapter" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+              <option>Chương 1</option>
+              <option>Chương 2</option>
+              <option>Chương 3</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Bài</label>
+            <select id="selLesson" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+              <option>Bài 1</option>
+              <option>Bài 2</option>
+              <option>Bài 3</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button id="loadExercises" class="w-full py-2.5 bg-accent text-white rounded-xl font-semibold hover:bg-orange-600 transition text-sm">🔍 Xem bài giải</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="relative mb-6">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        <input type="text" id="searchEx" placeholder="Tìm bài tập cụ thể... (VD: Bài 1.5, tập hợp, mệnh đề...)"
+          class="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary outline-none text-sm">
+      </div>
+
+      <!-- Exercises list -->
+      <div id="exerciseList" class="space-y-4"></div>
+
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Exercise data ──
+  const EXERCISES = {
+    'toan-c1': [
+      {
+        id:'b1', num:'Bài 1.1', page:'Tr. 8',
+        question:'Xét xem mỗi câu sau có phải là mệnh đề không?\na) 2 + 2 = 5\nb) Bạn học lớp nào?\nc) Số $\\pi$ là số hữu tỉ\nd) $x + 1 = 3$',
+        solution:`<p><strong>a)</strong> "2 + 2 = 5" → <strong>Là mệnh đề</strong> (sai)</p>
+                  <p><strong>b)</strong> "Bạn học lớp nào?" → <strong>Không phải mệnh đề</strong> (câu hỏi)</p>
+                  <p><strong>c)</strong> "Số π là số hữu tỉ" → <strong>Là mệnh đề</strong> (sai, vì π vô tỉ)</p>
+                  <p><strong>d)</strong> "x + 1 = 3" → <strong>Không phải mệnh đề</strong> (chứa biến x, chưa xác định đúng/sai)</p>`,
+        difficulty:'easy',
+      },
+      {
+        id:'b2', num:'Bài 1.2', page:'Tr. 8',
+        question:'Phát biểu mệnh đề phủ định của mỗi mệnh đề sau và xét tính đúng sai:\na) P: "3 là số nguyên tố"\nb) Q: "Số $\\pi$ là số vô tỉ"\nc) R: "Mọi số tự nhiên đều lớn hơn 0"',
+        solution:`<p><strong>a)</strong> $\\overline{P}$: "3 không là số nguyên tố" → <strong>Sai</strong> (nên P đúng)</p>
+                  <p><strong>b)</strong> $\\overline{Q}$: "Số π không phải số vô tỉ" → <strong>Sai</strong> (nên Q đúng)</p>
+                  <p><strong>c)</strong> $\\overline{R}$: "Tồn tại số tự nhiên không lớn hơn 0" → <strong>Đúng</strong> (số 0 ∈ ℕ và 0 ≯ 0, nên R sai)</p>`,
+        difficulty:'easy',
+      },
+      {
+        id:'b3', num:'Bài 1.3', page:'Tr. 10',
+        question:'Cho mệnh đề: "Nếu $a > b$ thì $a^2 > b^2$".\na) Phát biểu mệnh đề đảo.\nb) Xét tính đúng sai của cả hai mệnh đề.',
+        solution:`<p><strong>a)</strong> Mệnh đề đảo: "Nếu $a^2 > b^2$ thì $a > b$"</p>
+                  <p><strong>b)</strong> Mệnh đề gốc: <strong>Sai</strong></p>
+                  <p>Phản ví dụ: $a = 1, b = -2$. Khi đó $a > b$ nhưng $a^2 = 1 < 4 = b^2$.</p>
+                  <p>Mệnh đề đảo: <strong>Sai</strong></p>
+                  <p>Phản ví dụ: $a = -3, b = 2$. Khi đó $a^2 = 9 > 4 = b^2$ nhưng $a = -3 < 2 = b$.</p>`,
+        difficulty:'medium',
+      },
+      {
+        id:'b4', num:'Bài 1.4', page:'Tr. 12',
+        question:'Cho tập hợp $A = \\{1, 2, 3, 4, 5\\}$ và $B = \\{3, 4, 5, 6, 7\\}$.\nTìm: $A \\cup B$, $A \\cap B$, $A \\setminus B$, $B \\setminus A$.',
+        solution:`<p>$A \\cup B = \\{1, 2, 3, 4, 5, 6, 7\\}$ (hợp — tất cả phần tử của A và B)</p>
+                  <p>$A \\cap B = \\{3, 4, 5\\}$ (giao — phần tử chung)</p>
+                  <p>$A \\setminus B = \\{1, 2\\}$ (hiệu — phần tử trong A nhưng không trong B)</p>
+                  <p>$B \\setminus A = \\{6, 7\\}$ (hiệu — phần tử trong B nhưng không trong A)</p>`,
+        difficulty:'easy',
+      },
+      {
+        id:'b5', num:'Bài 1.5', page:'Tr. 13',
+        question:'Cho $U = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\\}$, $A = \\{1, 3, 5, 7, 9\\}$ (các số lẻ).\nTìm $C_U A$ và chứng tỏ $A \\cup C_U A = U$, $A \\cap C_U A = \\emptyset$.',
+        solution:`<p>$C_U A = U \\setminus A = \\{2, 4, 6, 8, 10\\}$ (các số chẵn trong U)</p>
+                  <p><strong>Chứng tỏ:</strong></p>
+                  <p>$A \\cup C_U A = \\{1,3,5,7,9\\} \\cup \\{2,4,6,8,10\\} = \\{1,2,...,10\\} = U$ ✓</p>
+                  <p>$A \\cap C_U A = \\{1,3,5,7,9\\} \\cap \\{2,4,6,8,10\\} = \\emptyset$ ✓ (không phần tử chung)</p>
+                  <p>→ Điều này đúng với mọi tập A trong U theo định nghĩa phần bù.</p>`,
+        difficulty:'medium',
+      },
+    ],
+  };
+
+  const DIFFICULTY = { easy:'🟢 Dễ', medium:'🟡 Trung bình', hard:'🔴 Khó' };
+  const DIFF_COLOR  = { easy:'text-green-600 bg-green-50', medium:'text-yellow-600 bg-yellow-50', hard:'text-red-600 bg-red-50' };
+
+  let allExercises = EXERCISES['toan-c1'];
+  let revealedSet  = new Set();
+
+  function renderExercises(list) {
+    document.getElementById('exerciseList').innerHTML = list.length
+      ? list.map(ex => `
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-primary">${ex.num}</span>
+                <span class="text-xs text-slate-400">${ex.page}</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${DIFF_COLOR[ex.difficulty]}">${DIFFICULTY[ex.difficulty]}</span>
+              </div>
+              <button onclick="copyExercise('${ex.id}')" class="text-xs text-slate-400 hover:text-secondary transition">📋 Sao chép</button>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4 mb-4">
+              <p class="font-semibold text-slate-700 text-sm mb-2">📋 Đề bài:</p>
+              <p class="text-slate-700 text-sm whitespace-pre-line">${ex.question}</p>
+            </div>
+            <button onclick="toggleSolution('sol-${ex.id}', '${ex.id}')"
+              class="px-4 py-2 bg-secondary text-white rounded-lg text-sm font-semibold hover:bg-primary transition">
+              ${revealedSet.has(ex.id) ? '🔼 Ẩn lời giải' : '📖 Xem lời giải chi tiết'}
+            </button>
+          </div>
+          <div id="sol-${ex.id}" class="${revealedSet.has(ex.id) ? '' : 'hidden'} border-t border-slate-100">
+            <div class="p-5">
+              <p class="font-semibold text-green-700 mb-3 flex items-center gap-2">✅ Lời giải chi tiết:</p>
+              <div class="prose max-w-none text-slate-700 text-sm space-y-2">${ex.solution}</div>
+            </div>
+          </div>
+        </div>`).join('')
+      : '<p class="text-slate-400 py-12 text-center">Không tìm thấy bài tập</p>';
+
+    if (window.MathJax) MathJax.typesetPromise();
+  }
+
+  window.toggleSolution = (solId, exId) => {
+    const el = document.getElementById(solId);
+    el.classList.toggle('hidden');
+    if (!el.classList.contains('hidden')) {
+      revealedSet.add(exId);
+      if (window.MathJax) MathJax.typesetPromise([el]);
+    } else {
+      revealedSet.delete(exId);
+    }
+    renderExercises(allExercises);
+  };
+  window.copyExercise = (id) => {
+    const ex = allExercises.find(e => e.id === id);
+    if (ex) navigator.clipboard?.writeText(ex.question).then(() => alert('Đã sao chép!'));
+  };
+
+  document.getElementById('loadExercises').addEventListener('click', () => {
+    allExercises = EXERCISES['toan-c1'];
+    renderExercises(allExercises);
+  });
+
+  document.getElementById('searchEx').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    renderExercises(allExercises.filter(ex => ex.question.toLowerCase().includes(q) || ex.num.toLowerCase().includes(q)));
+  });
+
+  renderExercises(allExercises);
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

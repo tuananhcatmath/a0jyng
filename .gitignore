@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment files (KHÔNG push lên GitHub)
+.env
+.env.local
+.env.production
+
+# Firebase service account
+firebase-adminsdk-*.json
+serviceAccount*.json
+
+# Build outputs
+dist/
+.vercel/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

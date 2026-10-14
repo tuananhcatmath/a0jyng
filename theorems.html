@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chứng minh định lý — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath:[['$','$'],['\\(','\\)']], displayMath:[['$$','$$'],['\\[','\\]']] },
+      svg: { fontCache:'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+  <style>
+    .proof-step { counter-increment: step; }
+    .proof-step::before { content: "Bước " counter(step) ":"; font-weight: 700; color: #1E40AF; margin-right: 6px; }
+    .theorem-card { transition: box-shadow .2s, transform .2s; }
+    .theorem-card:hover { box-shadow: 0 8px 30px rgba(30,64,175,.12); transform: translateY(-2px); }
+  </style>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📚</span> Môn học</a>
+    <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📊</span> Tiến trình</a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="schedule.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🗓️</span> Lịch học</a>
+    <a href="roadmap.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧭</span> Lộ trình</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>💬</span> Diễn đàn</a>
+    <a href="textbook.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📗</span> Giải SGK</a>
+    <a href="theorems.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧮</span> Định lý</a>
+    <a href="summaries.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📝</span> Tóm tắt</a>
+    <a href="reports.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📈</span> Báo cáo</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 class="text-xl font-bold text-slate-800">🧮 Chứng minh định lý</h1>
+    </div>
+    <!-- Filter -->
+    <div class="flex gap-2 items-center">
+      <select id="subjectFilter" class="px-3 py-2 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+        <option value="all">Tất cả môn</option>
+        <option value="toan">📐 Toán học</option>
+        <option value="ly">⚛️ Vật lý</option>
+        <option value="hoa">🧪 Hóa học</option>
+      </select>
+      <select id="levelFilter" class="px-3 py-2 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+        <option value="all">Mọi cấp độ</option>
+        <option value="basic">Cơ bản</option>
+        <option value="advanced">Nâng cao</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Search -->
+      <div class="relative mb-6">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        <input type="text" id="searchThm" placeholder="Tìm định lý... (VD: Pythagore, mệnh đề, tập hợp...)"
+          class="w-full pl-10 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary outline-none text-sm">
+      </div>
+
+      <!-- Theorem list -->
+      <div id="theoremList" class="space-y-5"></div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Theorem data ──
+  const THEOREMS = [
+    // ── TOÁN 10 ──
+    {
+      id:'t1', subject:'toan', level:'basic',
+      name:'Định lý: Tính chất mệnh đề kéo theo',
+      statement:'Mệnh đề $P \\Rightarrow Q$ chỉ sai khi và chỉ khi $P$ đúng và $Q$ sai.',
+      tags:['mệnh đề','logic'],
+      steps:[
+        { title:'Xây dựng bảng chân trị', body:'Ta lập bảng xét tất cả 4 tổ hợp giá trị của P và Q (mỗi cái có thể Đ hoặc S):' },
+        { title:'Phân tích từng trường hợp', body:'• P=Đ, Q=Đ: "$P \\Rightarrow Q$" → ĐÚng (kéo theo hợp lý)<br>• P=Đ, Q=S: "$P \\Rightarrow Q$" → SAI (điều kiện đủ bị vi phạm)<br>• P=S, Q=Đ: "$P \\Rightarrow Q$" → ĐÚNG (giả thiết sai, kết luận bất kỳ đều chấp nhận)<br>• P=S, Q=S: "$P \\Rightarrow Q$" → ĐÚNG' },
+        { title:'Kết luận', body:'Như vậy $P \\Rightarrow Q$ chỉ nhận giá trị SAI khi P đúng và Q sai, đúng trong 3 trường hợp còn lại. $\\blacksquare$' },
+      ],
+      example:'Ví dụ: "Nếu n chia hết cho 4 thì n chia hết cho 2" là mệnh đề ĐÚNG. Nhưng "Nếu n chia hết cho 2 thì n chia hết cho 4" là mệnh đề SAI (phản ví dụ: n=6).',
+    },
+    {
+      id:'t2', subject:'toan', level:'basic',
+      name:'Định lý: $A \\cup (B \\cap C) = (A \\cup B) \\cap (A \\cup C)$',
+      statement:'Với mọi tập hợp $A$, $B$, $C$: phép hợp phân phối đối với phép giao.',
+      tags:['tập hợp','đại số'],
+      steps:[
+        { title:'Chứng minh chiều ⊆ (trái → phải)', body:'Lấy $x \\in A \\cup (B \\cap C)$, tức là $x \\in A$ hoặc $x \\in B \\cap C$.<br><strong>TH1:</strong> $x \\in A$ ⟹ $x \\in A \\cup B$ và $x \\in A \\cup C$ ⟹ $x \\in (A \\cup B) \\cap (A \\cup C)$.<br><strong>TH2:</strong> $x \\in B \\cap C$ ⟹ $x \\in B$ và $x \\in C$ ⟹ $x \\in A \\cup B$ và $x \\in A \\cup C$ ⟹ $x \\in (A\\cup B)\\cap(A\\cup C)$.' },
+        { title:'Chứng minh chiều ⊆ (phải → trái)', body:'Lấy $x \\in (A \\cup B) \\cap (A \\cup C)$, tức $x \\in A \\cup B$ và $x \\in A \\cup C$.<br>Nếu $x \\in A$: xong (đưa vào vế trái).<br>Nếu $x \\notin A$: thì từ $x \\in A \\cup B$ ⟹ $x \\in B$; từ $x \\in A \\cup C$ ⟹ $x \\in C$; do đó $x \\in B \\cap C \\subseteq A \\cup (B \\cap C)$.' },
+        { title:'Kết luận bằng hai chiều bao nhau', body:'Từ hai chiều ⊆ suy ra $A \\cup (B \\cap C) = (A \\cup B) \\cap (A \\cup C)$. $\\blacksquare$' },
+      ],
+      example:'Ví dụ: A={1,2,3}, B={2,3,4}, C={3,4,5}. B∩C={3,4}. A∪(B∩C)={1,2,3,4}. (A∪B)={1,2,3,4}, (A∪C)={1,2,3,4,5}. Giao = {1,2,3,4}. ✓',
+    },
+    {
+      id:'t3', subject:'toan', level:'basic',
+      name:'Định lý Pythagore',
+      statement:'Trong tam giác vuông, bình phương cạnh huyền bằng tổng bình phương hai cạnh góc vuông: $a^2 + b^2 = c^2$ (c là cạnh huyền).',
+      tags:['hình học','tam giác','Pythagore'],
+      steps:[
+        { title:'Dựng hình vuông cạnh (a+b)', body:'Vẽ hình vuông có cạnh $a+b$. Bên trong, đặt 4 tam giác vuông bằng nhau (cạnh góc vuông a và b) tại 4 góc, tạo nên hình vuông cạnh c ở giữa.' },
+        { title:'Tính diện tích hai cách', body:'<strong>Cách 1:</strong> $S_{ngoài} = (a+b)^2 = a^2 + 2ab + b^2$<br><strong>Cách 2:</strong> $S_{ngoài} = 4 \\times \\frac{1}{2}ab + c^2 = 2ab + c^2$' },
+        { title:'Đồng nhất và kết luận', body:'$(a^2 + 2ab + b^2) = (2ab + c^2)$<br>$\\Rightarrow a^2 + b^2 = c^2$ $\\blacksquare$' },
+      ],
+      example:'Tam giác vuông cạnh 3, 4, 5: $3^2 + 4^2 = 9 + 16 = 25 = 5^2$ ✓. Tam giác cạnh 5, 12, 13: $5^2 + 12^2 = 25 + 144 = 169 = 13^2$ ✓.',
+    },
+    {
+      id:'t4', subject:'toan', level:'advanced',
+      name:'Định lý: Số nguyên tố là vô hạn',
+      statement:'Tập hợp các số nguyên tố là tập vô hạn (không có số nguyên tố lớn nhất).',
+      tags:['số học','số nguyên tố','vô hạn'],
+      steps:[
+        { title:'Giả sử ngược lại (chứng minh phản chứng)', body:'Giả sử chỉ có hữu hạn số nguyên tố, gọi chúng là $p_1, p_2, \\ldots, p_n$.' },
+        { title:'Xây dựng số đặc biệt N', body:'Đặt $N = p_1 \\cdot p_2 \\cdots p_n + 1$.<br>N lớn hơn mọi $p_i$, nên N không thuộc danh sách.' },
+        { title:'Phân tích ước của N', body:'N ≥ 2 nên N có ít nhất một ước nguyên tố $q$. Nhưng $q$ phải là một trong $p_1, \\ldots, p_n$ (theo giả sử).<br>Suy ra $q \\mid N$ và $q \\mid p_1 p_2 \\cdots p_n$, nên $q \\mid (N - p_1 p_2 \\cdots p_n) = 1$. Mâu thuẫn! (q ≥ 2 không thể chia hết 1).' },
+        { title:'Kết luận', body:'Giả sử ban đầu sai → có vô hạn số nguyên tố. $\\blacksquare$' },
+      ],
+      example:'Ví dụ với n=3: p₁=2, p₂=3, p₃=5. N = 2×3×5+1 = 31 (là số nguyên tố mới!). Với n=4: N = 2×3×5×7+1 = 211 (nguyên tố). Thêm p₅=7: N=2×3×5×7×11+1 = 2311 (nguyên tố).',
+    },
+    // ── VẬT LÝ 10 ──
+    {
+      id:'t5', subject:'ly', level:'basic',
+      name:'Định luật II Newton: $\\vec{F} = m\\vec{a}$',
+      statement:'Gia tốc của một vật tỉ lệ thuận với lực tác dụng và tỉ lệ nghịch với khối lượng: $\\vec{a} = \\dfrac{\\vec{F}_{tổng}}{m}$.',
+      tags:['động lực học','Newton','lực'],
+      steps:[
+        { title:'Quan sát thực nghiệm', body:'Thí nghiệm: giữ nguyên khối lượng, tăng lực gấp đôi → gia tốc tăng gấp đôi. Giữ lực không đổi, tăng khối lượng gấp đôi → gia tốc giảm còn nửa.' },
+        { title:'Rút ra quan hệ tỉ lệ', body:'Từ thực nghiệm: $a \\propto F$ và $a \\propto \\frac{1}{m}$, suy ra $a \\propto \\frac{F}{m}$.' },
+        { title:'Định nghĩa đơn vị Newton', body:'Chọn hệ số tỉ lệ = 1 (định nghĩa đơn vị lực 1 N = lực làm vật 1 kg thu gia tốc 1 m/s²). Khi đó: $F = ma$.' },
+        { title:'Tổng quát hóa thành phương trình vectơ', body:'Lực là đại lượng vectơ, gia tốc cũng là vectơ, khối lượng là đại lượng vô hướng dương. Do đó: $\\vec{F}_{tổng} = m\\vec{a}$. $\\blacksquare$' },
+      ],
+      example:'Xe ô tô 1000 kg, lực động cơ 2000 N, lực ma sát 500 N. Lực tổng = 1500 N. Gia tốc a = F/m = 1500/1000 = 1,5 m/s².',
+    },
+    {
+      id:'t6', subject:'ly', level:'basic',
+      name:'Định lý: Năng lượng bảo toàn trong hệ kín',
+      statement:'Tổng năng lượng cơ học (động năng + thế năng) của một hệ kín (không có lực ma sát, ngoại lực) là không đổi: $E_k + E_t = const$.',
+      tags:['năng lượng','bảo toàn','cơ học'],
+      steps:[
+        { title:'Định nghĩa năng lượng cơ học', body:'$E = E_k + E_t = \\frac{1}{2}mv^2 + mgh$<br>Trong đó: $v$ là vận tốc, $m$ là khối lượng, $g$ là gia tốc trọng trường, $h$ là độ cao.' },
+        { title:'Tính vi phân theo thời gian', body:'$\\frac{dE}{dt} = \\frac{d}{dt}\\left(\\frac{1}{2}mv^2\\right) + \\frac{d}{dt}(mgh) = mv\\frac{dv}{dt} + mg\\frac{dh}{dt}$<br>$= mva + mgv\\cos\\theta$<br>Với $\\theta$ là góc giữa vận tốc và phương nằm ngang.' },
+        { title:'Áp dụng định luật II Newton', body:'Từ $F_{net} = ma$ và lực duy nhất là trọng lực: $ma = -mg\\cos\\theta$ (chiếu dọc theo chuyển động).<br>Suy ra $mva = -mgv\\cos\\theta$, nên $\\frac{dE}{dt} = 0$.' },
+        { title:'Kết luận', body:'$E = const$ → Năng lượng cơ học bảo toàn trong hệ kín. $\\blacksquare$' },
+      ],
+      example:'Quả bóng ném lên cao: khi lên, động năng giảm, thế năng tăng, tổng không đổi. Tại điểm cao nhất: $v=0$, $E_k=0$, $E_t=mgh_{max}=E_{ban đầu}$.',
+    },
+    // ── HÓA HỌC 10 ──
+    {
+      id:'t7', subject:'hoa', level:'basic',
+      name:'Quy tắc bát tử (Octet Rule)',
+      statement:'Các nguyên tử có xu hướng nhận, nhường hoặc góp chung electron để đạt cấu hình electron bền vững với 8 electron (giống khí hiếm) ở lớp ngoài cùng.',
+      tags:['liên kết hóa học','electron','bát tử'],
+      steps:[
+        { title:'Quan sát cấu hình khí hiếm', body:'Các khí hiếm (He, Ne, Ar...) rất ổn định về mặt hóa học. He có 2 electron (đã đủ lớp 1), Ne và Ar có 8 electron lớp ngoài cùng.' },
+        { title:'Nhận xét về phản ứng hóa học', body:'Na có 1e lớp ngoài → nhường 1e để lớp 8 lộ ra (Na⁺). Cl có 7e lớp ngoài → nhận 1e để đủ 8 (Cl⁻). Kết quả: NaCl bền vững.' },
+        { title:'Tổng quát hóa', body:'• Ion hóa: nguyên tử nhường/nhận e để đạt 8e ngoài cùng (liên kết ion).<br>• Góp chung: nguyên tử chia sẻ cặp e để mỗi bên "đếm" đủ 8 (liên kết cộng hóa trị).' },
+        { title:'Kết luận và ngoại lệ', body:'Quy tắc bát tử đúng với hầu hết các nguyên tố chu kỳ 2 và 3. Ngoại lệ: H (cần 2e), BF₃ (B chỉ có 6e), PCl₅ (P có 10e). $\\blacksquare$' },
+      ],
+      example:'H₂O: O có 6e ngoài, cần 2e → dùng chung 2 cặp e với 2 H. O đạt 8e (4 cặp), H đạt 2e. Phân tử bền.',
+    },
+  ];
+
+  let allTheorems = THEOREMS;
+
+  function renderTheorems(list) {
+    const container = document.getElementById('theoremList');
+    if (!list.length) { container.innerHTML = '<p class="text-slate-400 py-12 text-center">Không tìm thấy định lý</p>'; return; }
+    container.innerHTML = list.map(thm => `
+      <div class="theorem-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- Header -->
+        <div class="p-5">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex-1">
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-full ${thm.subject==='toan'?'bg-blue-100 text-primary':thm.subject==='ly'?'bg-orange-100 text-accent':'bg-green-100 text-green-700'}">
+                  ${thm.subject==='toan'?'📐 Toán':thm.subject==='ly'?'⚛️ Vật lý':'🧪 Hóa học'}
+                </span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${thm.level==='basic'?'bg-slate-100 text-slate-600':'bg-purple-100 text-purple-700'}">
+                  ${thm.level==='basic'?'Cơ bản':'Nâng cao'}
+                </span>
+                ${thm.tags.map(t=>`<span class="text-xs px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full">#${t}</span>`).join('')}
+              </div>
+              <h3 class="font-bold text-slate-800 text-base">${thm.name}</h3>
+            </div>
+          </div>
+          <!-- Statement box -->
+          <div class="bg-blue-50 border-l-4 border-primary rounded-r-xl p-4 mb-4">
+            <p class="text-sm font-semibold text-primary mb-1">📜 Phát biểu:</p>
+            <p class="text-slate-700 text-sm">${thm.statement}</p>
+          </div>
+          <!-- Toggle proof -->
+          <button onclick="toggleProof('proof-${thm.id}', this)"
+            class="px-4 py-2 bg-accent text-white rounded-lg text-sm font-semibold hover:bg-orange-600 transition flex items-center gap-2">
+            <span>📖 Xem chứng minh</span>
+            <span class="toggle-arrow">▼</span>
+          </button>
+        </div>
+
+        <!-- Proof (collapsible) -->
+        <div id="proof-${thm.id}" class="hidden border-t border-slate-100">
+          <div class="p-5">
+            <p class="font-bold text-slate-800 mb-4">📋 Chứng minh từng bước:</p>
+            <div class="space-y-4" style="counter-reset: step">
+              ${thm.steps.map(s => `
+                <div class="proof-step flex gap-3">
+                  <div class="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5"></div>
+                  <div class="flex-1 bg-slate-50 rounded-xl p-3">
+                    <p class="font-semibold text-primary text-sm mb-1">${s.title}</p>
+                    <p class="text-slate-700 text-sm leading-relaxed">${s.body}</p>
+                  </div>
+                </div>`).join('')}
+            </div>
+
+            <!-- Example -->
+            <div class="mt-5 bg-orange-50 border-l-4 border-accent rounded-r-xl p-4">
+              <p class="font-semibold text-accent text-sm mb-1">💡 Ví dụ minh họa:</p>
+              <p class="text-slate-700 text-sm">${thm.example}</p>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+              <a href="ai-chat.html" class="px-3 py-1.5 bg-secondary text-white text-xs font-semibold rounded-lg hover:bg-primary transition">
+                🤖 Hỏi AI thêm
+              </a>
+              <button onclick="shareThm('${thm.name}')" class="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition">
+                📤 Chia sẻ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`).join('');
+
+    // Number proof steps with CSS counter — fix numbering with JS
+    document.querySelectorAll('.proof-step').forEach((el, i) => {
+      const dot = el.querySelector('.flex-shrink-0');
+      if (dot) dot.textContent = (i % 4) + 1; // reset per theorem
+    });
+    // Actually number per-theorem correctly:
+    document.querySelectorAll('[id^="proof-"]').forEach(proof => {
+      proof.querySelectorAll('.proof-step').forEach((el, idx) => {
+        const dot = el.querySelector('.flex-shrink-0');
+        if (dot) dot.textContent = idx + 1;
+      });
+    });
+
+    if (window.MathJax) MathJax.typesetPromise([container]);
+  }
+
+  window.toggleProof = (proofId, btn) => {
+    const el = document.getElementById(proofId);
+    el.classList.toggle('hidden');
+    const arrow = btn.querySelector('.toggle-arrow');
+    if (arrow) arrow.textContent = el.classList.contains('hidden') ? '▼' : '▲';
+    btn.querySelector('span:first-child').textContent = el.classList.contains('hidden') ? '📖 Xem chứng minh' : '🔼 Ẩn chứng minh';
+    if (!el.classList.contains('hidden') && window.MathJax) MathJax.typesetPromise([el]);
+  };
+
+  window.shareThm = (name) => {
+    if (navigator.share) navigator.share({ title: name, url: window.location.href });
+    else navigator.clipboard?.writeText(window.location.href).then(() => alert('Đã sao chép link!'));
+  };
+
+  // Filters & search
+  function applyFilters() {
+    const subject = document.getElementById('subjectFilter').value;
+    const level   = document.getElementById('levelFilter').value;
+    const q       = document.getElementById('searchThm').value.toLowerCase();
+    renderTheorems(allTheorems.filter(t =>
+      (subject === 'all' || t.subject === subject) &&
+      (level   === 'all' || t.level   === level) &&
+      (!q || t.name.toLowerCase().includes(q) || t.tags.some(tag => tag.includes(q)))
+    ));
+  }
+
+  document.getElementById('subjectFilter').addEventListener('change', applyFilters);
+  document.getElementById('levelFilter').addEventListener('change', applyFilters);
+  document.getElementById('searchThm').addEventListener('input', applyFilters);
+
+  renderTheorems(allTheorems);
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

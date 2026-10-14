@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đồng hồ Pomodoro — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📚</span> Môn học</a>
+    <a href="pomodoro.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>💬</span> Diễn đàn</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center gap-4 flex-shrink-0">
+    <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <h1 class="text-xl font-bold text-slate-800">⏰ Đồng hồ Pomodoro</h1>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-2xl mx-auto">
+
+      <!-- Mode tabs -->
+      <div class="flex gap-2 mb-8 bg-slate-200 rounded-xl p-1">
+        <button data-mode="work"       class="mode-btn flex-1 py-2 rounded-lg text-sm font-semibold bg-white shadow text-primary transition">🍅 Học (25p)</button>
+        <button data-mode="short"      class="mode-btn flex-1 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white/50 transition">☕ Nghỉ ngắn (5p)</button>
+        <button data-mode="long"       class="mode-btn flex-1 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white/50 transition">🛋️ Nghỉ dài (15p)</button>
+      </div>
+
+      <!-- Timer ring -->
+      <div class="flex flex-col items-center mb-8">
+        <div class="relative w-64 h-64">
+          <svg class="w-full h-full" viewBox="0 0 100 100">
+            <!-- Background ring -->
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#E2E8F0" stroke-width="6"/>
+            <!-- Progress ring -->
+            <circle id="timerRing" cx="50" cy="50" r="45" fill="none"
+              stroke="#1E40AF" stroke-width="6" stroke-linecap="round"
+              class="pomo-ring"
+              stroke-dasharray="282.7"
+              stroke-dashoffset="0"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div id="timerDisplay" class="text-5xl font-black text-slate-800 font-mono">25:00</div>
+            <div id="timerMode" class="text-sm text-slate-500 mt-1">🍅 Học tập</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex gap-4 justify-center mb-8">
+        <button id="resetBtn" class="w-12 h-12 rounded-full bg-slate-200 hover:bg-slate-300 transition flex items-center justify-center text-lg" title="Reset">↺</button>
+        <button id="startBtn" class="w-20 h-20 rounded-full bg-primary text-white text-2xl hover:bg-blue-800 transition shadow-lg shadow-primary/30 font-bold flex items-center justify-center">
+          ▶
+        </button>
+        <button id="skipBtn"  class="w-12 h-12 rounded-full bg-slate-200 hover:bg-slate-300 transition flex items-center justify-center text-lg" title="Bỏ qua">⏭</button>
+      </div>
+
+      <!-- Settings -->
+      <div class="bg-white rounded-2xl shadow-sm p-5 mb-6">
+        <h3 class="font-bold text-slate-800 mb-4">⚙️ Cài đặt thời gian</h3>
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Học (phút)</label>
+            <input type="number" id="workTime" value="25" min="1" max="60"
+              class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-center font-bold focus:ring-2 focus:ring-secondary outline-none">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Nghỉ ngắn</label>
+            <input type="number" id="shortTime" value="5" min="1" max="30"
+              class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-center font-bold focus:ring-2 focus:ring-secondary outline-none">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Nghỉ dài</label>
+            <input type="number" id="longTime" value="15" min="1" max="60"
+              class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-center font-bold focus:ring-2 focus:ring-secondary outline-none">
+          </div>
+        </div>
+        <div class="flex items-center gap-3 mt-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="autoStart" class="rounded">
+            <span class="text-sm text-slate-600">Tự động bắt đầu phiên tiếp theo</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="bg-white rounded-2xl shadow-sm p-5">
+        <h3 class="font-bold text-slate-800 mb-4">📊 Thống kê hôm nay</h3>
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div class="p-3 bg-blue-50 rounded-xl">
+            <p id="statSessions" class="text-3xl font-black text-primary">0</p>
+            <p class="text-xs text-slate-500 mt-1">Phiên hoàn thành</p>
+          </div>
+          <div class="p-3 bg-orange-50 rounded-xl">
+            <p id="statMinutes" class="text-3xl font-black text-accent">0</p>
+            <p class="text-xs text-slate-500 mt-1">Phút tập trung</p>
+          </div>
+          <div class="p-3 bg-green-50 rounded-xl">
+            <p id="statStreak" class="text-3xl font-black text-green-500">0</p>
+            <p class="text-xs text-slate-500 mt-1">Ngày liên tiếp</p>
+          </div>
+        </div>
+        <!-- Session history -->
+        <div class="mt-4">
+          <p class="text-xs font-semibold text-slate-500 mb-2">Phiên học hôm nay:</p>
+          <div id="sessionHistory" class="flex flex-wrap gap-2">
+            <span class="text-xs text-slate-400">Chưa có phiên nào</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Pomodoro Timer Logic ──
+  const MODES = { work: 25*60, short: 5*60, long: 15*60 };
+  let currentMode  = 'work';
+  let timeLeft     = MODES.work;
+  let totalTime    = MODES.work;
+  let isRunning    = false;
+  let timer        = null;
+  let completedSessions = 0;
+  let totalMinutes      = 0;
+  let sessions          = [];
+
+  const display  = document.getElementById('timerDisplay');
+  const ring     = document.getElementById('timerRing');
+  const modeEl   = document.getElementById('timerMode');
+  const startBtn = document.getElementById('startBtn');
+  const CIRCUMFERENCE = 2 * Math.PI * 45; // ≈ 282.7
+
+  const MODE_LABELS = { work:'🍅 Học tập', short:'☕ Nghỉ ngắn', long:'🛋️ Nghỉ dài' };
+  const MODE_COLORS = { work:'#1E40AF', short:'#10B981', long:'#F97316' };
+
+  function updateDisplay() {
+    const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+    const s = (timeLeft%60).toString().padStart(2,'0');
+    display.textContent = `${m}:${s}`;
+    document.title = `${m}:${s} — a0jyng Pomodoro`;
+
+    const progress = (totalTime - timeLeft) / totalTime;
+    ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+  }
+
+  function setMode(mode) {
+    clearInterval(timer);
+    isRunning    = false;
+    currentMode  = mode;
+    const mins   = parseInt(document.getElementById(mode === 'work' ? 'workTime' : mode === 'short' ? 'shortTime' : 'longTime').value);
+    totalTime    = mins * 60;
+    timeLeft     = totalTime;
+    ring.style.stroke = MODE_COLORS[mode];
+    modeEl.textContent = MODE_LABELS[mode];
+    startBtn.textContent = '▶';
+    updateDisplay();
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.className = b.dataset.mode === mode
+        ? 'mode-btn flex-1 py-2 rounded-lg text-sm font-semibold bg-white shadow text-primary transition'
+        : 'mode-btn flex-1 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white/50 transition';
+    });
+  }
+
+  function tick() {
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      isRunning = false;
+      startBtn.textContent = '▶';
+      onTimerComplete();
+      return;
+    }
+    timeLeft--;
+    updateDisplay();
+  }
+
+  function onTimerComplete() {
+    // Notification
+    if (Notification.permission === 'granted') {
+      new Notification('a0jyng Pomodoro', {
+        body: currentMode === 'work' ? '🍅 Phiên học hoàn thành! Đến lúc nghỉ rồi.' : '☕ Hết giờ nghỉ! Sẵn sàng học tiếp chưa?',
+        icon: '📚',
+      });
+    }
+
+    if (currentMode === 'work') {
+      completedSessions++;
+      totalMinutes += parseInt(document.getElementById('workTime').value);
+      document.getElementById('statSessions').textContent = completedSessions;
+      document.getElementById('statMinutes').textContent  = totalMinutes;
+
+      const now = new Date();
+      sessions.push(`${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`);
+      document.getElementById('sessionHistory').innerHTML = sessions.map(t =>
+        `<span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">🍅 ${t}</span>`
+      ).join('');
+
+      // Auto next: short break (every 4 sessions → long break)
+      const nextMode = completedSessions % 4 === 0 ? 'long' : 'short';
+      if (document.getElementById('autoStart').checked) {
+        setTimeout(() => { setMode(nextMode); startTimer(); }, 1000);
+      } else {
+        setMode(nextMode);
+      }
+    } else {
+      if (document.getElementById('autoStart').checked) {
+        setTimeout(() => { setMode('work'); startTimer(); }, 1000);
+      } else {
+        setMode('work');
+      }
+    }
+  }
+
+  function startTimer() {
+    if (Notification.permission === 'default') Notification.requestPermission();
+    timer     = setInterval(tick, 1000);
+    isRunning = true;
+    startBtn.textContent = '⏸';
+  }
+
+  startBtn.addEventListener('click', () => {
+    if (isRunning) { clearInterval(timer); isRunning = false; startBtn.textContent = '▶'; }
+    else { startTimer(); }
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    clearInterval(timer);
+    isRunning = false;
+    const mins = parseInt(document.getElementById(currentMode === 'work' ? 'workTime' : currentMode === 'short' ? 'shortTime' : 'longTime').value);
+    totalTime  = mins * 60;
+    timeLeft   = totalTime;
+    startBtn.textContent = '▶';
+    updateDisplay();
+  });
+
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    clearInterval(timer);
+    isRunning = false;
+    onTimerComplete();
+  });
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => setMode(btn.dataset.mode));
+  });
+
+  // Keyboard shortcut: Space = play/pause
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+      e.preventDefault();
+      startBtn.click();
+    }
+  });
+
+  updateDisplay();
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

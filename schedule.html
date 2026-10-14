@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lịch học thông minh — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+  <style>
+    .cal-day { min-height: 80px; }
+    .cal-day.today { background: #EFF6FF; border: 2px solid #3B82F6; }
+    .cal-day.other-month { opacity: 0.4; }
+    .event-pill { font-size: 0.65rem; line-height: 1.2; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
+    .time-slot { height: 60px; border-top: 1px solid #F1F5F9; position: relative; }
+    .time-slot:hover { background: #F8FAFC; }
+  </style>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📚</span> Môn học</a>
+    <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📊</span> Tiến trình</a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="schedule.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🗓️</span> Lịch học</a>
+    <a href="roadmap.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧭</span> Lộ trình</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>💬</span> Diễn đàn</a>
+    <a href="textbook.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📗</span> Giải SGK</a>
+    <a href="theorems.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧮</span> Định lý</a>
+    <a href="summaries.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📝</span> Tóm tắt</a>
+    <a href="reports.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📈</span> Báo cáo</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="flex items-center gap-3">
+        <button id="prevMonth" class="p-2 rounded-lg hover:bg-slate-100 transition">◀</button>
+        <h1 class="text-lg font-bold text-slate-800" id="calTitle">Tháng 10, 2026</h1>
+        <button id="nextMonth" class="p-2 rounded-lg hover:bg-slate-100 transition">▶</button>
+      </div>
+      <button id="todayBtn" class="px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 transition">Hôm nay</button>
+    </div>
+    <div class="flex gap-2">
+      <!-- View switcher -->
+      <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden">
+        <button id="viewMonth" class="px-3 py-1.5 bg-primary text-white text-sm font-medium">Tháng</button>
+        <button id="viewWeek"  class="px-3 py-1.5 text-slate-600 text-sm font-medium hover:bg-slate-50">Tuần</button>
+      </div>
+      <button id="addEventBtn" class="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-xl hover:bg-orange-600 transition">
+        + Thêm sự kiện
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-hidden flex">
+    <!-- Calendar -->
+    <div class="flex-1 overflow-auto p-4">
+      <!-- Month view -->
+      <div id="monthView">
+        <!-- Day headers -->
+        <div class="grid grid-cols-7 gap-1 mb-1">
+          <div class="text-center text-xs font-bold text-slate-500 py-2">T.2</div>
+          <div class="text-center text-xs font-bold text-slate-500 py-2">T.3</div>
+          <div class="text-center text-xs font-bold text-slate-500 py-2">T.4</div>
+          <div class="text-center text-xs font-bold text-slate-500 py-2">T.5</div>
+          <div class="text-center text-xs font-bold text-slate-500 py-2">T.6</div>
+          <div class="text-center text-xs font-bold text-slate-500 py-2 text-secondary">T.7</div>
+          <div class="text-center text-xs font-bold text-slate-500 py-2 text-red-400">CN</div>
+        </div>
+        <div id="calGrid" class="grid grid-cols-7 gap-1"></div>
+      </div>
+
+      <!-- Week view (hidden initially) -->
+      <div id="weekView" class="hidden">
+        <div class="grid grid-cols-8 gap-0">
+          <div class="col-span-1"></div>
+          <div id="weekHeaders" class="col-span-7 grid grid-cols-7">
+            <!-- Day headers populated by JS -->
+          </div>
+        </div>
+        <div class="grid grid-cols-8 gap-0 overflow-auto max-h-96" id="weekGrid">
+          <!-- Time slots populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar: upcoming + quick add -->
+    <div class="w-64 border-l bg-white p-4 overflow-y-auto hidden lg:block flex-shrink-0">
+      <h3 class="font-bold text-slate-800 mb-3 text-sm">📅 Lịch sắp tới</h3>
+      <div id="upcomingList" class="space-y-2"></div>
+
+      <div class="mt-6">
+        <h3 class="font-bold text-slate-800 mb-3 text-sm">🔔 Nhắc nhở</h3>
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked class="rounded"> <span class="text-xs text-slate-600">Nhắc trước 30 phút</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked class="rounded"> <span class="text-xs text-slate-600">Thông báo trình duyệt</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Study streak -->
+      <div class="mt-6 p-3 bg-orange-50 rounded-xl">
+        <p class="text-xs font-bold text-accent mb-1">🔥 Streak hiện tại</p>
+        <p class="text-3xl font-black text-accent">12</p>
+        <p class="text-xs text-slate-500">ngày học liên tiếp</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Add Event Modal -->
+<div id="eventModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/50" onclick="closeEventModal()"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+    <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Thêm sự kiện học</h2>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Tên sự kiện</label>
+        <input type="text" id="eventTitle" placeholder="VD: Học Toán - Chương 1" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Ngày</label>
+          <input type="date" id="eventDate" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Giờ</label>
+          <input type="time" id="eventTime" value="19:00" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Môn học</label>
+        <select id="eventSubject" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+          <option value="toan" data-color="#3B82F6">📐 Toán học</option>
+          <option value="ly"   data-color="#F97316">⚛️ Vật lý</option>
+          <option value="hoa"  data-color="#10B981">🧪 Hóa học</option>
+          <option value="van"  data-color="#8B5CF6">📖 Ngữ văn</option>
+          <option value="anh"  data-color="#EC4899">🌍 Tiếng Anh</option>
+          <option value="other" data-color="#6B7280">📌 Khác</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Lặp lại</label>
+        <select id="eventRepeat" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+          <option value="none">Không lặp</option>
+          <option value="daily">Hàng ngày</option>
+          <option value="weekly">Hàng tuần (cùng thứ)</option>
+          <option value="weekdays">Thứ 2 – 6</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeEventModal()" class="flex-1 py-3 bg-slate-100 rounded-xl font-semibold hover:bg-slate-200 transition">Huỷ</button>
+      <button id="saveEvent" class="flex-1 py-3 bg-accent text-white rounded-xl font-bold hover:bg-orange-600 transition">💾 Lưu sự kiện</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Calendar State ──
+  const today  = new Date();
+  let current  = new Date(today.getFullYear(), today.getMonth(), 1);
+  let viewMode = 'month';
+
+  // Events stored in localStorage
+  const STORAGE_KEY = 'a0jyng_events';
+  let events = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+  // Sample events
+  if (!events.length) {
+    const y = today.getFullYear(), m = today.getMonth();
+    events = [
+      { id:1, title:'Học Toán - Chương 1', date:`${y}-${String(m+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`, time:'19:00', subject:'toan', color:'#3B82F6' },
+      { id:2, title:'Ôn Vật Lý',            date:`${y}-${String(m+1).padStart(2,'0')}-${String(today.getDate()+2).padStart(2,'0')}`, time:'20:00', subject:'ly', color:'#F97316' },
+      { id:3, title:'Kiểm tra Hóa',         date:`${y}-${String(m+1).padStart(2,'0')}-${String(today.getDate()+5).padStart(2,'0')}`, time:'07:30', subject:'hoa', color:'#10B981' },
+    ];
+    saveEvents();
+  }
+
+  function saveEvents() { localStorage.setItem(STORAGE_KEY, JSON.stringify(events)); }
+
+  const SUBJECT_COLORS = { toan:'#3B82F6', ly:'#F97316', hoa:'#10B981', van:'#8B5CF6', anh:'#EC4899', other:'#6B7280' };
+  const MONTH_VI = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+
+  function renderCalendar() {
+    document.getElementById('calTitle').textContent = `${MONTH_VI[current.getMonth()]}, ${current.getFullYear()}`;
+    const firstDay = new Date(current.getFullYear(), current.getMonth(), 1);
+    const lastDay  = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+    // Monday-first offset
+    let startOffset = (firstDay.getDay() + 6) % 7;
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    // Previous month filler days
+    for (let i = startOffset - 1; i >= 0; i--) {
+      const d = new Date(firstDay); d.setDate(d.getDate() - i - 1);
+      grid.appendChild(createDayCell(d, true));
+    }
+    // Current month days
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const date = new Date(current.getFullYear(), current.getMonth(), d);
+      grid.appendChild(createDayCell(date, false));
+    }
+    // Next month filler
+    const totalCells = startOffset + lastDay.getDate();
+    const remaining  = 7 - (totalCells % 7);
+    if (remaining < 7) {
+      for (let i = 1; i <= remaining; i++) {
+        const d = new Date(lastDay); d.setDate(d.getDate() + i);
+        grid.appendChild(createDayCell(d, true));
+      }
+    }
+
+    renderUpcoming();
+  }
+
+  function createDayCell(date, isOther) {
+    const isToday = date.toDateString() === today.toDateString();
+    const dateStr = date.toISOString().split('T')[0];
+    const dayEvents = events.filter(e => e.date === dateStr);
+
+    const cell = document.createElement('div');
+    cell.className = `cal-day rounded-xl p-1.5 cursor-pointer hover:bg-blue-50 transition ${isToday ? 'today' : isOther ? 'other-month bg-slate-50' : 'bg-white border border-slate-100'}`;
+    cell.innerHTML = `
+      <div class="text-xs font-bold ${isToday ? 'text-secondary' : isOther ? 'text-slate-400' : 'text-slate-700'} mb-1">${date.getDate()}</div>
+      <div class="space-y-0.5">
+        ${dayEvents.slice(0,3).map(e => `
+          <div class="event-pill text-white truncate" style="background:${e.color || '#3B82F6'}" title="${e.title}">
+            ${e.time ? e.time.slice(0,5)+' ' : ''}${e.title}
+          </div>`).join('')}
+        ${dayEvents.length > 3 ? `<div class="text-xs text-slate-400">+${dayEvents.length-3} thêm</div>` : ''}
+      </div>`;
+    cell.addEventListener('click', () => openEventModal(dateStr));
+    return cell;
+  }
+
+  function renderUpcoming() {
+    const futureEvents = events
+      .filter(e => new Date(e.date) >= today)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 6);
+
+    document.getElementById('upcomingList').innerHTML = futureEvents.length
+      ? futureEvents.map(e => `
+        <div class="flex items-start gap-2 p-2 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+          <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style="background:${e.color || '#3B82F6'}"></div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-slate-800 truncate">${e.title}</p>
+            <p class="text-xs text-slate-400">${e.date.split('-').reverse().join('/')} ${e.time || ''}</p>
+          </div>
+        </div>`).join('')
+      : '<p class="text-xs text-slate-400">Không có sự kiện sắp tới</p>';
+  }
+
+  // Navigation
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    current.setMonth(current.getMonth() - 1);
+    renderCalendar();
+  });
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    current.setMonth(current.getMonth() + 1);
+    renderCalendar();
+  });
+  document.getElementById('todayBtn').addEventListener('click', () => {
+    current = new Date(today.getFullYear(), today.getMonth(), 1);
+    renderCalendar();
+  });
+
+  // Add event
+  document.getElementById('addEventBtn').addEventListener('click', () => openEventModal());
+  window.openEventModal = (dateStr) => {
+    document.getElementById('eventDate').value = dateStr || today.toISOString().split('T')[0];
+    document.getElementById('eventModal').classList.remove('hidden');
+  };
+  window.closeEventModal = () => document.getElementById('eventModal').classList.add('hidden');
+
+  document.getElementById('saveEvent').addEventListener('click', () => {
+    const title   = document.getElementById('eventTitle').value.trim();
+    const date    = document.getElementById('eventDate').value;
+    const time    = document.getElementById('eventTime').value;
+    const subject = document.getElementById('eventSubject').value;
+    if (!title || !date) { alert('Vui lòng điền tên sự kiện và ngày!'); return; }
+
+    const event = { id: Date.now(), title, date, time, subject, color: SUBJECT_COLORS[subject] };
+    events.push(event);
+
+    // Handle repeat
+    const repeat = document.getElementById('eventRepeat').value;
+    if (repeat === 'weekly') {
+      for (let w = 1; w <= 8; w++) {
+        const d = new Date(date); d.setDate(d.getDate() + w*7);
+        events.push({ ...event, id: Date.now()+w, date: d.toISOString().split('T')[0] });
+      }
+    } else if (repeat === 'daily') {
+      for (let d = 1; d <= 14; d++) {
+        const nd = new Date(date); nd.setDate(nd.getDate() + d);
+        events.push({ ...event, id: Date.now()+d, date: nd.toISOString().split('T')[0] });
+      }
+    } else if (repeat === 'weekdays') {
+      for (let d = 1; d <= 20; d++) {
+        const nd = new Date(date); nd.setDate(nd.getDate() + d);
+        if (nd.getDay() >= 1 && nd.getDay() <= 5)
+          events.push({ ...event, id: Date.now()+d+100, date: nd.toISOString().split('T')[0] });
+      }
+    }
+
+    saveEvents();
+    closeEventModal();
+    document.getElementById('eventTitle').value = '';
+    renderCalendar();
+  });
+
+  // View switch
+  document.getElementById('viewMonth').addEventListener('click', () => {
+    viewMode = 'month';
+    document.getElementById('monthView').classList.remove('hidden');
+    document.getElementById('weekView').classList.add('hidden');
+    document.getElementById('viewMonth').className = 'px-3 py-1.5 bg-primary text-white text-sm font-medium';
+    document.getElementById('viewWeek').className  = 'px-3 py-1.5 text-slate-600 text-sm font-medium hover:bg-slate-50';
+  });
+  document.getElementById('viewWeek').addEventListener('click', () => {
+    viewMode = 'week';
+    document.getElementById('monthView').classList.add('hidden');
+    document.getElementById('weekView').classList.remove('hidden');
+    document.getElementById('viewMonth').className = 'px-3 py-1.5 text-slate-600 text-sm font-medium hover:bg-slate-50';
+    document.getElementById('viewWeek').className  = 'px-3 py-1.5 bg-primary text-white text-sm font-medium';
+    renderWeekView();
+  });
+
+  function renderWeekView() {
+    const weekStart = new Date(today);
+    weekStart.setDate(weekStart.getDate() - ((weekStart.getDay()+6)%7));
+
+    const DAYS = ['T2','T3','T4','T5','T6','T7','CN'];
+    document.getElementById('weekHeaders').innerHTML = Array.from({length:7}, (_,i) => {
+      const d = new Date(weekStart); d.setDate(d.getDate()+i);
+      return `<div class="text-center text-xs font-bold p-2 ${d.toDateString()===today.toDateString()?'text-secondary bg-blue-50 rounded-t-lg':'text-slate-500'}">${DAYS[i]}<br>${d.getDate()}</div>`;
+    }).join('');
+
+    const hours = Array.from({length:14}, (_,i)=>i+7); // 7am-20pm
+    document.getElementById('weekGrid').innerHTML = hours.map(h => `
+      <div class="col-span-1 text-xs text-slate-400 pr-2 text-right py-3 border-t border-slate-100">${String(h).padStart(2,'0')}:00</div>
+      <div class="col-span-7 grid grid-cols-7">
+        ${Array.from({length:7}, (_,di) => {
+          const d = new Date(weekStart); d.setDate(d.getDate()+di);
+          const dateStr = d.toISOString().split('T')[0];
+          const slotEvents = events.filter(e => e.date===dateStr && parseInt(e.time?.split(':')[0]||0)===h);
+          return `<div class="time-slot border-l border-slate-100 px-1">
+            ${slotEvents.map(e=>`<div class="event-pill text-white text-xs" style="background:${e.color}">${e.title}</div>`).join('')}
+          </div>`;
+        }).join('')}
+      </div>`
+    ).join('');
+  }
+
+  renderCalendar();
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

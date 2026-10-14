@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Báo cáo tháng – a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E40AF',
+            secondary: '#3B82F6',
+            accent: '#F97316',
+          },
+          fontFamily: {
+            logo: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .sidebar { display: none !important; }
+      .main-content { margin-left: 0 !important; }
+      body { background: white !important; }
+      .print-card { break-inside: avoid; }
+    }
+    .streak-day { width: 28px; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+    .streak-done { background: #1E40AF; color: white; }
+    .streak-partial { background: #93C5FD; color: #1E40AF; }
+    .streak-none { background: #F1F5F9; color: #94A3B8; }
+    .streak-today { ring: 2px; ring-color: #F97316; outline: 2px solid #F97316; }
+  </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800">
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar fixed inset-y-0 left-0 w-64 bg-primary text-white flex flex-col z-40 shadow-xl no-print">
+  <div class="p-6 border-b border-blue-700">
+    <a href="index.html" class="font-logo text-2xl font-black">
+      a0<span class="text-accent">jyng</span>
+    </a>
+    <p class="text-blue-300 text-xs mt-1">Nền tảng học tập</p>
+  </div>
+  <nav class="flex-1 overflow-y-auto py-4">
+    <div class="px-4 mb-2 text-xs text-blue-400 uppercase tracking-wider">Học tập</div>
+    <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>🏠</span><span>Tổng quan</span>
+    </a>
+    <a href="subjects.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>📚</span><span>Môn học</span>
+    </a>
+    <a href="roadmap.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>🧭</span><span>Lộ trình</span>
+    </a>
+    <div class="px-4 mt-4 mb-2 text-xs text-blue-400 uppercase tracking-wider">Tiện ích</div>
+    <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>📅</span><span>Lịch học</span>
+    </a>
+    <a href="pomodoro.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>⏱️</span><span>Pomodoro</span>
+    </a>
+    <a href="ai-chat.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>🤖</span><span>AI hỏi đáp</span>
+    </a>
+    <a href="forum.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>💬</span><span>Diễn đàn</span>
+    </a>
+    <a href="textbook.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>📖</span><span>Giải bài tập</span>
+    </a>
+    <a href="theorems.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>📐</span><span>Định lý</span>
+    </a>
+    <a href="summaries.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>📝</span><span>Tóm tắt</span>
+    </a>
+    <a href="progress.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-700 transition mx-2 rounded-lg">
+      <span>📊</span><span>Tiến trình</span>
+    </a>
+    <a href="reports.html" class="flex items-center gap-3 px-4 py-3 bg-blue-700 mx-2 rounded-lg font-semibold">
+      <span>📋</span><span>Báo cáo tháng</span>
+    </a>
+  </nav>
+  <div class="p-4 border-t border-blue-700">
+    <div id="sidebarUser" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-accent flex items-center justify-center font-bold text-sm">U</div>
+      <div>
+        <p class="font-semibold text-sm" id="sidebarName">Học sinh</p>
+        <button onclick="handleLogout()" class="text-xs text-blue-300 hover:text-white">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content ml-64 min-h-screen">
+
+  <!-- Top bar -->
+  <header class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-30 no-print">
+    <div>
+      <h1 class="text-xl font-bold text-slate-800">📋 Báo cáo tháng</h1>
+      <p class="text-sm text-slate-500">Tổng kết kết quả học tập theo tháng</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <!-- Month picker -->
+      <select id="monthPicker" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" onchange="loadReport()">
+      </select>
+      <button onclick="printReport()" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-blue-800 transition">
+        🖨️ In / Xuất PDF
+      </button>
+      <button onclick="openEmailModal()" class="flex items-center gap-2 px-4 py-2 border border-accent text-accent rounded-lg text-sm hover:bg-orange-50 transition">
+        📧 Gửi phụ huynh
+      </button>
+    </div>
+  </header>
+
+  <main class="p-8">
+
+    <!-- REPORT HEADER (shows in print) -->
+    <div class="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl p-8 mb-8 print-card">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-blue-200 text-sm mb-1">Báo cáo học tập</p>
+          <h2 class="text-3xl font-black font-logo" id="reportTitle">Tháng 10, 2026</h2>
+          <p class="text-blue-100 mt-2" id="reportStudent">Học sinh: <span class="font-semibold">Nguyễn Văn A</span></p>
+        </div>
+        <div class="text-right">
+          <div class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></div>
+          <p class="text-blue-200 text-xs mt-1">a0jyng.edu.vn</p>
+        </div>
+      </div>
+      <!-- Summary stats in header -->
+      <div class="grid grid-cols-4 gap-4 mt-6">
+        <div class="bg-white/10 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold" id="statLessons">–</p>
+          <p class="text-blue-200 text-xs mt-1">Bài đã học</p>
+        </div>
+        <div class="bg-white/10 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold" id="statHours">–</p>
+          <p class="text-blue-200 text-xs mt-1">Giờ học</p>
+        </div>
+        <div class="bg-white/10 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold" id="statActivities">–</p>
+          <p class="text-blue-200 text-xs mt-1">Hoạt động</p>
+        </div>
+        <div class="bg-white/10 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold" id="statStreak">–</p>
+          <p class="text-blue-200 text-xs mt-1">Chuỗi ngày học</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VS PREVIOUS MONTH BANNER -->
+    <div id="comparisonBanner" class="bg-white border border-slate-200 rounded-2xl p-5 mb-8 flex items-center gap-6 print-card">
+      <div class="text-4xl">📈</div>
+      <div class="flex-1">
+        <h3 class="font-bold text-slate-800 mb-1">So sánh với tháng trước</h3>
+        <div class="grid grid-cols-4 gap-4">
+          <div id="cmpLessons" class="text-center"></div>
+          <div id="cmpHours" class="text-center"></div>
+          <div id="cmpActivities" class="text-center"></div>
+          <div id="cmpScore" class="text-center"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="grid grid-cols-2 gap-8 mb-8">
+      <!-- Daily study time line chart -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm print-card">
+        <h3 class="font-bold text-slate-800 mb-4">⏱️ Thời gian học theo ngày (phút)</h3>
+        <canvas id="dailyChart" height="200"></canvas>
+      </div>
+      <!-- Subject breakdown donut -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm print-card">
+        <h3 class="font-bold text-slate-800 mb-4">📚 Phân bổ theo môn học</h3>
+        <canvas id="subjectChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- SUBJECT BREAKDOWN TABLE -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8 print-card">
+      <h3 class="font-bold text-slate-800 mb-4">📊 Chi tiết từng môn học</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-slate-50 text-slate-600">
+              <th class="text-left px-4 py-3 rounded-l-lg">Môn học</th>
+              <th class="text-center px-4 py-3">Bài đã học</th>
+              <th class="text-center px-4 py-3">Hoạt động</th>
+              <th class="text-center px-4 py-3">Giờ học</th>
+              <th class="text-center px-4 py-3">Điểm TB</th>
+              <th class="text-center px-4 py-3 rounded-r-lg">Tiến độ</th>
+            </tr>
+          </thead>
+          <tbody id="subjectTable">
+            <tr><td colspan="6" class="text-center py-8 text-slate-400">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STREAK CALENDAR -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8 print-card">
+      <h3 class="font-bold text-slate-800 mb-2">🔥 Lịch học tháng này</h3>
+      <p class="text-sm text-slate-500 mb-4">Mỗi ô thể hiện ngày bạn có học (xanh = hoàn thành mục tiêu, xanh nhạt = học ít, trắng = không học)</p>
+      <div id="streakCalendar" class="flex flex-wrap gap-2"></div>
+      <div class="flex items-center gap-4 mt-4 text-xs text-slate-500">
+        <span><span class="inline-block w-4 h-4 rounded bg-primary align-middle mr-1"></span>Đủ mục tiêu</span>
+        <span><span class="inline-block w-4 h-4 rounded bg-blue-200 align-middle mr-1"></span>Học ít</span>
+        <span><span class="inline-block w-4 h-4 rounded bg-slate-100 align-middle mr-1"></span>Không học</span>
+      </div>
+    </div>
+
+    <!-- TOP ACHIEVEMENTS -->
+    <div class="grid grid-cols-2 gap-8 mb-8">
+      <!-- Best days -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm print-card">
+        <h3 class="font-bold text-slate-800 mb-4">🏆 Ngày học tốt nhất</h3>
+        <div id="topDaysList" class="space-y-3"></div>
+      </div>
+      <!-- Achievements badges -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm print-card">
+        <h3 class="font-bold text-slate-800 mb-4">🎖️ Thành tích đạt được</h3>
+        <div id="achievementsList" class="flex flex-wrap gap-3"></div>
+      </div>
+    </div>
+
+    <!-- TEACHER/PARENT NOTE -->
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 print-card">
+      <h3 class="font-bold text-amber-800 mb-3">💬 Nhận xét & Đề xuất</h3>
+      <div id="autoComment" class="text-amber-700 text-sm leading-relaxed"></div>
+    </div>
+
+    <!-- GOAL SETTING FOR NEXT MONTH -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8 no-print">
+      <h3 class="font-bold text-slate-800 mb-4">🎯 Đặt mục tiêu tháng sau</h3>
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="text-sm text-slate-600 block mb-1">Số bài muốn học</label>
+          <input type="number" id="goalLessons" value="20" min="1" max="100"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-600 block mb-1">Giờ học mỗi ngày</label>
+          <input type="number" id="goalHours" value="2" min="0.5" max="12" step="0.5"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-600 block mb-1">Chuỗi ngày liên tiếp</label>
+          <input type="number" id="goalStreak" value="20" min="1" max="31"
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+      </div>
+      <button onclick="saveGoals()" class="mt-4 px-6 py-2 bg-primary text-white rounded-lg text-sm hover:bg-blue-800 transition">
+        💾 Lưu mục tiêu
+      </button>
+      <span id="goalSaved" class="ml-3 text-green-600 text-sm hidden">✅ Đã lưu!</span>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== EMAIL MODAL ===== -->
+<div id="emailModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-bold text-slate-800">📧 Gửi báo cáo cho phụ huynh</h3>
+      <button onclick="closeEmailModal()" class="text-slate-400 hover:text-slate-600 text-2xl">×</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-sm text-slate-600 block mb-1">Email phụ huynh <span class="text-red-500">*</span></label>
+        <input type="email" id="parentEmail" placeholder="phuhuynh@email.com"
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+      </div>
+      <div>
+        <label class="text-sm text-slate-600 block mb-1">Tên phụ huynh</label>
+        <input type="text" id="parentName" placeholder="Kính gửi..."
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+      </div>
+      <div>
+        <label class="text-sm text-slate-600 block mb-1">Lời nhắn thêm (tùy chọn)</label>
+        <textarea id="parentMessage" rows="3" placeholder="Con đã cố gắng học tập trong tháng này..."
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30"></textarea>
+      </div>
+      <div class="bg-blue-50 rounded-lg p-3 text-sm text-blue-700">
+        📎 Báo cáo sẽ được đính kèm dưới dạng PDF trong email gửi đi.
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="sendEmailReport()" class="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-blue-800 transition">
+        ✉️ Gửi email
+      </button>
+      <button onclick="closeEmailModal()" class="px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition">
+        Hủy
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="fixed bottom-6 right-6 px-5 py-3 rounded-xl text-white font-medium shadow-lg hidden z-50 transition-all"></div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  import { firebaseConfig } from './assets/js/firebase-config.js';
+
+  let app, auth, db, currentUser;
+  let dailyChartInst = null, subjectChartInst = null;
+
+  // ── DEMO DATA (used when Firebase not configured) ──────────────────────────
+  const DEMO_DATA = {
+    '2026-10': {
+      lessons: 18, hours: 34.5, activities: 72, streak: 22, avgScore: 82,
+      daily: [30,45,0,60,90,120,45,0,75,60,90,30,0,60,80,100,45,60,0,90,75,60,45,30,0,80,90,60,75,45,50],
+      subjects: [
+        { name:'Toán 10', icon:'📐', color:'#1E40AF', lessons:7, activities:28, hours:14, score:85, total:12 },
+        { name:'Vật lý 10', icon:'⚡', color:'#7C3AED', lessons:5, activities:20, hours:10, score:80, total:10 },
+        { name:'Hóa học 10', icon:'🧪', color:'#059669', lessons:4, activities:16, hours:8, score:78, total:9 },
+        { name:'Ngữ văn 10', icon:'📖', color:'#DC2626', lessons:2, activities:8, hours:4.5, score:88, total:8 },
+      ],
+    },
+    '2026-09': {
+      lessons: 14, hours: 27, activities: 55, streak: 17, avgScore: 76,
+      daily: [0,30,60,45,0,60,75,30,0,45,60,90,45,0,60,30,0,75,60,45,30,0,60,45,30,0,45,60,30,0],
+    }
+  };
+
+  // ── INIT ───────────────────────────────────────────────────────────────────
+  try {
+    app  = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db   = getFirestore(app);
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        currentUser = user;
+        updateSidebarUser(user);
+        initPage();
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+  } catch {
+    // Firebase not configured – demo mode
+    currentUser = { uid: 'demo', email: 'demo@a0jyng.vn', displayName: 'Học sinh Demo' };
+    updateSidebarUser(currentUser);
+    initPage();
+  }
+
+  // ── PAGE INIT ──────────────────────────────────────────────────────────────
+  function initPage() {
+    populateMonthPicker();
+    loadReport();
+    loadGoals();
+  }
+
+  function populateMonthPicker() {
+    const picker = document.getElementById('monthPicker');
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      const label = d.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+      const opt = document.createElement('option');
+      opt.value = val; opt.textContent = label;
+      picker.appendChild(opt);
+    }
+  }
+
+  window.loadReport = function() {
+    const month = document.getElementById('monthPicker').value;
+    const [year, mon] = month.split('-').map(Number);
+    const d = new Date(year, mon-1, 1);
+    document.getElementById('reportTitle').textContent =
+      d.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+
+    const data = DEMO_DATA[month] || generateFakeData(year, mon);
+    const prevKey = getPrevMonthKey(month);
+    const prevData = DEMO_DATA[prevKey] || generateFakeData(...prevKey.split('-').map(Number));
+
+    updateStats(data);
+    updateComparison(data, prevData);
+    renderDailyChart(data, year, mon);
+    renderSubjectChart(data);
+    renderSubjectTable(data);
+    renderStreakCalendar(data, year, mon);
+    renderTopDays(data, year, mon);
+    renderAchievements(data);
+    renderAutoComment(data, prevData);
+    updateStudentInfo();
+  };
+
+  function updateStudentInfo() {
+    const name = currentUser.displayName || currentUser.email?.split('@')[0] || 'Học sinh';
+    document.getElementById('reportStudent').innerHTML =
+      `Học sinh: <span class="font-semibold">${name}</span>`;
+    document.getElementById('sidebarName').textContent = name;
+    const initials = name.charAt(0).toUpperCase();
+    document.querySelector('#sidebarUser .bg-accent').textContent = initials;
+  }
+
+  function updateStats(data) {
+    document.getElementById('statLessons').textContent    = data.lessons;
+    document.getElementById('statHours').textContent      = data.hours + 'h';
+    document.getElementById('statActivities').textContent = data.activities;
+    document.getElementById('statStreak').textContent     = data.streak + ' ngày';
+  }
+
+  function updateComparison(cur, prev) {
+    const items = [
+      { id:'cmpLessons',    cur:cur.lessons,    prev:prev.lessons,    label:'Bài học', unit:'' },
+      { id:'cmpHours',      cur:cur.hours,      prev:prev.hours,      label:'Giờ học', unit:'h' },
+      { id:'cmpActivities', cur:cur.activities, prev:prev.activities, label:'Hoạt động', unit:'' },
+      { id:'cmpScore',      cur:cur.avgScore||80, prev:prev.avgScore||75, label:'Điểm TB', unit:'%' },
+    ];
+    items.forEach(({id, cur, prev, label, unit}) => {
+      const diff = cur - prev;
+      const pct  = prev ? Math.round((diff/prev)*100) : 0;
+      const up   = diff >= 0;
+      document.getElementById(id).innerHTML = `
+        <p class="text-xs text-slate-500">${label}</p>
+        <p class="font-bold text-lg text-slate-800">${cur}${unit}</p>
+        <p class="text-xs ${up ? 'text-green-600' : 'text-red-500'}">
+          ${up ? '▲' : '▼'} ${Math.abs(pct)}% so với tháng trước
+        </p>`;
+    });
+  }
+
+  function renderDailyChart(data, year, mon) {
+    const daysInMonth = new Date(year, mon, 0).getDate();
+    const labels = Array.from({length: daysInMonth}, (_, i) => `${i+1}`);
+    const values = (data.daily || []).slice(0, daysInMonth);
+    while (values.length < daysInMonth) values.push(0);
+
+    if (dailyChartInst) dailyChartInst.destroy();
+    const ctx = document.getElementById('dailyChart').getContext('2d');
+    dailyChartInst = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Phút học',
+          data: values,
+          backgroundColor: values.map(v => v >= 60 ? '#1E40AF' : v > 0 ? '#93C5FD' : '#E2E8F0'),
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Phút' } },
+          x: { ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  function renderSubjectChart(data) {
+    if (!data.subjects) return;
+    if (subjectChartInst) subjectChartInst.destroy();
+    const ctx = document.getElementById('subjectChart').getContext('2d');
+    subjectChartInst = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.subjects.map(s => s.name),
+        datasets: [{
+          data: data.subjects.map(s => s.hours),
+          backgroundColor: data.subjects.map(s => s.color),
+          borderWidth: 2,
+          borderColor: '#fff',
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 12 } } },
+          tooltip: {
+            callbacks: { label: ctx => ` ${ctx.raw}h (${Math.round(ctx.raw/data.hours*100)}%)` }
+          }
+        }
+      }
+    });
+  }
+
+  function renderSubjectTable(data) {
+    const tbody = document.getElementById('subjectTable');
+    if (!data.subjects) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400">Không có dữ liệu môn học</td></tr>'; return; }
+    tbody.innerHTML = data.subjects.map(s => {
+      const pct = Math.round((s.lessons / s.total) * 100);
+      const scoreColor = s.score >= 85 ? 'text-green-600' : s.score >= 70 ? 'text-blue-600' : 'text-orange-500';
+      return `<tr class="border-b border-slate-100 hover:bg-slate-50">
+        <td class="px-4 py-3 font-medium">${s.icon} ${s.name}</td>
+        <td class="px-4 py-3 text-center">${s.lessons} / ${s.total} bài</td>
+        <td class="px-4 py-3 text-center">${s.activities}</td>
+        <td class="px-4 py-3 text-center">${s.hours}h</td>
+        <td class="px-4 py-3 text-center font-bold ${scoreColor}">${s.score}%</td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full" style="width:${pct}%;background:${s.color}"></div>
+            </div>
+            <span class="text-xs text-slate-500 w-8">${pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderStreakCalendar(data, year, mon) {
+    const daysInMonth = new Date(year, mon, 0).getDate();
+    const firstDay    = new Date(year, mon-1, 1).getDay(); // 0=Sun
+    const today       = new Date();
+    const isThisMonth = today.getFullYear() === year && today.getMonth()+1 === mon;
+    const daily       = (data.daily || []).slice(0, daysInMonth);
+
+    const container = document.getElementById('streakCalendar');
+    container.innerHTML = '';
+
+    // Day-of-week headers
+    ['CN','T2','T3','T4','T5','T6','T7'].forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'streak-day text-slate-400';
+      el.textContent = d;
+      container.appendChild(el);
+    });
+
+    // Empty slots before first day
+    for (let i = 0; i < firstDay; i++) {
+      const el = document.createElement('div');
+      el.className = 'streak-day';
+      container.appendChild(el);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const mins = daily[day-1] || 0;
+      const cls  = mins >= 60 ? 'streak-done' : mins > 0 ? 'streak-partial' : 'streak-none';
+      const isToday = isThisMonth && today.getDate() === day;
+      const el = document.createElement('div');
+      el.className = `streak-day ${cls} ${isToday ? 'streak-today' : ''}`;
+      el.title = `Ngày ${day}: ${mins} phút`;
+      el.textContent = day;
+      container.appendChild(el);
+    }
+  }
+
+  function renderTopDays(data, year, mon) {
+    const daily = (data.daily || []);
+    const indexed = daily.map((v, i) => ({ day: i+1, mins: v }))
+                         .filter(d => d.mins > 0)
+                         .sort((a, b) => b.mins - a.mins)
+                         .slice(0, 5);
+    const container = document.getElementById('topDaysList');
+    if (!indexed.length) { container.innerHTML = '<p class="text-slate-400 text-sm">Không có dữ liệu</p>'; return; }
+    container.innerHTML = indexed.map((d, i) => {
+      const medal = ['🥇','🥈','🥉','4️⃣','5️⃣'][i];
+      return `<div class="flex items-center justify-between">
+        <span class="text-sm">${medal} Ngày ${d.day} tháng ${mon}</span>
+        <span class="font-bold text-primary text-sm">${d.mins} phút</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAchievements(data) {
+    const badges = [];
+    if (data.streak >= 7)   badges.push({ icon:'🔥', label:'7 ngày liên tiếp' });
+    if (data.streak >= 14)  badges.push({ icon:'💪', label:'14 ngày liên tiếp' });
+    if (data.streak >= 21)  badges.push({ icon:'🏆', label:'21 ngày liên tiếp' });
+    if (data.lessons >= 10) badges.push({ icon:'📚', label:'10 bài học' });
+    if (data.lessons >= 20) badges.push({ icon:'🎓', label:'20 bài học' });
+    if (data.hours >= 20)   badges.push({ icon:'⏰', label:'20 giờ học' });
+    if ((data.avgScore||0) >= 80) badges.push({ icon:'⭐', label:'Điểm TB ≥ 80' });
+    if ((data.avgScore||0) >= 90) badges.push({ icon:'🌟', label:'Điểm TB ≥ 90' });
+    if (!badges.length)     badges.push({ icon:'🌱', label:'Bắt đầu hành trình' });
+
+    document.getElementById('achievementsList').innerHTML = badges.map(b =>
+      `<div class="flex flex-col items-center gap-1 p-3 bg-slate-50 rounded-xl min-w-16 text-center">
+        <span class="text-2xl">${b.icon}</span>
+        <span class="text-xs text-slate-600 leading-tight">${b.label}</span>
+      </div>`
+    ).join('');
+  }
+
+  function renderAutoComment(cur, prev) {
+    const name = (currentUser.displayName || 'Bạn').split(' ').pop();
+    const upLessons = cur.lessons > prev.lessons;
+    const upHours   = cur.hours   > prev.hours;
+    const goodScore = (cur.avgScore||80) >= 80;
+    const goodStreak= cur.streak >= 15;
+
+    let comment = `<p class="mb-2"><strong>${name}</strong> đã `;
+    if (cur.lessons >= 15 && upLessons) comment += `có một tháng học tập rất tích cực với <strong>${cur.lessons} bài</strong> hoàn thành — tăng ${cur.lessons - prev.lessons} bài so với tháng trước. `;
+    else if (cur.lessons < 10) comment += `hoàn thành <strong>${cur.lessons} bài</strong> trong tháng này — hãy cố gắng thêm nhé! `;
+    else comment += `hoàn thành <strong>${cur.lessons} bài</strong> trong tháng này. `;
+
+    comment += `Tổng thời gian học là <strong>${cur.hours} giờ</strong>`;
+    comment += upHours ? ` (tăng ${(cur.hours - prev.hours).toFixed(1)}h so với tháng trước). ` : `. `;
+    comment += `</p><p class="mb-2">`;
+
+    if (goodStreak) comment += `🔥 Chuỗi <strong>${cur.streak} ngày</strong> học liên tiếp rất đáng khen. `;
+    else comment += `Hãy cố duy trì chuỗi ngày học đều đặn hơn. `;
+
+    if (goodScore) comment += `Điểm trung bình <strong>${cur.avgScore||80}%</strong> cho thấy bạn đang nắm vững kiến thức tốt.`;
+    else comment += `Cần ôn tập thêm để cải thiện điểm số.`;
+    comment += `</p>`;
+
+    comment += `<p class="mt-2"><strong>Đề xuất tháng tới:</strong> `;
+    if (!upHours) comment += `Tăng thêm 15–30 phút học mỗi ngày. `;
+    if (!goodStreak) comment += `Đặt mục tiêu học ít nhất 6 ngày/tuần. `;
+    if (!goodScore) comment += `Ôn lại các bài có điểm thấp trước khi sang chương mới. `;
+    if (upHours && goodStreak && goodScore) comment += `Tiếp tục duy trì phong độ xuất sắc này! `;
+    comment += `</p>`;
+
+    document.getElementById('autoComment').innerHTML = comment;
+  }
+
+  // ── UTILS ──────────────────────────────────────────────────────────────────
+  function getPrevMonthKey(key) {
+    const [y, m] = key.split('-').map(Number);
+    const d = new Date(y, m-2, 1);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+
+  function generateFakeData(year, mon) {
+    const seed = year * 100 + mon;
+    const rng  = (min, max) => min + ((seed * 1103515245 + 12345) % (max - min + 1));
+    const daysInMonth = new Date(year, mon, 0).getDate();
+    const daily = Array.from({length: daysInMonth}, (_, i) =>
+      (seed + i) % 5 === 0 ? 0 : 20 + ((seed * (i+1)) % 100)
+    );
+    return {
+      lessons: 8 + rng(0, 15), hours: 15 + rng(0, 20), activities: 30 + rng(0, 50),
+      streak:  10 + rng(0, 12), avgScore: 65 + rng(0, 25), daily,
+      subjects: [
+        { name:'Toán 10', icon:'📐', color:'#1E40AF', lessons:3+rng(0,4), activities:12+rng(0,8), hours:6+rng(0,5), score:70+rng(0,20), total:12 },
+        { name:'Vật lý 10', icon:'⚡', color:'#7C3AED', lessons:2+rng(0,3), activities:8+rng(0,6), hours:4+rng(0,4), score:65+rng(0,25), total:10 },
+        { name:'Hóa học 10', icon:'🧪', color:'#059669', lessons:2+rng(0,3), activities:8+rng(0,6), hours:3+rng(0,4), score:68+rng(0,20), total:9 },
+      ]
+    };
+  }
+
+  // ── GOALS ─────────────────────────────────────────────────────────────────
+  function loadGoals() {
+    const g = JSON.parse(localStorage.getItem('a0jyng_goals') || '{}');
+    if (g.lessons) document.getElementById('goalLessons').value = g.lessons;
+    if (g.hours)   document.getElementById('goalHours').value   = g.hours;
+    if (g.streak)  document.getElementById('goalStreak').value  = g.streak;
+  }
+
+  window.saveGoals = function() {
+    const goals = {
+      lessons: document.getElementById('goalLessons').value,
+      hours:   document.getElementById('goalHours').value,
+      streak:  document.getElementById('goalStreak').value,
+    };
+    localStorage.setItem('a0jyng_goals', JSON.stringify(goals));
+    const el = document.getElementById('goalSaved');
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 2500);
+  };
+
+  // ── PRINT ─────────────────────────────────────────────────────────────────
+  window.printReport = function() {
+    window.print();
+  };
+
+  // ── EMAIL MODAL ────────────────────────────────────────────────────────────
+  window.openEmailModal = function() {
+    document.getElementById('emailModal').classList.remove('hidden');
+  };
+  window.closeEmailModal = function() {
+    document.getElementById('emailModal').classList.add('hidden');
+  };
+  window.sendEmailReport = function() {
+    const email = document.getElementById('parentEmail').value.trim();
+    if (!email) { showToast('Vui lòng nhập email phụ huynh', 'error'); return; }
+    const name    = document.getElementById('parentName').value.trim() || 'Phụ huynh';
+    const message = document.getElementById('parentMessage').value.trim();
+    const month   = document.getElementById('monthPicker').options[document.getElementById('monthPicker').selectedIndex].text;
+    const student = currentUser.displayName || currentUser.email || 'Học sinh';
+
+    const subject = encodeURIComponent(`Báo cáo học tập ${month} - ${student}`);
+    const body    = encodeURIComponent(
+      `Kính gửi ${name},\n\n` +
+      `${student} gửi báo cáo học tập tháng ${month} qua nền tảng a0jyng.\n\n` +
+      (message ? `Lời nhắn: ${message}\n\n` : '') +
+      `Vui lòng đăng nhập vào https://a0jyng.edu.vn để xem chi tiết.\n\n` +
+      `Trân trọng,\na0jyng`
+    );
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+    closeEmailModal();
+    showToast('Đã mở ứng dụng email!', 'success');
+  };
+
+  // ── LOGOUT ────────────────────────────────────────────────────────────────
+  window.handleLogout = async function() {
+    try { await signOut(auth); } catch {}
+    window.location.href = 'login.html';
+  };
+
+  function updateSidebarUser(user) {
+    const name = user.displayName || user.email?.split('@')[0] || 'Học sinh';
+    document.getElementById('sidebarName').textContent = name;
+    const initials = name.charAt(0).toUpperCase();
+    document.querySelector('#sidebarUser .bg-accent').textContent = initials;
+  }
+
+  function showToast(msg, type='success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl text-white font-medium shadow-lg z-50 transition-all ${
+      type === 'error' ? 'bg-red-500' : 'bg-green-600'}`;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+  }
+</script>
+
+<!-- GOAL_COMPLETE -->
+</body>
+</html>

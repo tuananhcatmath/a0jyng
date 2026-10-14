@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans min-h-screen bg-slate-50 flex items-center justify-center p-6">
+<div class="w-full max-w-2xl">
+  <!-- Logo -->
+  <div class="text-center mb-6">
+    <a href="index.html" class="font-logo text-4xl font-black text-primary">
+      a0<span class="text-accent">jyng</span>
+    </a>
+    <p class="text-slate-500 mt-1 text-sm">Tạo tài khoản miễn phí — bắt đầu học ngay hôm nay</p>
+  </div>
+
+  <!-- Steps indicator -->
+  <div class="flex items-center justify-center mb-8 gap-2">
+    <div id="step1-indicator" class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-sm font-bold">1</div>
+      <span class="text-sm font-medium text-slate-700">Thông tin</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-slate-200 mx-2 max-w-12"></div>
+    <div id="step2-indicator" class="flex items-center gap-2 opacity-40">
+      <div class="w-8 h-8 rounded-full bg-slate-300 text-slate-500 flex items-center justify-center text-sm font-bold">2</div>
+      <span class="text-sm font-medium text-slate-500">Kiểu học</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-slate-200 mx-2 max-w-12"></div>
+    <div id="step3-indicator" class="flex items-center gap-2 opacity-40">
+      <div class="w-8 h-8 rounded-full bg-slate-300 text-slate-500 flex items-center justify-center text-sm font-bold">3</div>
+      <span class="text-sm font-medium text-slate-500">Xong!</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-xl p-8 animate-fade-in">
+    <!-- Error -->
+    <div id="errorBox" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+      <p id="errorMsg" class="text-red-600 text-sm"></p>
+    </div>
+
+    <!-- STEP 1: Basic info -->
+    <div id="step1">
+      <h2 class="text-xl font-bold text-slate-800 mb-5">Thông tin cơ bản</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Họ và tên <span class="text-red-400">*</span></label>
+          <input type="text" id="fullName" placeholder="Nguyễn Văn A" required
+            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Lớp / Khối <span class="text-red-400">*</span></label>
+          <select id="grade"
+            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary outline-none transition text-sm bg-white">
+            <option value="">-- Chọn khối --</option>
+            <option value="10">Lớp 10</option>
+            <option value="11">Lớp 11</option>
+            <option value="12">Lớp 12</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Email <span class="text-red-400">*</span></label>
+          <input type="email" id="email" placeholder="ten@example.com" required
+            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Số điện thoại</label>
+          <input type="tel" id="phone" placeholder="09xxxxxxxx"
+            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Mật khẩu <span class="text-red-400">*</span></label>
+          <input type="password" id="password" placeholder="Tối thiểu 8 ký tự" required
+            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary outline-none transition text-sm">
+          <!-- Password strength -->
+          <div class="mt-2 h-1 rounded-full bg-slate-200 overflow-hidden">
+            <div id="pwdStrength" class="h-full rounded-full w-0 transition-all duration-300"></div>
+          </div>
+          <p id="pwdLabel" class="text-xs text-slate-400 mt-1">Nhập mật khẩu để xem độ mạnh</p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1">Xác nhận mật khẩu <span class="text-red-400">*</span></label>
+          <input type="password" id="confirmPwd" placeholder="Nhập lại mật khẩu" required
+            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary outline-none transition text-sm">
+        </div>
+      </div>
+      <button id="nextStep" class="mt-6 w-full py-3 bg-accent text-white rounded-xl font-bold hover:bg-orange-600 transition">
+        Tiếp theo →
+      </button>
+    </div>
+
+    <!-- STEP 2: Learning style -->
+    <div id="step2" class="hidden">
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Phong cách học tập của bạn</h2>
+      <p class="text-slate-500 text-sm mb-6">Chọn cách bạn học hiệu quả nhất để a0jyng cá nhân hóa lộ trình cho bạn.</p>
+      <div class="grid md:grid-cols-2 gap-4" id="styleCards">
+        <div class="style-card cursor-pointer border-2 border-slate-200 rounded-2xl p-5 hover:border-secondary transition" data-style="visual">
+          <div class="text-4xl mb-3">👁️</div>
+          <h3 class="font-bold text-primary mb-1">Visual (Thị giác)</h3>
+          <p class="text-sm text-slate-600">Bạn học tốt qua hình ảnh, biểu đồ, sơ đồ tư duy và màu sắc.</p>
+        </div>
+        <div class="style-card cursor-pointer border-2 border-slate-200 rounded-2xl p-5 hover:border-secondary transition" data-style="auditory">
+          <div class="text-4xl mb-3">👂</div>
+          <h3 class="font-bold text-primary mb-1">Auditory (Thính giác)</h3>
+          <p class="text-sm text-slate-600">Bạn học tốt qua nghe giảng, podcast, đọc to và thảo luận.</p>
+        </div>
+        <div class="style-card cursor-pointer border-2 border-slate-200 rounded-2xl p-5 hover:border-secondary transition" data-style="kinesthetic">
+          <div class="text-4xl mb-3">✋</div>
+          <h3 class="font-bold text-primary mb-1">Kinesthetic (Xúc giác)</h3>
+          <p class="text-sm text-slate-600">Bạn học tốt qua thực hành, làm bài tập, thí nghiệm trực tiếp.</p>
+        </div>
+        <div class="style-card cursor-pointer border-2 border-slate-200 rounded-2xl p-5 hover:border-secondary transition" data-style="reading">
+          <div class="text-4xl mb-3">📖</div>
+          <h3 class="font-bold text-primary mb-1">Reading/Writing (Đọc-viết)</h3>
+          <p class="text-sm text-slate-600">Bạn học tốt qua đọc sách, ghi chép và viết tóm tắt.</p>
+        </div>
+      </div>
+      <input type="hidden" id="learningStyle" value="">
+      <p id="styleError" class="text-red-500 text-sm mt-3 hidden">Vui lòng chọn một phong cách học tập.</p>
+      <div class="flex gap-3 mt-6">
+        <button id="backStep" class="flex-1 py-3 bg-slate-100 rounded-xl font-semibold hover:bg-slate-200 transition">← Quay lại</button>
+        <button id="submitRegister" class="flex-1 py-3 bg-accent text-white rounded-xl font-bold hover:bg-orange-600 transition">
+          Hoàn tất đăng ký 🎉
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div id="step3" class="hidden text-center py-8">
+      <div class="text-7xl mb-4">🎉</div>
+      <h2 class="text-2xl font-bold text-primary mb-2">Chào mừng đến a0jyng!</h2>
+      <p class="text-slate-600 mb-6">Tài khoản đã được tạo thành công. Hãy bắt đầu hành trình học tập!</p>
+      <a href="dashboard.html" class="inline-block px-8 py-3 bg-accent text-white rounded-xl font-bold hover:bg-orange-600 transition">
+        Vào trang học tập →
+      </a>
+    </div>
+  </div>
+
+  <p class="text-center text-sm text-slate-500 mt-4">
+    Đã có tài khoản? <a href="login.html" class="text-accent font-semibold hover:underline">Đăng nhập</a>
+  </p>
+</div>
+
+<script type="module">
+  import { firebaseConfig, DEMO_MODE } from "./assets/js/firebase-config.js";
+
+  let auth, db, createUserWithEmailAndPassword, updateProfile, doc, setDoc, serverTimestamp;
+  if (!DEMO_MODE) {
+    const fbApp  = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+    const fbAuth = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+    const fbDb   = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    const app = fbApp.initializeApp(firebaseConfig);
+    auth = fbAuth.getAuth(app);
+    db   = fbDb.getFirestore(app);
+    createUserWithEmailAndPassword = fbAuth.createUserWithEmailAndPassword;
+    updateProfile                  = fbAuth.updateProfile;
+    doc              = fbDb.doc;
+    setDoc           = fbDb.setDoc;
+    serverTimestamp  = fbDb.serverTimestamp;
+  }
+
+  // Password strength
+  document.getElementById('password').addEventListener('input', (e) => {
+    const v   = e.target.value;
+    const bar = document.getElementById('pwdStrength');
+    const lbl = document.getElementById('pwdLabel');
+    let strength = 0;
+    if (v.length >= 8) strength++;
+    if (/[A-Z]/.test(v)) strength++;
+    if (/[0-9]/.test(v)) strength++;
+    if (/[^A-Za-z0-9]/.test(v)) strength++;
+    const levels = [
+      { w:'0%',   bg:'bg-slate-200', txt:'' },
+      { w:'25%',  bg:'bg-red-500',   txt:'Yếu' },
+      { w:'50%',  bg:'bg-yellow-500',txt:'Trung bình' },
+      { w:'75%',  bg:'bg-blue-500',  txt:'Tốt' },
+      { w:'100%', bg:'bg-green-500', txt:'Rất mạnh ✓' },
+    ];
+    const l = levels[Math.min(strength, 4)];
+    bar.className = `h-full rounded-full transition-all duration-300 ${l.bg}`;
+    bar.style.width = l.w;
+    lbl.textContent = l.txt;
+  });
+
+  // Step navigation
+  document.getElementById('nextStep').addEventListener('click', () => {
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pwd  = document.getElementById('password').value;
+    const cpwd = document.getElementById('confirmPwd').value;
+    const grade = document.getElementById('grade').value;
+
+    if (!name || !email || !grade) return showError('Vui lòng điền đầy đủ thông tin bắt buộc (*).');
+    if (pwd.length < 8)     return showError('Mật khẩu phải có ít nhất 8 ký tự.');
+    if (pwd !== cpwd)       return showError('Mật khẩu xác nhận không khớp.');
+
+    clearError();
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    setIndicator(2);
+  });
+
+  document.getElementById('backStep').addEventListener('click', () => {
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+    setIndicator(1);
+  });
+
+  // Learning style cards
+  let selectedStyle = '';
+  document.querySelectorAll('.style-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.style-card').forEach(c => {
+        c.classList.remove('border-secondary', 'bg-blue-50');
+        c.classList.add('border-slate-200');
+      });
+      card.classList.remove('border-slate-200');
+      card.classList.add('border-secondary', 'bg-blue-50');
+      selectedStyle = card.dataset.style;
+      document.getElementById('learningStyle').value = selectedStyle;
+      document.getElementById('styleError').classList.add('hidden');
+    });
+  });
+
+  // Submit registration
+  document.getElementById('submitRegister').addEventListener('click', async () => {
+    if (!selectedStyle) {
+      document.getElementById('styleError').classList.remove('hidden');
+      return;
+    }
+    const btn   = document.getElementById('submitRegister');
+    btn.disabled = true;
+    btn.textContent = 'Đang tạo tài khoản...';
+
+    try {
+      const email = document.getElementById('email').value.trim();
+      const pwd   = document.getElementById('password').value;
+      const name  = document.getElementById('fullName').value.trim();
+      const grade = parseInt(document.getElementById('grade').value);
+
+      if (DEMO_MODE) {
+        // ── DEMO MODE: lưu vào localStorage, không cần Firebase ──
+        const existingUsers = JSON.parse(localStorage.getItem('a0jyng_users') || '[]');
+        if (existingUsers.find(u => u.email === email)) {
+          throw { code: 'auth/email-already-in-use' };
+        }
+        const demoUser = {
+          uid: 'demo-' + Date.now(),
+          email, name, grade,
+          phone: document.getElementById('phone').value,
+          learningStyle: selectedStyle,
+          role: 'student',
+          createdAt: new Date().toISOString(),
+          streak: 0, totalMinutes: 0,
+        };
+        existingUsers.push(demoUser);
+        localStorage.setItem('a0jyng_users', JSON.stringify(existingUsers));
+        localStorage.setItem('a0jyng_current_user', JSON.stringify(demoUser));
+      } else {
+        // ── FIREBASE MODE ──
+        const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+        await updateProfile(cred.user, { displayName: name });
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid, name, email, grade,
+          phone: document.getElementById('phone').value,
+          learningStyle: selectedStyle,
+          role: 'student',
+          createdAt: serverTimestamp(),
+          streak: 0, totalMinutes: 0,
+        });
+        localStorage.setItem('a0jyng_current_user', JSON.stringify({ uid: cred.user.uid, email, name, grade, learningStyle: selectedStyle }));
+      }
+
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step3').classList.remove('hidden');
+      setIndicator(3);
+    } catch (err) {
+      const msgs = {
+        'auth/email-already-in-use': 'Email này đã được đăng ký. Hãy đăng nhập.',
+        'auth/invalid-email': 'Email không hợp lệ.',
+        'auth/weak-password': 'Mật khẩu quá yếu (ít nhất 6 ký tự).',
+      };
+      showError(msgs[err.code] || 'Đăng ký thất bại: ' + (err.message || err.code));
+      btn.disabled = false;
+      btn.textContent = 'Hoàn tất đăng ký 🎉';
+    }
+  });
+
+  function showError(msg) {
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorBox').classList.remove('hidden');
+  }
+  function clearError() {
+    document.getElementById('errorBox').classList.add('hidden');
+  }
+  function setIndicator(step) {
+    [1,2,3].forEach(n => {
+      const ind = document.getElementById(`step${n}-indicator`);
+      if (n < step) {
+        ind.querySelector('div').className = 'w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold';
+        ind.querySelector('div').textContent = '✓';
+        ind.classList.remove('opacity-40');
+      } else if (n === step) {
+        ind.querySelector('div').className = 'w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-sm font-bold';
+        ind.querySelector('div').textContent = n;
+        ind.classList.remove('opacity-40');
+      } else {
+        ind.classList.add('opacity-40');
+      }
+    });
+  }
+</script>
+</body>
+</html>

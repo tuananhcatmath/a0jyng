@@ -1,0 +1,103 @@
+/* ============================================================
+   style.css — Tuỳ biến CSS cho a0jyng (bổ sung Tailwind)
+   ============================================================ */
+
+/* ---- Font Elephant fallback ---- */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Nếu bạn có file Elephant.ttf, bỏ comment dưới: */
+/*
+@font-face {
+  font-family: 'Elephant';
+  src: url('../fonts/Elephant.ttf') format('truetype');
+  font-weight: 700 900;
+}
+*/
+
+:root {
+  --primary:   #1E40AF;
+  --secondary: #3B82F6;
+  --accent:    #F97316;
+  --success:   #10B981;
+  --warn:      #F59E0B;
+  --danger:    #EF4444;
+}
+
+/* ---- Global ---- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; }
+
+/* ---- Logo font ---- */
+.font-logo { font-family: 'Playfair Display', 'Elephant', 'Georgia', serif; }
+
+/* ---- Prose (lý thuyết bài học) ---- */
+.prose p   { margin-bottom: .75rem; line-height: 1.75; }
+.prose h3  { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin: 1rem 0 .5rem; }
+.prose ul  { list-style: disc; padding-left: 1.5rem; margin-bottom: .75rem; }
+.prose li  { margin-bottom: .25rem; }
+.prose strong { color: var(--primary); }
+.prose em  { color: #6B7280; }
+.prose sub, .prose sup { font-size: .75em; }
+
+/* ---- Sidebar active state ---- */
+.sidebar-link.active {
+  background: rgba(255,255,255,.15);
+  border-left: 3px solid var(--accent);
+  padding-left: calc(0.75rem - 3px);
+}
+
+/* ---- Activity accordion ---- */
+.activity-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.activity-body.open { max-height: 800px; }
+
+/* ---- Answer reveal ---- */
+.answer-block {
+  border-left: 4px solid var(--success);
+  background: #F0FDF4;
+  border-radius: 0 .75rem .75rem 0;
+  padding: 1rem 1.25rem;
+  animation: fadeIn .3s ease;
+}
+
+/* ---- Proof block ---- */
+.proof-block {
+  border-left: 4px solid var(--accent);
+  background: #FFF7ED;
+  border-radius: 0 .75rem .75rem 0;
+  padding: 1rem 1.25rem;
+  font-style: italic;
+  animation: fadeIn .3s ease;
+}
+
+/* ---- Pomodoro ring ---- */
+.pomo-ring { transform: rotate(-90deg); transform-origin: 50% 50%; }
+.pomo-ring circle { transition: stroke-dashoffset .5s linear; }
+
+/* ---- Progress bar ---- */
+.progress-bar { height: 8px; border-radius: 999px; background: #E2E8F0; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width .6s ease; }
+
+/* ---- Card hover ---- */
+.card-hover { transition: transform .2s, box-shadow .2s; }
+.card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(30,64,175,.12); }
+
+/* ---- Animations ---- */
+@keyframes fadeIn   { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn  { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes pulse-dot{ 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+
+.animate-fade-in  { animation: fadeIn .4s ease; }
+.animate-slide-in { animation: slideIn .4s ease; }
+
+/* ---- Mobile sidebar overlay ---- */
+#sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
+#sidebar-overlay.active { display: block; }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
+
+/* ---- Math rendering (MathJax/KaTeX) ---- */
+.math-block { overflow-x: auto; padding: .5rem 0; }

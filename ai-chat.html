@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI hỏi đáp — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+  <style>
+    .chat-bubble-user { background: #1E40AF; color: white; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; }
+    .chat-bubble-ai   { background: white; border: 1px solid #E2E8F0; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; }
+    .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #94A3B8; animation: pulse-dot 1.2s ease infinite; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    #chatContainer { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📚</span> Môn học</a>
+    <a href="ai-chat.html"   class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>💬</span> Diễn đàn</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>⏰</span> Pomodoro</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <!-- Header -->
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-sm">🤖</div>
+        <div>
+          <h1 class="font-bold text-slate-800">AI Trợ lý a0jyng</h1>
+          <p class="text-xs text-green-500 font-medium">● Đang hoạt động</p>
+        </div>
+      </div>
+    </div>
+    <button id="clearChat" class="px-3 py-1.5 text-xs bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition">🗑️ Xoá hội thoại</button>
+  </header>
+
+  <!-- Quick prompt chips -->
+  <div class="bg-white border-b px-6 py-2 flex gap-2 overflow-x-auto flex-shrink-0">
+    <button onclick="insertPrompt('Giải thích khái niệm mệnh đề toán học')"        class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">📐 Mệnh đề là gì?</button>
+    <button onclick="insertPrompt('Giải bài tập: Tìm x để x² - 5x + 6 = 0')"      class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">🧮 Giải phương trình</button>
+    <button onclick="insertPrompt('Chứng minh định lý Pythagore')"                  class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">📏 Pythagore</button>
+    <button onclick="insertPrompt('Tóm tắt kiến thức chương Động học chất điểm')"  class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">⚛️ Động học</button>
+    <button onclick="insertPrompt('Lập lịch học Toán 10 cho 1 tuần')"              class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">📅 Lịch học</button>
+  </div>
+
+  <!-- Chat area -->
+  <div id="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+    <!-- Welcome message -->
+    <div class="flex gap-3">
+      <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-1">🤖</div>
+      <div class="chat-bubble-ai p-4 max-w-lg shadow-sm">
+        <p class="text-slate-800 text-sm">Xin chào! Tôi là <strong>AI Trợ lý a0jyng</strong> 🎓</p>
+        <p class="text-slate-600 text-sm mt-2">Tôi có thể giúp bạn:</p>
+        <ul class="text-sm text-slate-600 mt-1 space-y-1">
+          <li>✅ Giải bài tập từng bước</li>
+          <li>✅ Chứng minh định lý, công thức</li>
+          <li>✅ Tóm tắt kiến thức bài học</li>
+          <li>✅ Lập lịch học cá nhân hóa</li>
+          <li>✅ Giải đáp mọi thắc mắc</li>
+        </ul>
+        <p class="text-slate-500 text-xs mt-3">Hãy đặt câu hỏi bất kỳ! ⬇️</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input area -->
+  <div class="bg-white border-t px-4 py-3 flex-shrink-0">
+    <!-- Subject context -->
+    <div class="flex gap-2 mb-2">
+      <select id="contextSubject" class="text-xs px-2 py-1 border rounded-lg text-slate-600 bg-slate-50 outline-none">
+        <option value="">📚 Ngữ cảnh: Tất cả</option>
+        <option value="toan">📐 Toán học</option>
+        <option value="ly">⚛️ Vật lý</option>
+        <option value="hoa">🧪 Hóa học</option>
+        <option value="van">📖 Ngữ văn</option>
+        <option value="anh">🌍 Tiếng Anh</option>
+      </select>
+      <select id="contextLevel" class="text-xs px-2 py-1 border rounded-lg text-slate-600 bg-slate-50 outline-none">
+        <option value="10">Lớp 10</option>
+        <option value="11">Lớp 11</option>
+        <option value="12">Lớp 12</option>
+      </select>
+    </div>
+    <div class="flex gap-3 items-end">
+      <textarea id="chatInput" rows="2" placeholder="Hỏi bất cứ điều gì... (Enter để gửi, Shift+Enter xuống dòng)"
+        class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary outline-none resize-none text-sm transition"></textarea>
+      <button id="sendBtn" class="w-12 h-12 bg-primary text-white rounded-xl hover:bg-blue-800 transition flex items-center justify-center flex-shrink-0 shadow">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      </button>
+    </div>
+    <p class="text-xs text-slate-400 mt-1">⚡ AI được cung cấp bởi Gemini · Cài API key trong <code>assets/js/ai-config.js</code></p>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── GEMINI API CONFIG ──
+  const GEMINI_API_KEY = 'AQ.Ab8RN6L7B-4bvUcQUIBW_s2E1QuGRsR73VN1hE5plBUrvRHzmw';
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+  let chatHistory = [];
+
+  const chatContainer = document.getElementById('chatContainer');
+  const chatInput     = document.getElementById('chatInput');
+  const sendBtn       = document.getElementById('sendBtn');
+
+  function addMessage(role, text) {
+    const isUser = role === 'user';
+    const div = document.createElement('div');
+    div.className = `flex gap-3 animate-fade-in ${isUser ? 'flex-row-reverse' : ''}`;
+    div.innerHTML = `
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-1 ${isUser ? 'bg-accent' : 'bg-gradient-to-br from-primary to-secondary'}">
+        ${isUser ? '👤' : '🤖'}
+      </div>
+      <div class="${isUser ? 'chat-bubble-user' : 'chat-bubble-ai'} p-4 max-w-lg shadow-sm text-sm leading-relaxed">
+        ${text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1 rounded text-xs">$1</code>')}
+      </div>`;
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    return div;
+  }
+
+  function addTypingIndicator() {
+    const div = document.createElement('div');
+    div.id = 'typingIndicator';
+    div.className = 'flex gap-3 animate-fade-in';
+    div.innerHTML = `
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm flex-shrink-0">🤖</div>
+      <div class="chat-bubble-ai p-4 flex items-center gap-1.5">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>`;
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const text    = chatInput.value.trim();
+    if (!text) return;
+    const subject = document.getElementById('contextSubject').value;
+    const grade   = document.getElementById('contextLevel').value;
+
+    chatInput.value = '';
+    sendBtn.disabled = true;
+    addMessage('user', text);
+
+    // Build prompt with context
+    const sysPrompt = `Bạn là trợ lý học tập thông minh của nền tảng a0jyng, chuyên hỗ trợ học sinh Việt Nam lớp ${grade}${subject ? ' môn ' + subject : ''}.
+Hãy:
+- Giải thích rõ ràng, từng bước một
+- Dùng tiếng Việt, thân thiện với học sinh
+- Nếu là bài toán, trình bày đẹp với ký hiệu toán học
+- Nếu là định lý, cung cấp chứng minh đầy đủ
+- Kết thúc bằng một câu khuyến khích`;
+
+    chatHistory.push({ role: 'user', parts: [{ text }] });
+    addTypingIndicator();
+
+    try {
+      // If no API key, use mock response
+      if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
+        throw new Error('NO_API_KEY');
+      }
+
+      const res = await fetch(GEMINI_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: sysPrompt }] },
+          contents: chatHistory,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+        }),
+      });
+      const data = await res.json();
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Xin lỗi, tôi không thể trả lời lúc này.';
+
+      document.getElementById('typingIndicator')?.remove();
+      addMessage('ai', reply);
+      chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+
+    } catch(e) {
+      document.getElementById('typingIndicator')?.remove();
+      // Demo fallback response
+      const demoReply = generateDemoReply(text);
+      addMessage('ai', demoReply);
+      chatHistory.push({ role: 'model', parts: [{ text: demoReply }] });
+    }
+    sendBtn.disabled = false;
+  }
+
+  // Demo responses when no API key
+  function generateDemoReply(question) {
+    const q = question.toLowerCase();
+    if (q.includes('mệnh đề'))
+      return `**Mệnh đề** là một câu khẳng định có tính đúng hoặc sai xác định.\n\n**Ví dụ về mệnh đề:**\n- "2 + 2 = 4" → Mệnh đề ĐÚNG ✅\n- "1 > 5" → Mệnh đề SAI ❌\n- "Hà Nội là thủ đô của Việt Nam" → Mệnh đề ĐÚNG ✅\n\n**Không phải mệnh đề:**\n- "Bạn có khỏe không?" (câu hỏi)\n- "Hãy học bài!" (câu mệnh lệnh)\n- "x + 1 = 2" (chứa biến x)\n\n💡 Để hiểu sâu hơn, hãy làm các hoạt động trong bài học nhé!`;
+
+    if (q.includes('pythagore') || q.includes('pythagor'))
+      return `**Định lý Pythagore:**\n\nTrong tam giác vuông, bình phương của cạnh huyền bằng tổng bình phương hai cạnh góc vuông:\n\n**a² + b² = c²** (c là cạnh huyền)\n\n**Chứng minh (dùng diện tích):**\n1. Dựng hình vuông cạnh (a+b)\n2. Bên trong đặt 4 tam giác vuông\n3. Diện tích hình vuông lớn = 4 × ½ab + c²\n4. Mặt khác = (a+b)² = a² + 2ab + b²\n5. Suy ra: a² + b² = c² ∎\n\n💪 Bạn đã hiểu chứng minh này chưa?`;
+
+    if (q.includes('lịch học') || q.includes('thời khóa biểu'))
+      return `**Gợi ý lịch học tuần cho Toán 10:**\n\n| Thứ | Ca sáng | Ca chiều |\n|------|---------|----------|\n| 2 | Lý thuyết (30p) + BT (30p) | Ôn tập |\n| 3 | Bài tập SGK | Hoạt động online |\n| 4 | Nghỉ hoặc đọc thêm | - |\n| 5 | Lý thuyết mới | BT nâng cao |\n| 6 | Ôn tổng hợp | Kiểm tra mini |\n| 7 | Giải đề | Sửa lỗi |\n| CN | Nghỉ | Nghỉ |\n\n⏱️ Dùng Pomodoro: 25 phút học + 5 phút nghỉ để hiệu quả nhất!`;
+
+    return `Cảm ơn bạn đã đặt câu hỏi về: **"${question}"**\n\nĐây là phản hồi demo (chưa kết nối Gemini API).\n\nĐể kích hoạt AI thực sự:\n1. Lấy API key tại **https://aistudio.google.com/**\n2. Thay \`YOUR_GEMINI_API_KEY\` trong file \`ai-chat.html\`\n3. Tải lại trang và hỏi đáp tự do!\n\n💡 Trong lúc đó, hãy thử các hoạt động học tập trong phần Môn học nhé!`;
+  }
+
+  // Event listeners
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  window.insertPrompt = (text) => { chatInput.value = text; chatInput.focus(); };
+
+  document.getElementById('clearChat').addEventListener('click', () => {
+    if (!confirm('Xoá toàn bộ hội thoại?')) return;
+    chatHistory = [];
+    chatContainer.innerHTML = '';
+    addMessage('ai', 'Hội thoại đã được xoá. Tôi sẵn sàng giúp bạn! 🚀');
+  });
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

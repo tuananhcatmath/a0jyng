@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tóm tắt kiến thức — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    window.MathJax = { tex:{ inlineMath:[['$','$'],['\\(','\\)']] }, svg:{ fontCache:'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+  <style>
+    .flashcard { perspective: 1000px; }
+    .flashcard-inner { transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .flashcard-back { transform: rotateY(180deg); position: absolute; inset: 0; }
+    .mindmap-node { border: 2px solid; border-radius: 12px; padding: 6px 12px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; cursor: default; }
+  </style>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📚</span> Môn học</a>
+    <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📊</span> Tiến trình</a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="schedule.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🗓️</span> Lịch học</a>
+    <a href="roadmap.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧭</span> Lộ trình</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>💬</span> Diễn đàn</a>
+    <a href="textbook.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📗</span> Giải SGK</a>
+    <a href="theorems.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧮</span> Định lý</a>
+    <a href="summaries.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📝</span> Tóm tắt</a>
+    <a href="reports.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📈</span> Báo cáo</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 class="text-xl font-bold text-slate-800">📝 Tóm tắt kiến thức</h1>
+    </div>
+    <!-- View mode tabs -->
+    <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden">
+      <button id="tabCheatsheet" class="px-4 py-2 bg-primary text-white text-sm font-semibold" onclick="switchTab('cheatsheet')">📋 Tóm tắt</button>
+      <button id="tabFlashcard"  class="px-4 py-2 text-slate-600 text-sm font-semibold hover:bg-slate-50" onclick="switchTab('flashcard')">🃏 Flashcard</button>
+      <button id="tabMindmap"    class="px-4 py-2 text-slate-600 text-sm font-semibold hover:bg-slate-50" onclick="switchTab('mindmap')">🗺️ Sơ đồ</button>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Subject/chapter selector -->
+      <div class="flex gap-3 mb-6 flex-wrap">
+        <select id="selSubject" class="px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+          <option value="toan-10-c1">📐 Toán 10 — Chương 1: Mệnh đề & Tập hợp</option>
+          <option value="ly-10-c1">⚛️ Vật Lý 10 — Chương 1: Động học</option>
+          <option value="hoa-10-c1">🧪 Hóa Học 10 — Chương 1: Nguyên tử</option>
+        </select>
+        <button id="loadSummary" class="px-4 py-2.5 bg-accent text-white rounded-xl font-semibold text-sm hover:bg-orange-600 transition">Xem tóm tắt</button>
+        <button id="printBtn" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-semibold text-sm hover:bg-slate-200 transition">🖨️ In</button>
+      </div>
+
+      <!-- ── TAB: CHEATSHEET ── -->
+      <div id="viewCheatsheet">
+        <div id="cheatsheetContent" class="space-y-5"></div>
+      </div>
+
+      <!-- ── TAB: FLASHCARD ── -->
+      <div id="viewFlashcard" class="hidden">
+        <div class="text-center mb-6">
+          <p class="text-slate-500 text-sm">Nhấn vào thẻ để lật · <span id="cardCounter" class="font-bold text-primary">1/10</span></p>
+        </div>
+        <div class="flex flex-col items-center gap-6">
+          <!-- Flashcard -->
+          <div id="flashcard" class="flashcard w-full max-w-lg h-56 cursor-pointer" onclick="flipCard()">
+            <div class="flashcard-inner w-full h-full">
+              <div class="flashcard-front bg-gradient-to-br from-primary to-secondary text-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-xl">
+                <p class="text-xs text-blue-200 mb-3 uppercase tracking-wide">Khái niệm</p>
+                <p id="cardFront" class="text-xl font-bold">Mệnh đề là gì?</p>
+              </div>
+              <div class="flashcard-back bg-white border-2 border-primary rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-xl">
+                <p class="text-xs text-primary mb-3 uppercase tracking-wide font-bold">Định nghĩa</p>
+                <p id="cardBack" class="text-slate-700 text-sm leading-relaxed">Mệnh đề là một câu khẳng định có tính đúng hoặc sai xác định (không thể vừa đúng vừa sai).</p>
+              </div>
+            </div>
+          </div>
+          <!-- Controls -->
+          <div class="flex gap-4 items-center">
+            <button id="prevCard" class="px-5 py-2.5 bg-slate-200 rounded-xl font-semibold hover:bg-slate-300 transition text-sm">← Trước</button>
+            <button id="nextCard" class="px-5 py-2.5 bg-primary text-white rounded-xl font-semibold hover:bg-blue-800 transition text-sm">Tiếp theo →</button>
+          </div>
+          <!-- Progress dots -->
+          <div id="cardDots" class="flex gap-1.5"></div>
+          <!-- Self-assessment -->
+          <div class="flex gap-3 mt-2">
+            <button onclick="rateCard('hard')"   class="px-4 py-2 bg-red-100 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-200 transition">😰 Khó</button>
+            <button onclick="rateCard('medium')" class="px-4 py-2 bg-yellow-100 text-yellow-600 rounded-lg text-sm font-semibold hover:bg-yellow-200 transition">🤔 Tạm được</button>
+            <button onclick="rateCard('easy')"   class="px-4 py-2 bg-green-100 text-green-600 rounded-lg text-sm font-semibold hover:bg-green-200 transition">😊 Dễ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: MIND MAP ── -->
+      <div id="viewMindmap" class="hidden">
+        <div class="bg-white rounded-2xl shadow-sm border p-6 overflow-auto">
+          <h3 class="font-bold text-center text-primary mb-6 text-lg">Sơ đồ tư duy: Chương 1 — Mệnh đề & Tập hợp</h3>
+          <div id="mindmapContainer" class="flex justify-center overflow-x-auto pb-4">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Summary Data ──
+  const SUMMARIES = {
+    'toan-10-c1': {
+      title:'Toán 10 — Chương 1: Mệnh đề và Tập hợp',
+      sections:[
+        {
+          heading:'🔵 1. Mệnh đề',
+          color:'blue',
+          points:[
+            '**Định nghĩa:** Câu khẳng định có tính đúng (Đ) hoặc sai (S) xác định.',
+            '**Không phải mệnh đề:** câu hỏi, câu cảm thán, câu chứa biến tự do ($x+1=2$).',
+            '**Phủ định:** $\\overline{P}$ ngược giá trị với P.',
+            '**Kéo theo ($P \\Rightarrow Q$):** sai khi và chỉ khi P đúng, Q sai.',
+            '**Tương đương ($P \\Leftrightarrow Q$):** đúng khi P, Q cùng giá trị.',
+          ],
+          formulas:['$\\overline{P \\Rightarrow Q} \\equiv P \\land \\overline{Q}$', '$P \\Leftrightarrow Q \\equiv (P\\Rightarrow Q) \\land (Q\\Rightarrow P)$'],
+        },
+        {
+          heading:'🟠 2. Ký hiệu ∀ và ∃',
+          color:'orange',
+          points:[
+            '**∀** (với mọi): mệnh đề "$\\forall x \\in A, P(x)$" đúng khi mọi x trong A đều thỏa P.',
+            '**∃** (tồn tại): mệnh đề "$\\exists x \\in A: P(x)$" đúng khi có ít nhất một x thỏa P.',
+            'Phủ định: $\\overline{\\forall x, P(x)} \\equiv \\exists x: \\overline{P(x)}$',
+            'Phủ định: $\\overline{\\exists x, P(x)} \\equiv \\forall x: \\overline{P(x)}$',
+          ],
+          formulas:['$\\overline{\\forall x \\in A, P(x)} \\equiv \\exists x \\in A: \\overline{P(x)}$'],
+        },
+        {
+          heading:'🟢 3. Tập hợp',
+          color:'green',
+          points:[
+            '**Tập rỗng:** $\\emptyset$ — không có phần tử nào.',
+            '**Tập con:** $A \\subseteq B$ khi mọi phần tử của A đều thuộc B.',
+            '**Hai tập bằng nhau:** $A = B \\Leftrightarrow A \\subseteq B$ và $B \\subseteq A$.',
+            '**Số tập con:** Tập có n phần tử có $2^n$ tập con.',
+          ],
+          formulas:['$|A| = n \\Rightarrow$ số tập con $= 2^n$'],
+        },
+        {
+          heading:'🟣 4. Các phép toán tập hợp',
+          color:'purple',
+          points:[
+            '**Hợp:** $A \\cup B = \\{x : x \\in A$ hoặc $x \\in B\\}$',
+            '**Giao:** $A \\cap B = \\{x : x \\in A$ và $x \\in B\\}$',
+            '**Hiệu:** $A \\setminus B = \\{x : x \\in A$ và $x \\notin B\\}$',
+            '**Phần bù:** $C_U A = U \\setminus A$',
+          ],
+          formulas:[
+            '$A \\cup (B \\cap C) = (A \\cup B) \\cap (A \\cup C)$',
+            '$|A \\cup B| = |A| + |B| - |A \\cap B|$',
+          ],
+        },
+      ],
+      flashcards:[
+        { q:'Mệnh đề là gì?', a:'Câu khẳng định có tính đúng hoặc sai xác định (không thể vừa đúng vừa sai).' },
+        { q:'$P \\Rightarrow Q$ khi nào sai?', a:'Chỉ sai khi P đúng và Q sai. (Còn lại đều đúng)' },
+        { q:'Phủ định của $\\forall x, P(x)$ là gì?', a:'$\\exists x: \\overline{P(x)}$ — Tồn tại x không thỏa P.' },
+        { q:'$A \\cup B$ là gì?', a:'Hợp: tập gồm tất cả phần tử thuộc A hoặc thuộc B (hoặc cả hai).' },
+        { q:'$A \\cap B$ là gì?', a:'Giao: tập gồm tất cả phần tử vừa thuộc A vừa thuộc B.' },
+        { q:'$C_U A$ là gì?', a:'Phần bù của A trong U: gồm tất cả phần tử trong U không thuộc A.' },
+        { q:'Tập có 3 phần tử có bao nhiêu tập con?', a:'$2^3 = 8$ tập con (kể cả ∅ và chính nó).' },
+        { q:'$|A \\cup B| = ?$', a:'$|A| + |B| - |A \\cap B|$ (Công thức bao-loại).' },
+        { q:'$P \\Leftrightarrow Q$ có nghĩa gì?', a:'P và Q tương đương: đúng khi cả hai cùng đúng hoặc cùng sai.' },
+        { q:'Câu nào KHÔNG phải mệnh đề?', a:'Câu hỏi ("Bạn có khỏe không?"), câu mệnh lệnh ("Học đi!"), câu chứa biến tự do ($x + 1 = 2$).' },
+      ],
+      mindmap:{
+        center:'Chương 1',
+        branches:[
+          { label:'Mệnh đề', color:'#3B82F6', children:['Phủ định', 'Kéo theo', 'Tương đương', '∀ ∃'] },
+          { label:'Tập hợp', color:'#10B981', children:['Tập con', 'Tập rỗng', 'Tập bằng nhau'] },
+          { label:'Phép toán', color:'#F97316', children:['A ∪ B', 'A ∩ B', 'A \\ B', 'CᵤA'] },
+          { label:'Công thức', color:'#8B5CF6', children:['2ⁿ tập con', 'Bao-loại', 'Phân phối'] },
+        ],
+      },
+    },
+    'ly-10-c1': {
+      title:'Vật Lý 10 — Chương 1: Động học chất điểm',
+      sections:[
+        {
+          heading:'🔵 1. Chuyển động thẳng đều',
+          color:'blue',
+          points:[
+            'Vận tốc không đổi, quỹ đạo thẳng.',
+            'Phương trình vị trí: $x = x_0 + vt$',
+            'Quãng đường: $s = |v| \\cdot t$',
+            'Đồ thị (x,t): đường thẳng; đồ thị (v,t): đường nằm ngang.',
+          ],
+          formulas:['$x = x_0 + vt$', '$s = |v| \\cdot t$'],
+        },
+        {
+          heading:'🟠 2. Chuyển động thẳng biến đổi đều',
+          color:'orange',
+          points:[
+            'Gia tốc không đổi (a = const), $a > 0$: nhanh dần; $a < 0$: chậm dần.',
+            'Phương trình vận tốc: $v = v_0 + at$',
+            'Phương trình vị trí: $x = x_0 + v_0 t + \\frac{1}{2}at^2$',
+            'Công thức độc lập thời gian: $v^2 - v_0^2 = 2as$',
+          ],
+          formulas:['$v = v_0 + at$', '$s = v_0 t + \\frac{1}{2}at^2$', '$v^2 = v_0^2 + 2as$'],
+        },
+        {
+          heading:'🟢 3. Rơi tự do',
+          color:'green',
+          points:[
+            'Chuyển động nhanh dần đều xuống, gia tốc $g \\approx 9.8 \\text{ m/s}^2$.',
+            '$v_0 = 0$ (thả từ nghỉ).',
+            'Vận tốc: $v = gt$; Quãng đường: $h = \\frac{1}{2}gt^2$',
+          ],
+          formulas:['$v = gt$', '$h = \\frac{1}{2}gt^2$', '$v^2 = 2gh$'],
+        },
+      ],
+      flashcards:[
+        { q:'Công thức vận tốc trong chuyển động biến đổi đều?', a:'$v = v_0 + at$' },
+        { q:'Công thức quãng đường trong chuyển động biến đổi đều?', a:'$s = v_0 t + \\frac{1}{2}at^2$' },
+        { q:'Công thức độc lập thời gian?', a:'$v^2 - v_0^2 = 2as$' },
+        { q:'Rơi tự do: vận tốc sau t giây?', a:'$v = gt$ (với $g \\approx 9.8$ m/s²)' },
+        { q:'Đặc điểm chuyển động thẳng đều?', a:'Vận tốc không đổi về độ lớn và hướng; gia tốc a = 0.' },
+      ],
+      mindmap:{
+        center:'Động học',
+        branches:[
+          { label:'Thẳng đều', color:'#3B82F6', children:['x=x₀+vt', 's=vt', 'a=0'] },
+          { label:'Biến đổi đều', color:'#F97316', children:['v=v₀+at', 's=v₀t+½at²', 'v²=v₀²+2as'] },
+          { label:'Rơi tự do', color:'#10B981', children:['v=gt', 'h=½gt²', 'v₀=0'] },
+        ],
+      },
+    },
+  };
+
+  // ── State ──
+  let currentChapter = 'toan-10-c1';
+  let currentCard = 0;
+  let cardRatings = {};
+  let currentTab  = 'cheatsheet';
+
+  function loadData() {
+    currentChapter = document.getElementById('selSubject').value;
+    const data = SUMMARIES[currentChapter] || SUMMARIES['toan-10-c1'];
+    renderCheatsheet(data);
+    renderFlashcards(data.flashcards);
+    renderMindmap(data.mindmap);
+  }
+
+  // ── Cheatsheet ──
+  function renderCheatsheet(data) {
+    const COLOR_MAP = { blue:'border-blue-200 bg-blue-50', orange:'border-orange-200 bg-orange-50', green:'border-green-200 bg-green-50', purple:'border-purple-200 bg-purple-50' };
+    const HEAD_MAP  = { blue:'text-blue-700', orange:'text-orange-700', green:'text-green-700', purple:'text-purple-700' };
+
+    document.getElementById('cheatsheetContent').innerHTML = `
+      <div class="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl p-5 mb-2">
+        <h2 class="text-xl font-bold">${data.title}</h2>
+        <p class="text-blue-100 text-sm mt-1">Tóm tắt kiến thức trọng tâm</p>
+      </div>
+      ${data.sections.map(sec => `
+        <div class="border-2 ${COLOR_MAP[sec.color]} rounded-2xl p-5">
+          <h3 class="font-bold text-base ${HEAD_MAP[sec.color]} mb-3">${sec.heading}</h3>
+          <ul class="space-y-2 text-sm text-slate-700 mb-3">
+            ${sec.points.map(p => `<li class="flex items-start gap-2"><span class="text-secondary mt-0.5 flex-shrink-0">•</span><span>${p.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</span></li>`).join('')}
+          </ul>
+          ${sec.formulas?.length ? `
+            <div class="flex flex-wrap gap-2 pt-3 border-t border-current/20">
+              ${sec.formulas.map(f => `<span class="px-3 py-1.5 bg-white/80 rounded-xl text-sm font-mono font-bold shadow-sm">${f}</span>`).join('')}
+            </div>` : ''}
+        </div>`).join('')}`;
+
+    if (window.MathJax) MathJax.typesetPromise([document.getElementById('cheatsheetContent')]);
+  }
+
+  // ── Flashcards ──
+  function renderFlashcards(cards) {
+    currentCard = 0;
+    window._cards = cards;
+    updateCard();
+
+    const dots = document.getElementById('cardDots');
+    dots.innerHTML = cards.map((_,i) => `<div class="w-2 h-2 rounded-full ${i===0?'bg-primary':'bg-slate-300'} transition-colors" id="dot-${i}"></div>`).join('');
+    document.getElementById('cardCounter').textContent = `1/${cards.length}`;
+  }
+
+  function updateCard() {
+    const cards = window._cards || [];
+    if (!cards.length) return;
+    const card = cards[currentCard];
+    document.getElementById('cardFront').innerHTML = card.q;
+    document.getElementById('cardBack').innerHTML  = card.a;
+    document.getElementById('flashcard').classList.remove('flipped');
+    document.getElementById('cardCounter').textContent = `${currentCard+1}/${cards.length}`;
+    cards.forEach((_,i) => {
+      const dot = document.getElementById(`dot-${i}`);
+      if (dot) dot.className = `w-2 h-2 rounded-full ${i===currentCard?'bg-primary':'bg-slate-300'} transition-colors`;
+    });
+    if (window.MathJax) MathJax.typesetPromise([document.getElementById('flashcard')]);
+  }
+
+  window.flipCard = () => document.getElementById('flashcard').classList.toggle('flipped');
+  window.rateCard = (rating) => {
+    const cards = window._cards || [];
+    cardRatings[currentCard] = rating;
+    if (currentCard < cards.length - 1) { currentCard++; updateCard(); }
+    else {
+      const hard = Object.values(cardRatings).filter(r=>r==='hard').length;
+      alert(`Hoàn thành! 🎉\n😰 Khó: ${hard} thẻ\n😊 Dễ: ${Object.values(cardRatings).filter(r=>r==='easy').length} thẻ\n\nHãy ôn lại những thẻ khó trước nhé!`);
+      currentCard = 0; cardRatings = {}; updateCard();
+    }
+  };
+
+  document.getElementById('prevCard').addEventListener('click', () => {
+    const cards = window._cards || [];
+    if (currentCard > 0) { currentCard--; updateCard(); }
+  });
+  document.getElementById('nextCard').addEventListener('click', () => {
+    const cards = window._cards || [];
+    if (currentCard < cards.length - 1) { currentCard++; updateCard(); }
+  });
+
+  // Keyboard navigation for flashcards
+  document.addEventListener('keydown', e => {
+    if (currentTab !== 'flashcard') return;
+    if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+    if (e.code === 'ArrowRight') document.getElementById('nextCard').click();
+    if (e.code === 'ArrowLeft')  document.getElementById('prevCard').click();
+  });
+
+  // ── Mind Map ──
+  function renderMindmap(map) {
+    const container = document.getElementById('mindmapContainer');
+    const ANGLE_START = -Math.PI / 2;
+    const R = 160;
+
+    let html = `<div class="relative" style="width:520px;height:480px">
+      <!-- Center node -->
+      <div class="absolute mindmap-node bg-primary text-white border-primary text-base"
+        style="left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 20px;font-size:1rem;font-weight:800">
+        ${map.center}
+      </div>`;
+
+    map.branches.forEach((branch, i) => {
+      const angle = ANGLE_START + (i / map.branches.length) * 2 * Math.PI;
+      const bx = 260 + R * Math.cos(angle);
+      const by = 240 + R * Math.sin(angle);
+
+      html += `<!-- Branch line -->
+        <svg class="absolute inset-0 w-full h-full" style="pointer-events:none">
+          <line x1="260" y1="240" x2="${bx}" y2="${by}" stroke="${branch.color}" stroke-width="2" stroke-dasharray="4"/>
+        </svg>
+        <div class="absolute mindmap-node text-white" style="left:${bx}px;top:${by}px;transform:translate(-50%,-50%);background:${branch.color};border-color:${branch.color}">
+          ${branch.label}
+        </div>`;
+
+      branch.children.forEach((child, j) => {
+        const childAngle = angle + (j - (branch.children.length-1)/2) * 0.4;
+        const cr = R * 0.75;
+        const cx = bx + cr * Math.cos(childAngle);
+        const cy = by + cr * Math.sin(childAngle);
+        const safeChild = child.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        html += `<svg class="absolute inset-0 w-full h-full" style="pointer-events:none">
+          <line x1="${bx}" y1="${by}" x2="${cx}" y2="${cy}" stroke="${branch.color}" stroke-width="1.5" opacity="0.5"/>
+        </svg>
+        <div class="absolute mindmap-node border-opacity-50 text-xs"
+          style="left:${cx}px;top:${cy}px;transform:translate(-50%,-50%);border-color:${branch.color};color:${branch.color};background:white;font-size:0.65rem">
+          ${safeChild}
+        </div>`;
+      });
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  // ── Tab switching ──
+  window.switchTab = (tab) => {
+    currentTab = tab;
+    ['cheatsheet','flashcard','mindmap'].forEach(t => {
+      document.getElementById(`view${t.charAt(0).toUpperCase()+t.slice(1)}`).classList.toggle('hidden', t !== tab);
+      const btn = document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
+      btn.className = t === tab
+        ? 'px-4 py-2 bg-primary text-white text-sm font-semibold'
+        : 'px-4 py-2 text-slate-600 text-sm font-semibold hover:bg-slate-50';
+    });
+  };
+
+  document.getElementById('loadSummary').addEventListener('click', loadData);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+  loadData();
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

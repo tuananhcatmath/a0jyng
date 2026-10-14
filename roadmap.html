@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lộ trình học tập — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📚</span> Môn học</a>
+    <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📊</span> Tiến trình</a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="schedule.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🗓️</span> Lịch học</a>
+    <a href="roadmap.html"   class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧭</span> Lộ trình</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>💬</span> Diễn đàn</a>
+    <a href="textbook.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📗</span> Giải SGK</a>
+    <a href="theorems.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🧮</span> Định lý</a>
+    <a href="summaries.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📝</span> Tóm tắt</a>
+    <a href="reports.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📈</span> Báo cáo</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 class="text-xl font-bold text-slate-800">🧭 Lộ trình học tập cá nhân</h1>
+    </div>
+    <div class="flex gap-2 items-center">
+      <span id="styleBadge" class="px-3 py-1 bg-blue-100 text-primary text-xs font-bold rounded-full">👁️ Visual</span>
+      <button id="changeStyle" class="px-3 py-1.5 border-2 border-slate-200 rounded-lg text-xs font-medium hover:bg-slate-50 transition">Đổi kiểu học</button>
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Learning style info banner -->
+      <div id="styleBanner" class="mb-6 p-5 rounded-2xl text-white">
+        <div class="flex items-center gap-4">
+          <div class="text-5xl" id="styleIcon">👁️</div>
+          <div>
+            <h2 class="text-xl font-bold" id="styleTitle">Người học thị giác (Visual Learner)</h2>
+            <p class="text-white/80 text-sm mt-1" id="styleDesc">Bạn học tốt nhất qua hình ảnh, biểu đồ, màu sắc và sơ đồ tư duy. Lộ trình của bạn được tối ưu với video bài giảng và mindmap.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goal setting -->
+      <div class="bg-white rounded-2xl shadow-sm border p-5 mb-6">
+        <h3 class="font-bold text-slate-800 mb-4">🎯 Mục tiêu học tập</h3>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Mục tiêu</label>
+            <select id="goalType" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+              <option value="thpt">🎓 Thi THPT Quốc gia</option>
+              <option value="dai-hoc">🏛️ Thi đại học</option>
+              <option value="hoc-ki">📅 Thi học kỳ</option>
+              <option value="nang-cao">⭐ Nâng cao kiến thức</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Ngày mục tiêu</label>
+            <input type="date" id="goalDate" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Giờ/ngày có thể học</label>
+            <select id="dailyHours" class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+              <option value="1">1 giờ/ngày</option>
+              <option value="2" selected>2 giờ/ngày</option>
+              <option value="3">3 giờ/ngày</option>
+              <option value="4">4+ giờ/ngày</option>
+            </select>
+          </div>
+        </div>
+        <button id="generateRoadmap" class="mt-4 px-5 py-2.5 bg-accent text-white rounded-xl font-semibold hover:bg-orange-600 transition text-sm">
+          🔄 Tạo lộ trình mới
+        </button>
+      </div>
+
+      <!-- Roadmap timeline -->
+      <div id="roadmapContainer">
+        <!-- Month tabs -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-2" id="monthTabs"></div>
+
+        <!-- Timeline content -->
+        <div id="timelineContent" class="space-y-4"></div>
+      </div>
+
+      <!-- Study tips by learning style -->
+      <div class="mt-8 bg-white rounded-2xl shadow-sm border p-5">
+        <h3 class="font-bold text-slate-800 mb-4" id="tipsTitle">💡 Mẹo học cho người học thị giác</h3>
+        <div class="grid md:grid-cols-2 gap-3" id="tipsList"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Change style modal -->
+<div id="styleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('styleModal').classList.add('hidden')"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in">
+    <h2 class="text-xl font-bold text-slate-800 mb-4">Chọn kiểu học tập của bạn</h2>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="style-opt cursor-pointer border-2 border-slate-200 rounded-xl p-4 hover:border-secondary transition" data-style="visual">
+        <div class="text-3xl mb-2">👁️</div>
+        <h4 class="font-bold text-primary">Visual</h4>
+        <p class="text-xs text-slate-500">Hình ảnh, biểu đồ, màu sắc</p>
+      </div>
+      <div class="style-opt cursor-pointer border-2 border-slate-200 rounded-xl p-4 hover:border-secondary transition" data-style="auditory">
+        <div class="text-3xl mb-2">👂</div>
+        <h4 class="font-bold text-primary">Auditory</h4>
+        <p class="text-xs text-slate-500">Nghe, nói, thảo luận</p>
+      </div>
+      <div class="style-opt cursor-pointer border-2 border-slate-200 rounded-xl p-4 hover:border-secondary transition" data-style="kinesthetic">
+        <div class="text-3xl mb-2">✋</div>
+        <h4 class="font-bold text-primary">Kinesthetic</h4>
+        <p class="text-xs text-slate-500">Thực hành, làm bài</p>
+      </div>
+      <div class="style-opt cursor-pointer border-2 border-slate-200 rounded-xl p-4 hover:border-secondary transition" data-style="reading">
+        <div class="text-3xl mb-2">📖</div>
+        <h4 class="font-bold text-primary">Reading/Writing</h4>
+        <p class="text-xs text-slate-500">Đọc sách, ghi chép</p>
+      </div>
+    </div>
+    <button id="confirmStyle" class="mt-5 w-full py-3 bg-accent text-white rounded-xl font-bold hover:bg-orange-600 transition">Xác nhận</button>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  let currentUser = null;
+  let learningStyle = localStorage.getItem('a0jyng_style') || 'visual';
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) learningStyle = snap.data().learningStyle || learningStyle;
+    } catch(e) {}
+    applyStyle(learningStyle);
+    generateRoadmap();
+  });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Learning style config ──
+  const STYLES = {
+    visual: {
+      icon:'👁️', label:'Người học thị giác (Visual Learner)',
+      desc:'Bạn học tốt nhất qua hình ảnh, biểu đồ, màu sắc và sơ đồ tư duy.',
+      bg:'bg-gradient-to-r from-blue-600 to-secondary',
+      tips:[
+        { icon:'🗺️', text:'Vẽ sơ đồ tư duy (mind map) trước khi học bài mới' },
+        { icon:'🎨', text:'Dùng màu sắc khác nhau để phân loại kiến thức' },
+        { icon:'📊', text:'Chuyển đổi thông tin thành biểu đồ, bảng, timeline' },
+        { icon:'🎬', text:'Ưu tiên xem video bài giảng thay vì chỉ đọc sách' },
+        { icon:'📐', text:'Vẽ hình minh họa bên cạnh công thức toán học' },
+        { icon:'🗂️', text:'Tổ chức ghi chú theo không gian, dùng sticky notes' },
+      ]
+    },
+    auditory: {
+      icon:'👂', label:'Người học thính giác (Auditory Learner)',
+      desc:'Bạn học tốt nhất qua nghe giảng, podcast, và thảo luận nhóm.',
+      bg:'bg-gradient-to-r from-purple-600 to-indigo-500',
+      tips:[
+        { icon:'🎙️', text:'Đọc to nội dung đang học — tự nghe giọng mình' },
+        { icon:'💬', text:'Thảo luận bài học với bạn bè sau mỗi buổi học' },
+        { icon:'🎵', text:'Học với nhạc nhẹ nền (không lời) để tập trung' },
+        { icon:'📻', text:'Tìm kiếm podcast giải thích kiến thức theo môn học' },
+        { icon:'🗣️', text:'Giải thích lại bài học cho người khác nghe (dạy lại)' },
+        { icon:'🎧', text:'Ghi âm ghi chú và nghe lại khi di chuyển' },
+      ]
+    },
+    kinesthetic: {
+      icon:'✋', label:'Người học xúc giác (Kinesthetic Learner)',
+      desc:'Bạn học tốt nhất qua thực hành, làm bài tập trực tiếp.',
+      bg:'bg-gradient-to-r from-green-600 to-teal-500',
+      tips:[
+        { icon:'✏️', text:'Làm ngay bài tập sau khi học lý thuyết (không trì hoãn)' },
+        { icon:'🧪', text:'Tìm kiếm thí nghiệm, ví dụ thực tế liên quan đến bài học' },
+        { icon:'🚶', text:'Đi bộ nhẹ hoặc vận động tay khi ôn bài (học kinesthetic)' },
+        { icon:'🎮', text:'Dùng flashcard vật lý, tự viết tay rồi kiểm tra' },
+        { icon:'⏱️', text:'Chia nhỏ thời gian học: 20p học + 5p vận động' },
+        { icon:'📋', text:'Làm đề thi thử, kiểm tra mini để củng cố kiến thức' },
+      ]
+    },
+    reading: {
+      icon:'📖', label:'Người học đọc-viết (Reading/Writing Learner)',
+      desc:'Bạn học tốt nhất qua đọc sách, ghi chép và viết tóm tắt.',
+      bg:'bg-gradient-to-r from-amber-600 to-orange-500',
+      tips:[
+        { icon:'📓', text:'Ghi chép chi tiết, viết lại kiến thức bằng lời của mình' },
+        { icon:'📚', text:'Đọc nhiều sách tham khảo, tài liệu bổ sung' },
+        { icon:'📑', text:'Viết tóm tắt bài học sau mỗi buổi học' },
+        { icon:'📝', text:'Lập danh sách, bullet point để tổ chức kiến thức' },
+        { icon:'✍️', text:'Viết essay ngắn giải thích khái niệm bằng ngôn ngữ của bạn' },
+        { icon:'🔖', text:'Dùng highlighter và ghi chú bên lề khi đọc sách' },
+      ]
+    },
+  };
+
+  function applyStyle(style) {
+    learningStyle = style;
+    const cfg = STYLES[style];
+    document.getElementById('styleBadge').textContent = `${cfg.icon} ${style.charAt(0).toUpperCase()+style.slice(1)}`;
+    document.getElementById('styleBanner').className = `mb-6 p-5 rounded-2xl text-white ${cfg.bg}`;
+    document.getElementById('styleIcon').textContent  = cfg.icon;
+    document.getElementById('styleTitle').textContent = cfg.label;
+    document.getElementById('styleDesc').textContent  = cfg.desc;
+    document.getElementById('tipsTitle').textContent  = `💡 Mẹo học cho ${cfg.label.split('(')[0].trim().toLowerCase()}`;
+    document.getElementById('tipsList').innerHTML = cfg.tips.map(t =>
+      `<div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+        <span class="text-xl flex-shrink-0">${t.icon}</span>
+        <p class="text-sm text-slate-700">${t.text}</p>
+      </div>`
+    ).join('');
+    localStorage.setItem('a0jyng_style', style);
+  }
+
+  // ── Roadmap generation ──
+  function generateRoadmap() {
+    const goalDate  = document.getElementById('goalDate').value || getDefaultGoalDate();
+    const dailyHrs  = parseInt(document.getElementById('dailyHours').value) || 2;
+
+    const subjects = [
+      { id:'toan-10', name:'Toán 10', icon:'📐', totalLessons:15, done:5, color:'#3B82F6' },
+      { id:'ly-10',   name:'Vật Lý 10', icon:'⚛️', totalLessons:10, done:2, color:'#F97316' },
+      { id:'hoa-10',  name:'Hóa Học 10', icon:'🧪', totalLessons:8,  done:1, color:'#10B981' },
+      { id:'van-10',  name:'Ngữ Văn 10', icon:'📖', totalLessons:12, done:0, color:'#8B5CF6' },
+    ];
+
+    const weeks = generateWeekPlan(subjects, goalDate, dailyHrs);
+    renderTimeline(weeks);
+  }
+
+  function getDefaultGoalDate() {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 3);
+    return d.toISOString().split('T')[0];
+  }
+
+  function generateWeekPlan(subjects, goalDate, dailyHrs) {
+    const weeks = [];
+    const today = new Date();
+    const goal  = new Date(goalDate);
+    const totalWeeks = Math.max(1, Math.ceil((goal - today) / (7 * 24 * 3600 * 1000)));
+    const lessonsPerWeek = Math.ceil(dailyHrs * 7 / 1.5); // ~1.5h per lesson
+
+    for (let w = 0; w < Math.min(totalWeeks, 12); w++) {
+      const weekStart = new Date(today);
+      weekStart.setDate(weekStart.getDate() + w * 7);
+      const weekEnd   = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      // Rotate through subjects
+      const subIdx    = w % subjects.length;
+      const subject   = subjects[subIdx];
+      const focus     = Math.min(lessonsPerWeek, subject.totalLessons - subject.done);
+
+      weeks.push({
+        week: w + 1,
+        start: weekStart.toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit' }),
+        end:   weekEnd.toLocaleDateString('vi-VN',   { day:'2-digit', month:'2-digit' }),
+        subject,
+        lessons: Math.max(1, focus),
+        done: w === 0,
+        current: w === 0,
+        tasks: generateWeekTasks(subject, learningStyle, Math.max(1, focus)),
+      });
+    }
+    return weeks;
+  }
+
+  function generateWeekTasks(subject, style, lessonCount) {
+    const styleTasks = {
+      visual:      ['🗺️ Vẽ sơ đồ tư duy cho chương', '🎬 Xem video bài giảng', '📊 Tóm tắt bằng bảng/biểu đồ'],
+      auditory:    ['🎙️ Đọc to và giải thích bài cho bạn', '💬 Tham gia diễn đàn thảo luận', '🎧 Nghe podcast/bài giảng audio'],
+      kinesthetic: ['✏️ Làm ngay bài tập sau lý thuyết', '🧪 Tìm ví dụ thực tế', '📋 Làm đề kiểm tra mini'],
+      reading:     ['📓 Ghi chép chi tiết toàn bộ bài', '📑 Viết tóm tắt sau mỗi bài', '🔖 Làm bài tập viết'],
+    };
+    const common = [`📚 Học ${lessonCount} bài mới (${subject.name})`, '✅ Hoàn thành hoạt động + xem đáp án', '🔄 Ôn tập bài tuần trước'];
+    return [...common, ...(styleTasks[style] || styleTasks.visual)].slice(0, 5);
+  }
+
+  function renderTimeline(weeks) {
+    // Month grouping
+    const months = [...new Set(weeks.map(w => w.start.split('/')[1]))];
+    const MONTH_NAMES = { '01':'Tháng 1','02':'Tháng 2','03':'Tháng 3','04':'Tháng 4','05':'Tháng 5','06':'Tháng 6','07':'Tháng 7','08':'Tháng 8','09':'Tháng 9','10':'Tháng 10','11':'Tháng 11','12':'Tháng 12' };
+    let activeMonth = months[0];
+
+    document.getElementById('monthTabs').innerHTML = months.map((m, i) =>
+      `<button class="month-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold ${i===0 ? 'bg-primary text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'} transition" data-month="${m}">
+        ${MONTH_NAMES[m] || m}
+      </button>`
+    ).join('');
+
+    function renderWeeks(month) {
+      const filtered = weeks.filter(w => w.start.split('/')[1] === month);
+      document.getElementById('timelineContent').innerHTML = filtered.map((w, i) => `
+        <div class="flex gap-4 animate-fade-in">
+          <!-- Timeline dot -->
+          <div class="flex flex-col items-center flex-shrink-0">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${w.current ? 'bg-accent text-white ring-4 ring-orange-200' : w.done ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-600'}">
+              ${w.done && !w.current ? '✓' : w.week}
+            </div>
+            ${i < filtered.length - 1 ? '<div class="flex-1 w-0.5 bg-slate-200 mt-2 min-h-8"></div>' : ''}
+          </div>
+          <!-- Week card -->
+          <div class="flex-1 bg-white rounded-2xl shadow-sm border ${w.current ? 'border-accent/30 ring-2 ring-accent/20' : 'border-slate-100'} p-4 mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-800">Tuần ${w.week}</span>
+                  ${w.current ? '<span class="text-xs bg-accent text-white px-2 py-0.5 rounded-full font-bold">Tuần hiện tại</span>' : ''}
+                </div>
+                <p class="text-xs text-slate-500">${w.start} – ${w.end}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">${w.subject.icon}</span>
+                <div>
+                  <p class="font-semibold text-sm" style="color:${w.subject.color}">${w.subject.name}</p>
+                  <p class="text-xs text-slate-500">${w.lessons} bài học</p>
+                </div>
+              </div>
+            </div>
+            <ul class="space-y-1.5">
+              ${w.tasks.map(t => `
+                <li class="flex items-center gap-2 text-sm text-slate-600">
+                  <input type="checkbox" class="rounded border-slate-300" ${w.done ? 'checked' : ''}>
+                  <span>${t}</span>
+                </li>`).join('')}
+            </ul>
+            ${w.current ? `<a href="subjects.html" class="mt-3 inline-block px-4 py-2 bg-accent text-white text-xs font-bold rounded-lg hover:bg-orange-600 transition">Bắt đầu tuần này →</a>` : ''}
+          </div>
+        </div>`
+      ).join('');
+    }
+
+    renderWeeks(activeMonth);
+
+    document.querySelectorAll('.month-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.month-tab').forEach(b => {
+          b.className = 'month-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold bg-slate-200 text-slate-600 hover:bg-slate-300 transition';
+          b.dataset.month === btn.dataset.month && (b.className = 'month-tab flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold bg-primary text-white transition');
+        });
+        renderWeeks(btn.dataset.month);
+      });
+    });
+  }
+
+  document.getElementById('generateRoadmap').addEventListener('click', generateRoadmap);
+
+  // Style modal
+  document.getElementById('changeStyle').addEventListener('click', () => {
+    document.getElementById('styleModal').classList.remove('hidden');
+  });
+  let selectedStyleTmp = learningStyle;
+  document.querySelectorAll('.style-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.style-opt').forEach(o => o.classList.remove('border-secondary', 'bg-blue-50'));
+      opt.classList.add('border-secondary', 'bg-blue-50');
+      selectedStyleTmp = opt.dataset.style;
+    });
+  });
+  document.getElementById('confirmStyle').addEventListener('click', async () => {
+    applyStyle(selectedStyleTmp);
+    generateRoadmap();
+    document.getElementById('styleModal').classList.add('hidden');
+    if (currentUser) {
+      try { await updateDoc(doc(db, 'users', currentUser.uid), { learningStyle: selectedStyleTmp }); } catch(e) {}
+    }
+  });
+
+  // Set default goal date
+  document.getElementById('goalDate').value = getDefaultGoalDate();
+
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+</body>
+</html>

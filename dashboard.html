@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+
+<!-- ===== MOBILE OVERLAY ===== -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <!-- Logo -->
+  <div class="p-5 border-b border-white/10">
+    <a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a>
+    <p class="text-xs text-blue-300 mt-0.5">Nền tảng học tập</p>
+  </div>
+  <!-- User mini card -->
+  <div class="p-4 border-b border-white/10">
+    <div class="flex items-center gap-3">
+      <div id="userAvatar" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center font-bold text-white text-sm">A</div>
+      <div class="min-w-0">
+        <p id="sidebarName" class="font-semibold text-sm truncate">Học sinh</p>
+        <p id="sidebarGrade" class="text-xs text-blue-300">Lớp 10</p>
+      </div>
+    </div>
+  </div>
+  <!-- Nav links -->
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">🏠</span> Dashboard
+    </a>
+    <a href="subjects.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">📚</span> Môn học
+    </a>
+    <a href="progress.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">📊</span> Tiến trình
+    </a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="schedule.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">🗓️</span> Lịch học
+    </a>
+    <a href="roadmap.html"    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">🧭</span> Lộ trình
+    </a>
+    <a href="pomodoro.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">⏰</span> Pomodoro
+    </a>
+    <a href="ai-chat.html"    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">🤖</span> AI hỏi đáp
+    </a>
+    <a href="forum.html"      class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">💬</span> Diễn đàn
+    </a>
+    <a href="textbook.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">📗</span> Giải SGK
+    </a>
+    <a href="theorems.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">🧮</span> Định lý
+    </a>
+    <a href="summaries.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">📝</span> Tóm tắt
+    </a>
+    <a href="reports.html"    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">📈</span> Báo cáo
+    </a>
+  </nav>
+  <!-- Logout -->
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2">
+      🚪 Đăng xuất
+    </button>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="flex-1 flex flex-col overflow-hidden">
+  <!-- Top bar -->
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <div>
+        <h1 class="text-xl font-bold text-slate-800">Xin chào, <span id="headerName" class="text-accent">...</span>! 👋</h1>
+        <p class="text-xs text-slate-500" id="todayDate"></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="relative p-2 rounded-full hover:bg-slate-100">
+        <span class="text-xl">🔔</span>
+        <span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
+      </button>
+      <div id="topAvatar" class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm cursor-pointer">A</div>
+    </div>
+  </header>
+
+  <!-- Scrollable content -->
+  <div class="flex-1 overflow-y-auto p-6">
+
+    <!-- STAT CARDS -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-gradient-to-br from-primary to-secondary text-white p-5 rounded-2xl shadow">
+        <p class="text-sm text-blue-200 mb-1">⏱ Hôm nay</p>
+        <p id="todayMinutes" class="text-3xl font-black">0p</p>
+        <p class="text-xs text-blue-200 mt-1">thời gian học</p>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+        <p class="text-sm text-slate-500 mb-1">📈 Tuần này</p>
+        <p id="weekProgress" class="text-3xl font-black text-accent">0%</p>
+        <p class="text-xs text-slate-400 mt-1">mục tiêu tuần</p>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+        <p class="text-sm text-slate-500 mb-1">🔥 Streak</p>
+        <p id="streak" class="text-3xl font-black text-primary">0</p>
+        <p class="text-xs text-slate-400 mt-1">ngày liên tiếp</p>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+        <p class="text-sm text-slate-500 mb-1">✅ Bài hoàn thành</p>
+        <p id="completedLessons" class="text-3xl font-black text-green-500">0</p>
+        <p class="text-xs text-slate-400 mt-1">bài học</p>
+      </div>
+    </div>
+
+    <!-- SUBJECTS + RECENT -->
+    <div class="grid md:grid-cols-3 gap-6 mb-6">
+      <!-- My subjects -->
+      <div class="md:col-span-2">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-slate-800">📚 Môn học của bạn</h2>
+          <a href="subjects.html" class="text-sm text-secondary hover:underline">Xem tất cả →</a>
+        </div>
+        <div id="subjectCards" class="grid grid-cols-2 gap-3">
+          <!-- Skeleton -->
+          <div class="animate-pulse bg-slate-200 rounded-2xl h-28"></div>
+          <div class="animate-pulse bg-slate-200 rounded-2xl h-28"></div>
+          <div class="animate-pulse bg-slate-200 rounded-2xl h-28"></div>
+          <div class="animate-pulse bg-slate-200 rounded-2xl h-28"></div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div>
+        <h2 class="text-lg font-bold text-slate-800 mb-4">⚡ Truy cập nhanh</h2>
+        <div class="space-y-2">
+          <a href="pomodoro.html"  class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
+            <span class="text-2xl">⏰</span><div><p class="font-medium text-sm">Pomodoro</p><p class="text-xs text-slate-400">Bắt đầu học tập</p></div>
+          </a>
+          <a href="ai-chat.html"   class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
+            <span class="text-2xl">🤖</span><div><p class="font-medium text-sm">AI hỏi đáp</p><p class="text-xs text-slate-400">Giải đáp thắc mắc</p></div>
+          </a>
+          <a href="forum.html"     class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
+            <span class="text-2xl">💬</span><div><p class="font-medium text-sm">Diễn đàn</p><p class="text-xs text-slate-400">3 câu hỏi mới</p></div>
+          </a>
+          <a href="roadmap.html"   class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
+            <span class="text-2xl">🧭</span><div><p class="font-medium text-sm">Lộ trình</p><p class="text-xs text-slate-400">Xem tiến độ tháng</p></div>
+          </a>
+          <a href="reports.html"   class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
+            <span class="text-2xl">📊</span><div><p class="font-medium text-sm">Báo cáo tháng</p><p class="text-xs text-slate-400">Tháng 10/2026</p></div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT LESSONS -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold text-slate-800">🕐 Học tiếp</h2>
+        <a href="subjects.html" class="text-sm text-secondary hover:underline">Tất cả →</a>
+      </div>
+      <div id="recentLessons" class="space-y-3">
+        <!-- Placeholder -->
+        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">📐</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm truncate">Bài 1: Mệnh đề</p>
+            <p class="text-xs text-slate-500">Toán 10 · Chương 1</p>
+            <div class="progress-bar mt-2 w-full">
+              <div class="progress-fill" style="width: 40%"></div>
+            </div>
+          </div>
+          <a href="lesson-detail.html?id=toan-10-c1-b1" class="flex-shrink-0 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-orange-600 transition">Học →</a>
+        </div>
+        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">⚛️</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm truncate">Bài 1: Chuyển động thẳng đều</p>
+            <p class="text-xs text-slate-500">Vật Lý 10 · Chương 1</p>
+            <div class="progress-bar mt-2 w-full">
+              <div class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          <a href="lesson-detail.html?id=ly-10-c1-b1" class="flex-shrink-0 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-lg hover:bg-orange-600 transition">Bắt đầu →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end scrollable -->
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // Auth guard
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+
+    // Set names
+    const name = user.displayName || user.email.split('@')[0];
+    document.getElementById('headerName').textContent = name;
+    document.getElementById('sidebarName').textContent = name;
+    document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+    document.getElementById('topAvatar').textContent  = name[0].toUpperCase();
+
+    // Today date
+    document.getElementById('todayDate').textContent =
+      new Date().toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+    // Load user profile from Firestore
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        document.getElementById('sidebarGrade').textContent = `Lớp ${data.grade || 10}`;
+        document.getElementById('streak').textContent = data.streak || 0;
+        document.getElementById('todayMinutes').textContent = (data.todayMinutes || 0) + 'p';
+        document.getElementById('completedLessons').textContent = data.completedLessons || 0;
+      }
+    } catch (e) { console.warn('Cannot load profile:', e); }
+
+    // Load subjects
+    try {
+      const snap = await getDocs(collection(db, 'subjects'));
+      const cards = document.getElementById('subjectCards');
+      if (!snap.empty) {
+        cards.innerHTML = snap.docs.map(d => {
+          const s = d.data();
+          return `<a href="chapters.html?subject=${d.id}"
+            class="card-hover p-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col">
+            <span class="text-3xl mb-2">${s.icon}</span>
+            <p class="font-bold text-sm text-slate-800">${s.name}</p>
+            <p class="text-xs text-slate-500 mt-1">${s.chaptersCount || '?'} chương</p>
+            <div class="progress-bar mt-3"><div class="progress-fill" style="width:${Math.floor(Math.random()*80)}%"></div></div>
+          </a>`;
+        }).join('');
+      } else {
+        // Sample fallback if no Firestore data
+        cards.innerHTML = [
+          { id:'toan-10', name:'Toán 10',   icon:'📐', c:3 },
+          { id:'ly-10',   name:'Vật Lý 10', icon:'⚛️', c:2 },
+          { id:'hoa-10',  name:'Hóa Học 10',icon:'🧪', c:2 },
+          { id:'van-10',  name:'Ngữ Văn 10',icon:'📖', c:2 },
+        ].map(s => `<a href="chapters.html?subject=${s.id}"
+          class="card-hover p-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col">
+          <span class="text-3xl mb-2">${s.icon}</span>
+          <p class="font-bold text-sm text-slate-800">${s.name}</p>
+          <p class="text-xs text-slate-500 mt-1">${s.c} chương</p>
+          <div class="progress-bar mt-3"><div class="progress-fill" style="width:${Math.floor(Math.random()*80)}%"></div></div>
+        </a>`).join('');
+      }
+    } catch(e) { console.warn('Firestore error:', e); }
+  });
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.href = 'index.html';
+  });
+
+  // Sidebar toggle
+  window.toggleSidebar = () => {
+    document.getElementById('sidebar').classList.toggle('-translate-x-full');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+  };
+  window.closeSidebar = () => {
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+  };
+</script>
+</body>
+</html>
