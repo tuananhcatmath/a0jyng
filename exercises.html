@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài tập & Đề thi — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    window.MathJax = { tex:{ inlineMath:[['$','$'],['\\(','\\)']] }, svg:{ fontCache:'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🏠</span> Dashboard</a>
+    <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📚</span> Môn học</a>
+    <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📊</span> Tiến trình</a>
+    <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="exercises.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📝</span> Bài tập & Đề thi</a>
+    <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>⏰</span> Pomodoro</a>
+    <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>🤖</span> AI hỏi đáp</a>
+    <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>💬</span> Diễn đàn</a>
+    <a href="summaries.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>📋</span> Tóm tắt</a>
+  </nav>
+  <div class="p-4 border-t border-white/10">
+    <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition">🚪 Đăng xuất</button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col overflow-hidden">
+  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 class="text-xl font-bold text-slate-800">📝 Bài tập & Đề thi</h1>
+    </div>
+    <div class="flex items-center gap-2 text-sm text-slate-500">
+      <span id="doneCount" class="font-bold text-primary">0</span> bài đã làm
+    </div>
+  </header>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-5xl mx-auto">
+
+      <!-- FILTER -->
+      <div class="flex gap-3 mb-8 flex-wrap bg-white rounded-2xl p-4 shadow-sm border">
+        <select id="filterSubject" class="px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+          <option value="all">📚 Tất cả môn</option>
+          <option value="toan">📐 Toán 10</option>
+          <option value="ly">⚛️ Vật Lý 10</option>
+          <option value="hoa">🧪 Hóa Học 10</option>
+        </select>
+        <select id="filterType" class="px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-secondary bg-white">
+          <option value="all">📋 Tất cả</option>
+          <option value="theory">📘 Lý thuyết</option>
+          <option value="exercise">✏️ Bài tập</option>
+          <option value="exam">📄 Đề thi</option>
+        </select>
+        <button onclick="applyFilter()" class="px-5 py-2.5 bg-accent text-white rounded-xl font-semibold text-sm hover:bg-orange-600 transition">🔍 Lọc</button>
+      </div>
+
+      <!-- LÝ THUYẾT -->
+      <section id="secTheory" class="mb-10">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl">📘</div>
+          <div><h2 class="text-xl font-bold text-slate-800">Lý thuyết trọng tâm</h2>
+          <p class="text-sm text-slate-500">Nguồn: VietJack, Moon.vn, HocMai</p></div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4" id="theoryCards">
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-5 card-hover" data-subject="toan">
+            <div class="flex items-center gap-2 mb-3"><span class="text-2xl">📐</span><h3 class="font-bold text-blue-800">Toán 10 — C1: Mệnh đề & Tập hợp</h3></div>
+            <ul class="text-sm text-slate-700 space-y-1 mb-3">
+              <li>• Mệnh đề: câu khẳng định đúng/sai xác định</li>
+              <li>• Phủ định $\overline{P}$, kéo theo $P \Rightarrow Q$</li>
+              <li>• $A \cup B$, $A \cap B$, $A \setminus B$</li>
+              <li>• $|A \cup B| = |A| + |B| - |A \cap B|$</li>
+            </ul>
+            <a href="lesson-detail.html?id=toan-10-c1-b1" class="text-sm text-blue-600 font-semibold hover:underline">Học chi tiết →</a>
+          </div>
+          <div class="bg-gradient-to-br from-violet-50 to-violet-100 border-2 border-violet-200 rounded-2xl p-5 card-hover" data-subject="ly">
+            <div class="flex items-center gap-2 mb-3"><span class="text-2xl">⚛️</span><h3 class="font-bold text-violet-800">Vật Lý 10 — C1: Động học</h3></div>
+            <ul class="text-sm text-slate-700 space-y-1 mb-3">
+              <li>• Thẳng đều: $x = x_0 + vt$</li>
+              <li>• Biến đổi đều: $v = v_0 + at$, $s = v_0t + \frac{1}{2}at^2$</li>
+              <li>• Rơi tự do: $v = gt$, $h = \frac{1}{2}gt^2$</li>
+            </ul>
+            <a href="lesson-detail.html?id=ly-10-c1-b1" class="text-sm text-violet-600 font-semibold hover:underline">Học chi tiết →</a>
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 border-2 border-emerald-200 rounded-2xl p-5 card-hover" data-subject="hoa">
+            <div class="flex items-center gap-2 mb-3"><span class="text-2xl">🧪</span><h3 class="font-bold text-emerald-800">Hóa Học 10 — C1: Nguyên tử</h3></div>
+            <ul class="text-sm text-slate-700 space-y-1 mb-3">
+              <li>• Proton (p), Neutron (n), Electron (e)</li>
+              <li>• Z = số p = số e; $A = Z + N$</li>
+              <li>• Đồng vị: cùng Z, khác N</li>
+            </ul>
+            <a href="lesson-detail.html?id=hoa-10-c1-b1" class="text-sm text-emerald-600 font-semibold hover:underline">Học chi tiết →</a>
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-5 card-hover" data-subject="toan">
+            <div class="flex items-center gap-2 mb-3"><span class="text-2xl">📐</span><h3 class="font-bold text-blue-800">Toán 10 — C2: Hàm số</h3></div>
+            <ul class="text-sm text-slate-700 space-y-1 mb-3">
+              <li>• Hàm bậc nhất: $y = ax + b$</li>
+              <li>• Hàm bậc hai: $y = ax^2 + bx + c$</li>
+              <li>• Đỉnh parabol: $x_đ = -\frac{b}{2a}$</li>
+            </ul>
+            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-medium">Sắp có</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- BÀI TẬP -->
+      <section id="secExercise" class="mb-10">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-xl">✏️</div>
+          <div><h2 class="text-xl font-bold text-slate-800">Bài tập có đáp án</h2>
+          <p class="text-sm text-slate-500">Nhấn để mở, xem đáp án chi tiết</p></div>
+        </div>
+        <div class="space-y-3" id="exerciseList"></div>
+      </section>
+
+      <!-- ĐỀ THI -->
+      <section id="secExam" class="mb-10">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-xl">📄</div>
+          <div><h2 class="text-xl font-bold text-slate-800">Đề thi thử</h2>
+          <p class="text-sm text-slate-500">Luyện đề sẵn sàng kỳ thi</p></div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="bg-white rounded-2xl shadow-sm border p-5 card-hover" data-subject="toan">
+            <div class="flex items-center justify-between mb-3"><span class="text-3xl">📐</span><span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">HK1</span></div>
+            <h3 class="font-bold text-slate-800 mb-1">Đề thi thử Toán 10</h3>
+            <p class="text-sm text-slate-500 mb-3">20 trắc nghiệm + 2 tự luận</p>
+            <div class="text-xs text-slate-400 mb-4">⏱ 90 phút • 22 câu</div>
+            <div class="flex gap-2"><button class="flex-1 px-3 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-blue-800 transition">Làm bài</button><button class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">Đáp án</button></div>
+          </div>
+          <div class="bg-white rounded-2xl shadow-sm border p-5 card-hover" data-subject="ly">
+            <div class="flex items-center justify-between mb-3"><span class="text-3xl">⚛️</span><span class="text-xs bg-violet-100 text-violet-700 px-2 py-1 rounded-full font-semibold">HK1</span></div>
+            <h3 class="font-bold text-slate-800 mb-1">Đề thi thử Vật Lý 10</h3>
+            <p class="text-sm text-slate-500 mb-3">25 câu trắc nghiệm</p>
+            <div class="text-xs text-slate-400 mb-4">⏱ 45 phút • 25 câu</div>
+            <div class="flex gap-2"><button class="flex-1 px-3 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-blue-800 transition">Làm bài</button><button class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">Đáp án</button></div>
+          </div>
+          <div class="bg-white rounded-2xl shadow-sm border p-5 card-hover" data-subject="toan">
+            <div class="flex items-center justify-between mb-3"><span class="text-3xl">📐</span><span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-semibold">1 tiết</span></div>
+            <h3 class="font-bold text-slate-800 mb-1">Kiểm tra 1 tiết Toán</h3>
+            <p class="text-sm text-slate-500 mb-3">15 câu trắc nghiệm</p>
+            <div class="text-xs text-slate-400 mb-4">⏱ 45 phút • 15 câu</div>
+            <div class="flex gap-2"><button class="flex-1 px-3 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-blue-800 transition">Làm bài</button><button class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">Đáp án</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NGUỒN THAM KHẢO -->
+      <section class="mb-10">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl">🔗</div>
+          <div><h2 class="text-xl font-bold text-slate-800">Nguồn tham khảo</h2>
+          <p class="text-sm text-slate-500">Liên kết đến các nền tảng giáo dục uy tín</p></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <a href="https://hocmai.vn/" target="_blank" class="bg-white rounded-2xl border p-4 text-center card-hover group">
+            <div class="text-3xl mb-2">🎓</div><h4 class="font-bold text-sm text-slate-800 group-hover:text-primary">HocMai.vn</h4>
+            <p class="text-xs text-slate-400 mt-1">Video bài giảng</p>
+            <span class="mt-2 inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Miễn phí</span>
+          </a>
+          <a href="https://vuihoc.vn/" target="_blank" class="bg-white rounded-2xl border p-4 text-center card-hover group">
+            <div class="text-3xl mb-2">🎮</div><h4 class="font-bold text-sm text-slate-800 group-hover:text-primary">VuiHoc.vn</h4>
+            <p class="text-xs text-slate-400 mt-1">Luyện đề, flashcard</p>
+            <span class="mt-2 inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Miễn phí</span>
+          </a>
+          <a href="https://moon.vn/home" target="_blank" class="bg-white rounded-2xl border p-4 text-center card-hover group">
+            <div class="text-3xl mb-2">🌙</div><h4 class="font-bold text-sm text-slate-800 group-hover:text-primary">Moon.vn</h4>
+            <p class="text-xs text-slate-400 mt-1">Ôn thi đại học</p>
+            <span class="mt-2 inline-block text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">Có phí</span>
+          </a>
+          <a href="https://vietjack.com/" target="_blank" class="bg-white rounded-2xl border p-4 text-center card-hover group">
+            <div class="text-3xl mb-2">📖</div><h4 class="font-bold text-sm text-slate-800 group-hover:text-primary">VietJack</h4>
+            <p class="text-xs text-slate-400 mt-1">Lý thuyết chi tiết</p>
+            <span class="mt-2 inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Miễn phí</span>
+          </a>
+          <a href="https://app.onluyen.vn/home-student" target="_blank" class="bg-white rounded-2xl border p-4 text-center card-hover group">
+            <div class="text-3xl mb-2">✅</div><h4 class="font-bold text-sm text-slate-800 group-hover:text-primary">OnLuyen.vn</h4>
+            <p class="text-xs text-slate-400 mt-1">Đề thi online</p>
+            <span class="mt-2 inline-block text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Miễn phí</span>
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  import { firebaseConfig } from "./assets/js/firebase-config.js";
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => { if (!user) window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); window.location.href = 'index.html'; });
+
+  // ── Dữ liệu bài tập ──
+  const EXERCISES = [
+    { id:'bt1', subject:'toan', label:'📐 Toán 10', title:'Phép toán tập hợp',
+      question:'Cho A = {1,2,3,4,5}, B = {3,4,5,6,7}. Tìm A∪B, A∩B, A\\B.',
+      answer:'$A \\cup B = \\{1,2,3,4,5,6,7\\}$<br>$A \\cap B = \\{3,4,5\\}$<br>$A \\setminus B = \\{1,2\\}$' },
+    { id:'bt2', subject:'toan', label:'📐 Toán 10', title:'Mệnh đề ∀ và ∃',
+      question:'Xét tính đúng sai: "$\\forall x \\in \\mathbb{R}, x^2 \\geq 0$"',
+      answer:'<strong>ĐÚNG</strong>. Bình phương mọi số thực luôn ≥ 0.' },
+    { id:'bt3', subject:'toan', label:'📐 Toán 10', title:'Giải bất phương trình',
+      question:'Giải: $2x - 3 > 5$',
+      answer:'$2x > 8 \\Rightarrow x > 4$. Tập nghiệm: $S = (4; +\\infty)$' },
+    { id:'bt4', subject:'toan', label:'📐 Toán 10', title:'Chứng minh tính chẵn',
+      question:'Chứng minh: nếu n chẵn thì $n^2$ chẵn.',
+      answer:'n chẵn ⟹ $n = 2k$ ⟹ $n^2 = 4k^2 = 2(2k^2)$ chẵn. $\\blacksquare$' },
+    { id:'bt5', subject:'ly', label:'⚛️ Vật Lý 10', title:'Chuyển động thẳng đều',
+      question:'Xe chạy 60 km/h trong 2h. Tính quãng đường.',
+      answer:'$s = v \\cdot t = 60 \\times 2 = \\mathbf{120}$ km' },
+    { id:'bt6', subject:'ly', label:'⚛️ Vật Lý 10', title:'Rơi tự do',
+      question:'Vật rơi tự do từ 80m ($g = 10$ m/s²). Tính thời gian chạm đất.',
+      answer:'$h = \\frac{1}{2}gt^2 \\Rightarrow 80 = 5t^2 \\Rightarrow t = \\mathbf{4}$ s' },
+    { id:'bt7', subject:'ly', label:'⚛️ Vật Lý 10', title:'Tính gia tốc',
+      question:'Xe tăng tốc từ 0 lên 72 km/h trong 10s. Tính gia tốc.',
+      answer:'$v = 20$ m/s. $a = \\frac{20}{10} = \\mathbf{2}$ m/s²' },
+    { id:'bt8', subject:'ly', label:'⚛️ Vật Lý 10', title:'Lực và khối lượng (F=ma)',
+      question:'Lực 200N tác dụng lên vật 50kg. Tính gia tốc.',
+      answer:'$a = \\frac{F}{m} = \\frac{200}{50} = \\mathbf{4}$ m/s²' },
+    { id:'bt9', subject:'hoa', label:'🧪 Hóa Học 10', title:'Tìm nguyên tố từ tổng hạt',
+      question:'Nguyên tử X: tổng hạt = 34, hạt mang điện > hạt không mang điện là 10. Tìm Z, A.',
+      answer:'2Z + n = 34; 2Z - n = 10 → 4Z = 44 → Z = 11, n = 12, A = 23. <strong>Natri (Na)</strong>' },
+    { id:'bt10', subject:'hoa', label:'🧪 Hóa Học 10', title:'Đồng vị Carbon',
+      question:'$^{12}_6C$ và $^{14}_6C$. So sánh số neutron.',
+      answer:'$^{12}C$: N = 12-6 = 6. $^{14}C$: N = 14-6 = 8. Khác 2 neutron.' },
+  ];
+
+  // ── Render bài tập ──
+  const done = JSON.parse(localStorage.getItem('a0jyng_exercises') || '{}');
+  const colors = { toan:'blue', ly:'violet', hoa:'emerald' };
+
+  function renderExercises(filter = 'all') {
+    const list = document.getElementById('exerciseList');
+    const filtered = filter === 'all' ? EXERCISES : EXERCISES.filter(e => e.subject === filter);
+    list.innerHTML = filtered.map((ex, i) => {
+      const c = colors[ex.subject] || 'blue';
+      const isDone = done[ex.id];
+      return `
+      <div class="bg-white rounded-2xl shadow-sm border overflow-hidden ${isDone ? 'border-green-300' : ''}" data-subject="${ex.subject}" data-ex="${ex.id}">
+        <button onclick="toggleEx(this)" class="w-full text-left p-5 flex justify-between items-center hover:bg-slate-50 transition group">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg ${isDone ? 'bg-green-100 text-green-600' : 'bg-'+c+'-100 text-'+c+'-700'} flex items-center justify-center font-bold text-sm">${isDone ? '✓' : i+1}</div>
+            <div><span class="font-semibold text-slate-800 text-sm">${ex.title}</span>
+            <span class="text-xs text-slate-400 ml-2">${ex.label}</span></div>
+          </div>
+          <span class="toggle-icon text-xl text-slate-400 group-hover:text-accent">+</span>
+        </button>
+        <div class="activity-body">
+          <div class="p-5 border-t border-slate-100">
+            <div class="bg-slate-50 rounded-xl p-4 mb-3 text-sm text-slate-700"><strong>Đề bài:</strong> ${ex.question}</div>
+            <button onclick="showAnswer(this,'${ex.id}')" class="px-4 py-2 bg-secondary text-white rounded-lg text-sm font-semibold hover:bg-primary transition">👁️ Xem đáp án</button>
+            <div class="hidden mt-3 answer-block text-sm"><strong class="text-green-700">✅ Đáp án:</strong><br>${ex.answer}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    if (window.MathJax) MathJax.typesetPromise([list]);
+  }
+
+  renderExercises();
+  document.getElementById('doneCount').textContent = Object.keys(done).length;
+
+  // ── Toggle / Answer ──
+  window.toggleEx = (btn) => {
+    const body = btn.nextElementSibling;
+    body.classList.toggle('open');
+    btn.querySelector('.toggle-icon').textContent = body.classList.contains('open') ? '−' : '+';
+    if (window.MathJax) MathJax.typesetPromise([body]);
+  };
+
+  window.showAnswer = (btn, exId) => {
+    const ansDiv = btn.nextElementSibling;
+    ansDiv.classList.remove('hidden');
+    if (window.MathJax) MathJax.typesetPromise([ansDiv]);
+    if (exId && !done[exId]) {
+      done[exId] = { ts: Date.now() };
+      localStorage.setItem('a0jyng_exercises', JSON.stringify(done));
+      document.getElementById('doneCount').textContent = Object.keys(done).length;
+    }
+  };
+
+  // ── Filter ──
+  window.applyFilter = () => {
+    const subject = document.getElementById('filterSubject').value;
+    const type    = document.getElementById('filterType').value;
+    document.querySelectorAll('#theoryCards > div').forEach(el => {
+      el.style.display = (subject === 'all' || el.dataset.subject === subject) && (type === 'all' || type === 'theory') ? '' : 'none';
+    });
+    renderExercises(subject);
+    if (type !== 'all' && type !== 'exercise') document.getElementById('exerciseList').innerHTML = '';
+    document.getElementById('secTheory').style.display  = (type === 'all' || type === 'theory') ? '' : 'none';
+    document.getElementById('secExercise').style.display = (type === 'all' || type === 'exercise') ? '' : 'none';
+    document.getElementById('secExam').style.display     = (type === 'all' || type === 'exam') ? '' : 'none';
+    document.querySelectorAll('#secExam [data-subject]').forEach(el => {
+      el.style.display = (subject === 'all' || el.dataset.subject === subject) ? '' : 'none';
+    });
+  };
+
+  // Sidebar
+  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
+  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+</script>
+<script type="module" src="assets/js/ai-helper.js"></script>
+</body>
+</html>

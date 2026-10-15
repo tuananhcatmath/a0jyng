@@ -1,103 +1,280 @@
 /* ============================================================
-   style.css — Tuỳ biến CSS cho a0jyng (bổ sung Tailwind)
+   style.css — Nâng cấp Giao diện & Chuyển động Mượt mà (Airtime Motion Style)
    ============================================================ */
 
-/* ---- Font Elephant fallback ---- */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Nếu bạn có file Elephant.ttf, bỏ comment dưới: */
-/*
-@font-face {
-  font-family: 'Elephant';
-  src: url('../fonts/Elephant.ttf') format('truetype');
-  font-weight: 700 900;
-}
-*/
-
 :root {
-  --primary:   #1E40AF;
-  --secondary: #3B82F6;
-  --accent:    #F97316;
-  --success:   #10B981;
-  --warn:      #F59E0B;
-  --danger:    #EF4444;
+  --primary:        #1E40AF;
+  --primary-light:  #3B82F6;
+  --secondary:      #2563EB;
+  --accent:         #F97316;
+  --accent-light:   #FB923C;
+  --success:        #10B981;
+  --warn:           #F59E0B;
+  --danger:         #EF4444;
+  --bg-glass:       rgba(255, 255, 255, 0.72);
+  --border-glass:   rgba(255, 255, 255, 0.45);
+  --shadow-subtle:  0 10px 30px -10px rgba(0, 0, 0, 0.05);
+  --shadow-glow:    0 20px 40px -15px rgba(30, 64, 175, 0.18);
+  --shadow-hover:   0 24px 48px -12px rgba(30, 64, 175, 0.22);
+  
+  /* Airtime Spring Easing Curves */
+  --ease-spring:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ---- Global ---- */
+/* ---- Global Smooth Scroll & Font ---- */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Inter', sans-serif; }
-
-/* ---- Logo font ---- */
-.font-logo { font-family: 'Playfair Display', 'Elephant', 'Georgia', serif; }
-
-/* ---- Prose (lý thuyết bài học) ---- */
-.prose p   { margin-bottom: .75rem; line-height: 1.75; }
-.prose h3  { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin: 1rem 0 .5rem; }
-.prose ul  { list-style: disc; padding-left: 1.5rem; margin-bottom: .75rem; }
-.prose li  { margin-bottom: .25rem; }
-.prose strong { color: var(--primary); }
-.prose em  { color: #6B7280; }
-.prose sub, .prose sup { font-size: .75em; }
-
-/* ---- Sidebar active state ---- */
-.sidebar-link.active {
-  background: rgba(255,255,255,.15);
-  border-left: 3px solid var(--accent);
-  padding-left: calc(0.75rem - 3px);
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1E293B;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ---- Activity accordion ---- */
-.activity-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
-.activity-body.open { max-height: 800px; }
+.font-logo { font-family: 'Playfair Display', 'Elephant', 'Georgia', serif; }
 
-/* ---- Answer reveal ---- */
+/* ---- Glassmorphism (Kính mờ cao cấp phong cách SaaS) ---- */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-subtle);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Motion Cards & Interactive Hover (Airtime Style) ---- */
+.motion-card {
+  transition: transform 0.35s var(--ease-spring),
+              box-shadow 0.35s var(--ease-spring),
+              border-color 0.25s ease,
+              background-color 0.25s ease;
+  will-change: transform, box-shadow;
+}
+
+.motion-card:hover {
+  transform: translateY(-6px) scale(1.012);
+  box-shadow: var(--shadow-hover);
+}
+
+.motion-card:active {
+  transform: translateY(-2px) scale(0.995);
+}
+
+/* ---- Micro-interaction Button Press ---- */
+.btn-press {
+  transition: transform 0.18s var(--ease-spring), box-shadow 0.18s ease, filter 0.18s ease;
+  will-change: transform;
+}
+.btn-press:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+.btn-press:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+/* ---- Glowing Border Animation ---- */
+.glow-border {
+  position: relative;
+}
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(249, 115, 22, 0.5), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+.glow-border:hover::after {
+  opacity: 1;
+}
+
+/* ---- Floating & Pulsing Elements ---- */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(0.5deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.2s infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s var(--ease-spring) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s var(--ease-spring) both;
+}
+
+/* Stagger Delays for Entrance Animations */
+.stagger-1 { animation-delay: 0.06s; }
+.stagger-2 { animation-delay: 0.12s; }
+.stagger-3 { animation-delay: 0.18s; }
+.stagger-4 { animation-delay: 0.24s; }
+.stagger-5 { animation-delay: 0.30s; }
+
+/* ---- Fluid Status Indicator Badge ---- */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.25s var(--ease-spring);
+}
+.status-pill-online {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+}
+.status-pill-offline {
+  background: #FFFBEB;
+  color: #D97706;
+  border: 1px solid #FDE68A;
+}
+
+/* ---- Smooth Accordion (Spring Ease) ---- */
+.activity-body {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.45s var(--ease-spring), opacity 0.3s ease, padding 0.3s ease;
+}
+.activity-body.open {
+  max-height: 1200px;
+  opacity: 1;
+}
+
+/* ---- Answer / Proof Blocks with Smooth Reveal ---- */
 .answer-block {
   border-left: 4px solid var(--success);
   background: #F0FDF4;
-  border-radius: 0 .75rem .75rem 0;
-  padding: 1rem 1.25rem;
-  animation: fadeIn .3s ease;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1.25rem 1.5rem;
+  animation: fadeInUp 0.35s var(--ease-spring);
 }
 
-/* ---- Proof block ---- */
 .proof-block {
   border-left: 4px solid var(--accent);
   background: #FFF7ED;
-  border-radius: 0 .75rem .75rem 0;
-  padding: 1rem 1.25rem;
-  font-style: italic;
-  animation: fadeIn .3s ease;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1.25rem 1.5rem;
+  animation: fadeInUp 0.35s var(--ease-spring);
 }
 
-/* ---- Pomodoro ring ---- */
-.pomo-ring { transform: rotate(-90deg); transform-origin: 50% 50%; }
-.pomo-ring circle { transition: stroke-dashoffset .5s linear; }
+/* ---- Smooth Progress Bars ---- */
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1E40AF, #3B82F6, #F97316);
+  background-size: 200% 100%;
+  transition: width 0.7s var(--ease-spring);
+}
 
-/* ---- Progress bar ---- */
-.progress-bar { height: 8px; border-radius: 999px; background: #E2E8F0; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width .6s ease; }
+/* ---- Sidebar Active Indicator ---- */
+.sidebar-link {
+  position: relative;
+  transition: all 0.25s var(--ease-spring);
+}
+.sidebar-link.active {
+  background: rgba(255, 255, 255, 0.18);
+  font-weight: 600;
+  color: #FFFFFF;
+}
+.sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--accent);
+  animation: scaleIn 0.25s var(--ease-spring);
+}
 
-/* ---- Card hover ---- */
-.card-hover { transition: transform .2s, box-shadow .2s; }
-.card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(30,64,175,.12); }
-
-/* ---- Animations ---- */
-@keyframes fadeIn   { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes slideIn  { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes pulse-dot{ 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
-
-.animate-fade-in  { animation: fadeIn .4s ease; }
-.animate-slide-in { animation: slideIn .4s ease; }
-
-/* ---- Mobile sidebar overlay ---- */
-#sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
-#sidebar-overlay.active { display: block; }
-
-/* ---- Scrollbar ---- */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #F1F5F9; }
-::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
-
-/* ---- Math rendering (MathJax/KaTeX) ---- */
-.math-block { overflow-x: auto; padding: .5rem 0; }
+/* ---- Modern Scrollbar ---- */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }

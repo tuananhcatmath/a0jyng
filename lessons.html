@@ -25,6 +25,7 @@
     <a href="subjects.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📚</span> Môn học</a>
     <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📊</span> Tiến trình</a>
     <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="exercises.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📝</span> Bài tập &amp; Đề thi</a>
     <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>⏰</span> Pomodoro</a>
     <a href="ai-chat.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🤖</span> AI hỏi đáp</a>
     <a href="forum.html"     class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>💬</span> Diễn đàn</a>
@@ -76,24 +77,50 @@
   const params    = new URLSearchParams(window.location.search);
   const chapterId = params.get('chapter') || 'toan-10-c1';
 
+  // Load real progress from localStorage
+  const _lsProgress = JSON.parse(localStorage.getItem('a0jyng_progress') || '{}');
+  function getLessonProgress(lessonId) {
+    const acts = Object.keys(_lsProgress).filter(k => k.startsWith(lessonId + '_'));
+    return acts.length;
+  }
+
   const LESSONS = {
     'toan-10-c1': {
       chapterName:'Chương 1: Mệnh đề và tập hợp',
       subjectId:'toan-10', subjectName:'Toán 10',
       lessons:[
-        { id:'toan-10-c1-b1', name:'Bài 1: Mệnh đề',                      activities:3, status:'in-progress', progress:40 },
-        { id:'toan-10-c1-b2', name:'Bài 2: Tập hợp và các phép toán',     activities:4, status:'locked',      progress:0  },
-        { id:'toan-10-c1-b3', name:'Bài 3: Các phép toán tập hợp',        activities:3, status:'locked',      progress:0  },
+        { id:'toan-10-c1-b1', name:'Bài 1: Mệnh đề',                      activities:3 },
+        { id:'toan-10-c1-b2', name:'Bài 2: Tập hợp và các phép toán',     activities:4 },
+        { id:'toan-10-c1-b3', name:'Bài 3: Các phép toán tập hợp',        activities:3 },
       ]
     },
     'ly-10-c1': {
       chapterName:'Chương 1: Động học chất điểm',
       subjectId:'ly-10', subjectName:'Vật Lý 10',
       lessons:[
-        { id:'ly-10-c1-b1', name:'Bài 1: Chuyển động thẳng đều',          activities:3, status:'not-started', progress:0 },
-        { id:'ly-10-c1-b2', name:'Bài 2: Chuyển động thẳng biến đổi đều', activities:4, status:'locked',      progress:0 },
-        { id:'ly-10-c1-b3', name:'Bài 3: Rơi tự do',                      activities:3, status:'locked',      progress:0 },
-        { id:'ly-10-c1-b4', name:'Bài 4: Chuyển động tròn đều',           activities:3, status:'locked',      progress:0 },
+        { id:'ly-10-c1-b1', name:'Bài 1: Chuyển động thẳng đều',          activities:3 },
+        { id:'ly-10-c1-b2', name:'Bài 2: Chuyển động thẳng biến đổi đều', activities:2 },
+        { id:'ly-10-c1-b3', name:'Bài 3: Rơi tự do',                      activities:1 },
+        { id:'ly-10-c1-b4', name:'Bài 4: Chuyển động tròn đều',           activities:3 },
+      ]
+    },
+    'hoa-10-c1': {
+      chapterName:'Chương 1: Nguyên tử',
+      subjectId:'hoa-10', subjectName:'Hóa Học 10',
+      lessons:[
+        { id:'hoa-10-c1-b1', name:'Bài 1: Thành phần của nguyên tử',      activities:2 },
+        { id:'hoa-10-c1-b2', name:'Bài 2: Hạt nhân nguyên tử',            activities:3 },
+        { id:'hoa-10-c1-b3', name:'Bài 3: Cấu trúc lớp vỏ electron',      activities:3 },
+      ]
+    },
+    'van-10-c1': {
+      chapterName:'Chương 1: Văn học dân gian',
+      subjectId:'van-10', subjectName:'Ngữ Văn 10',
+      lessons:[
+        { id:'van-10-c1-b1', name:'Bài 1: Sử thi Đăm Săn — Chiến thắng Mtao Mxây', activities:2 },
+        { id:'van-10-c1-b2', name:'Bài 2: Truyện An Dương Vương',                   activities:3 },
+        { id:'van-10-c1-b3', name:'Bài 3: Ca dao yêu thương, tình nghĩa',            activities:2 },
+        { id:'van-10-c1-b4', name:'Bài 4: Ca dao hài hước',                          activities:2 },
       ]
     },
   };
@@ -108,24 +135,28 @@
   const statusColor= { 'completed':'text-green-600', 'in-progress':'text-secondary', 'not-started':'text-slate-500', 'locked':'text-slate-400' };
 
   document.getElementById('lessonList').innerHTML = data.lessons.map((l, i) => {
-    const locked = l.status === 'locked';
+    const doneCt  = getLessonProgress(l.id);
+    const pct     = l.activities > 0 ? Math.round((doneCt / l.activities) * 100) : 0;
+    const status  = pct >= 100 ? 'completed' : pct > 0 ? 'in-progress' : 'not-started';
     return `
-    <a href="${locked ? '#' : 'lesson-detail.html?id=' + l.id}"
-       class="flex items-center gap-4 bg-white rounded-2xl shadow-sm border border-slate-100 p-5 ${locked ? 'opacity-60 cursor-not-allowed' : 'card-hover hover:border-secondary'} transition group">
-      <div class="w-12 h-12 rounded-xl ${locked ? 'bg-slate-100' : 'bg-blue-100'} flex items-center justify-center font-black text-primary text-lg flex-shrink-0">
+    <a href="lesson-detail.html?id=${l.id}"
+       class="flex items-center gap-4 bg-white rounded-2xl shadow-sm border border-slate-100 p-5 card-hover hover:border-secondary transition group">
+      <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center font-black text-primary text-lg flex-shrink-0">
         ${i+1}
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
           <h3 class="font-semibold text-slate-800 text-sm">${l.name}</h3>
-          <span class="text-sm ${statusColor[l.status]}">${statusIcon[l.status]}</span>
+          <span class="text-sm ${statusColor[status]}">${statusIcon[status]}</span>
         </div>
-        <p class="text-xs text-slate-500 mt-0.5">${l.activities} hoạt động</p>
+        <p class="text-xs text-slate-500 mt-0.5">${l.activities} hoạt động${doneCt > 0 ? ' · ' + doneCt + ' đã làm' : ''}</p>
         <div class="progress-bar mt-2 w-full">
-          <div class="progress-fill" style="width:${l.progress}%"></div>
+          <div class="progress-fill" style="width:${pct}%"></div>
         </div>
       </div>
-      ${!locked ? `<span class="px-3 py-1.5 bg-accent text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition">Học →</span>` : ''}
+      <span class="px-3 py-1.5 bg-accent text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition">
+        ${pct > 0 ? 'Tiếp tục →' : 'Học →'}
+      </span>
     </a>`;
   }).join('');
 

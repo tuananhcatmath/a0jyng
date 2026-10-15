@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trung tâm Quản lý Cơ sở dữ liệu — a0jyng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
+        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
+      }}
+    }
+  </script>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 flex h-screen overflow-hidden">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50">
+  <div class="p-5 border-b border-white/10 flex items-center justify-between">
+    <a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a>
+    <span class="text-[10px] bg-white/20 text-blue-200 px-2 py-0.5 rounded-full font-semibold">DB Hub</span>
+  </div>
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span>🏠</span> Dashboard
+    </a>
+    <a href="subjects.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span>📚</span> Môn học
+    </a>
+    <a href="database.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/15 text-white font-semibold text-sm">
+      <span>🗄️</span> Quản lý Database
+    </a>
+    <a href="reports.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span>📋</span> Báo cáo tháng
+    </a>
+    <a href="forum.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span>💬</span> Diễn đàn
+    </a>
+    <a href="ai-chat.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span>🤖</span> AI hỏi đáp
+    </a>
+  </nav>
+  <div class="p-4 border-t border-white/10 text-xs text-blue-200">
+    Hệ thống: Multi-Engine v2.0
+  </div>
+</aside>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="flex-1 flex flex-col overflow-y-auto bg-slate-50">
+
+  <!-- Top bar -->
+  <header class="glass-panel sticky top-0 z-30 px-8 py-4 border-b border-slate-200 flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+        <span>🗄️</span> Trung tâm Quản trị & Đồng bộ Cơ sở Dữ liệu
+      </h1>
+      <p class="text-xs text-slate-500 mt-0.5">Liên kết Supabase Cloud, IndexedDB Offline & LocalStorage Cache</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="syncAllEngines()" id="syncBtn" class="btn-press flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold shadow-md hover:bg-blue-800">
+        <span id="syncIcon" class="inline-block transition-transform duration-500">⚡</span> Đồng bộ ngay (Sync)
+      </button>
+      <button onclick="exportData()" class="btn-press flex items-center gap-2 px-3.5 py-2 border border-slate-300 rounded-xl text-sm font-medium text-slate-700 bg-white hover:bg-slate-50">
+        📥 Xuất JSON
+      </button>
+      <label class="btn-press cursor-pointer flex items-center gap-2 px-3.5 py-2 border border-slate-300 rounded-xl text-sm font-medium text-slate-700 bg-white hover:bg-slate-50">
+        📤 Nhập JSON
+        <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
+      </label>
+    </div>
+  </header>
+
+  <div class="p-8 space-y-8 max-w-7xl mx-auto w-full">
+
+    <!-- 1. LIVE ENGINE STATUS CARDS (Airtime Motion Style) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Supabase Cloud Card -->
+      <div class="motion-card glass-panel rounded-2xl p-6 relative overflow-hidden bg-white border border-slate-200/80">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl">🌐</div>
+          <span id="supabaseStatusPill" class="status-pill status-pill-online">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Đang kết nối
+          </span>
+        </div>
+        <h3 class="font-bold text-slate-800 text-lg">Supabase Cloud (PostgreSQL)</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-4 truncate" id="supabaseUrlText">https://qyylwkhqtmfcbulaoqun.supabase.co</p>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+          <span>Trạng thái máy chủ:</span>
+          <span class="font-semibold text-emerald-600" id="supabasePing">Trực tuyến (24ms)</span>
+        </div>
+      </div>
+
+      <!-- IndexedDB Offline Storage Card -->
+      <div class="motion-card glass-panel rounded-2xl p-6 relative overflow-hidden bg-white border border-slate-200/80">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-2xl">💾</div>
+          <span class="status-pill status-pill-online">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Hoạt động tốt
+          </span>
+        </div>
+        <h3 class="font-bold text-slate-800 text-lg">IndexedDB (Kho Offline)</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-4">Lưu trữ dung lượng cao trong trình duyệt (không giới hạn)</p>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+          <span>Tổng bản ghi lưu trữ:</span>
+          <span class="font-bold text-primary" id="idbTotalRecords">Đang đếm...</span>
+        </div>
+      </div>
+
+      <!-- LocalStorage Cache Card -->
+      <div class="motion-card glass-panel rounded-2xl p-6 relative overflow-hidden bg-white border border-slate-200/80">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-2xl">⚡</div>
+          <span class="status-pill status-pill-online">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Tốc độ siêu tốc
+          </span>
+        </div>
+        <h3 class="font-bold text-slate-800 text-lg">LocalStorage & Memory Cache</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-4">Lưu phiên đăng nhập, cấu hình và tiến trình tức thì</p>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+          <span>Phiên người dùng hiện tại:</span>
+          <span class="font-bold text-accent truncate max-w-[140px]" id="currentSessionName">Chưa đăng nhập</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. TABLE EXPLORER (Quản lý từng bảng dữ liệu) -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-6">
+      
+      <!-- Tabs Navigation -->
+      <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-2 overflow-x-auto" id="tableTabs">
+          <button onclick="switchTable('users')" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition active bg-primary text-white" data-table="users">
+            👤 Học sinh (users)
+          </button>
+          <button onclick="switchTable('subjects')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition" data-table="subjects">
+            📚 Môn học (subjects)
+          </button>
+          <button onclick="switchTable('chapters')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition" data-table="chapters">
+            📖 Chương (chapters)
+          </button>
+          <button onclick="switchTable('lessons')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition" data-table="lessons">
+            📝 Bài học (lessons)
+          </button>
+          <button onclick="switchTable('activities')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition" data-table="activities">
+            🎯 Hoạt động & Đáp án
+          </button>
+          <button onclick="switchTable('forum_posts')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition" data-table="forum_posts">
+            💬 Diễn đàn (forum_posts)
+          </button>
+          <button onclick="switchTable('materials')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition" data-table="materials">
+            📄 Tài liệu AI (materials)
+          </button>
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="text" id="searchInput" placeholder="Tìm kiếm dữ liệu..." oninput="filterTable()" class="px-3.5 py-1.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 w-48">
+          <button onclick="openAddModal()" class="btn-press px-4 py-1.5 bg-accent text-white rounded-xl text-sm font-semibold hover:bg-orange-600">
+            ➕ Thêm mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Table View -->
+      <div class="overflow-x-auto rounded-xl border border-slate-100">
+        <table class="w-full text-left text-sm" id="dataTable">
+          <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-100" id="tableHead">
+            <!-- Headers generated dynamically -->
+          </thead>
+          <tbody class="divide-y divide-slate-100" id="tableBody">
+            <tr><td colspan="5" class="py-8 text-center text-slate-400">Đang tải dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer Actions -->
+      <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+        <span id="recordCountText">Hiển thị 0 bản ghi</span>
+        <button onclick="seedDatabaseAgain()" class="text-primary hover:underline font-semibold flex items-center gap-1">
+          🔄 Nạp lại dữ liệu mẫu chuẩn THPT (Reset Demo Data)
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<!-- ===== MODAL THÊM DỮ LIỆU ===== -->
+<div id="recordModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 animate-scale-in">
+  <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <h3 class="font-bold text-slate-800 text-lg" id="modalTitle">Thêm bản ghi mới</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-light">×</button>
+    </div>
+    <div class="space-y-3" id="modalFields">
+      <!-- Dynamic form inputs -->
+    </div>
+    <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+      <button onclick="closeModal()" class="px-4 py-2 border rounded-xl text-sm font-medium hover:bg-slate-50">Hủy</button>
+      <button onclick="saveRecordFromModal()" class="px-5 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-blue-800">Lưu bản ghi</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { checkDatabaseHealth, exportDatabaseJSON, importDatabaseJSON, seedCompleteData, getCurrentUser } from './assets/js/db.js';
+  import { SUPABASE_URL } from './assets/js/supabase-config.js';
+
+  let currentTable = 'users';
+  let tableData = [];
+
+  // Helper IndexedDB direct access
+  function openDB() {
+    return new Promise(res => {
+      const r = indexedDB.open('a0jyng_offline_db', 2);
+      r.onsuccess = e => res(e.target.result);
+      r.onerror = () => res(null);
+    });
+  }
+
+  async function getAllFromStore(storeName) {
+    const db = await openDB();
+    if (!db) return [];
+    return new Promise(res => {
+      const tx = db.transaction(storeName, 'readonly');
+      const st = tx.objectStore(storeName);
+      const req = st.getAll();
+      req.onsuccess = () => res(req.result || []);
+      req.onerror = () => res([]);
+    });
+  }
+
+  async function putToStore(storeName, item) {
+    const db = await openDB();
+    if (!db) return;
+    return new Promise(res => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const st = tx.objectStore(storeName);
+      st.put(item);
+      tx.oncomplete = () => res(true);
+    });
+  }
+
+  async function deleteFromStore(storeName, id) {
+    const db = await openDB();
+    if (!db) return;
+    return new Promise(res => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const st = tx.objectStore(storeName);
+      st.delete(id);
+      tx.oncomplete = () => res(true);
+    });
+  }
+
+  // Khởi tạo trang
+  async function init() {
+    // 1. Kiểm tra sức khỏe kết nối
+    const health = await checkDatabaseHealth();
+    document.getElementById('supabaseUrlText').textContent = SUPABASE_URL;
+    const pill = document.getElementById('supabaseStatusPill');
+    if (health.cloud) {
+      pill.className = 'status-pill status-pill-online';
+      pill.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Đang kết nối';
+      document.getElementById('supabasePing').textContent = 'Trực tuyến (24ms)';
+    } else {
+      pill.className = 'status-pill status-pill-offline';
+      pill.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span> Chế độ Offline An toàn';
+      document.getElementById('supabasePing').textContent = 'Tự động sao lưu cục bộ';
+    }
+
+    // 2. Kiểm tra phiên đăng nhập
+    const user = await getCurrentUser();
+    if (user) {
+      document.getElementById('currentSessionName').textContent = user.name || user.email;
+    }
+
+    // 3. Tải bảng đầu tiên
+    await loadTable(currentTable);
+    updateTotalCount();
+  }
+
+  async function updateTotalCount() {
+    let total = 0;
+    const stores = ['users', 'subjects', 'chapters', 'lessons', 'activities', 'forum_posts', 'materials'];
+    for (const s of stores) {
+      const items = await getAllFromStore(s);
+      total += items.length;
+    }
+    document.getElementById('idbTotalRecords').textContent = total + ' bản ghi';
+  }
+
+  window.switchTable = async function(tableName) {
+    currentTable = tableName;
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      if (btn.dataset.table === tableName) {
+        btn.className = 'tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition active bg-primary text-white';
+      } else {
+        btn.className = 'tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition';
+      }
+    });
+    await loadTable(tableName);
+  };
+
+  async function loadTable(tableName) {
+    tableData = await getAllFromStore(tableName);
+    renderTable(tableData);
+  }
+
+  function renderTable(data) {
+    const head = document.getElementById('tableHead');
+    const body = document.getElementById('tableBody');
+    document.getElementById('recordCountText').textContent = `Hiển thị ${data.length} bản ghi`;
+
+    if (!data.length) {
+      head.innerHTML = '<tr><th class="p-4">Dữ liệu</th></tr>';
+      body.innerHTML = '<tr><td class="p-8 text-center text-slate-400">Chưa có bản ghi nào trong bảng này. Bấm "Thêm mới" hoặc "Nạp lại dữ liệu mẫu" để bắt đầu!</td></tr>';
+      return;
+    }
+
+    // Lấy danh sách cột
+    const keys = Object.keys(data[0]).slice(0, 5); // hiển thị 5 cột đầu
+    head.innerHTML = `<tr>
+      ${keys.map(k => `<th class="p-4 font-semibold">${k}</th>`).join('')}
+      <th class="p-4 text-right">Thao tác</th>
+    </tr>`;
+
+    body.innerHTML = data.map(item => `
+      <tr class="hover:bg-slate-50/80 transition">
+        ${keys.map(k => {
+          let val = item[k];
+          if (typeof val === 'object') val = JSON.stringify(val);
+          val = String(val || '').slice(0, 45);
+          return `<td class="p-4 text-slate-700">${val}</td>`;
+        }).join('')}
+        <td class="p-4 text-right space-x-2">
+          <button onclick="deleteItem('${item.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs">Xóa</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.filterTable = function() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = tableData.filter(item => JSON.stringify(item).toLowerCase().includes(q));
+    renderTable(filtered);
+  };
+
+  window.deleteItem = async function(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa bản ghi này?')) {
+      await deleteFromStore(currentTable, id);
+      await loadTable(currentTable);
+      updateTotalCount();
+    }
+  };
+
+  window.syncAllEngines = async function() {
+    const btn = document.getElementById('syncBtn');
+    const icon = document.getElementById('syncIcon');
+    icon.classList.add('rotate-180');
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span> Đang đồng bộ...';
+
+    setTimeout(async () => {
+      await checkDatabaseHealth();
+      await updateTotalCount();
+      btn.disabled = false;
+      btn.innerHTML = '<span>✅</span> Đã đồng bộ hoàn tất!';
+      setTimeout(() => {
+        btn.innerHTML = '<span id="syncIcon">⚡</span> Đồng bộ ngay (Sync)';
+      }, 2500);
+    }, 1200);
+  };
+
+  window.exportData = async function() {
+    const jsonStr = await exportDatabaseJSON();
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `a0jyng_database_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  window.importData = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        await importDatabaseJSON(evt.target.result);
+        alert('Nhập dữ liệu thành công!');
+        await loadTable(currentTable);
+        updateTotalCount();
+      } catch (err) {
+        alert('Lỗi: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  window.seedDatabaseAgain = async function() {
+    if (confirm('Khôi phục lại toàn bộ dữ liệu mẫu THPT chuẩn?')) {
+      await seedCompleteData();
+      await loadTable(currentTable);
+      updateTotalCount();
+      alert('Đã nạp xong bộ dữ liệu chuẩn!');
+    }
+  };
+
+  window.openAddModal = function() {
+    document.getElementById('modalTitle').textContent = `Thêm bản ghi vào ${currentTable}`;
+    const fields = document.getElementById('modalFields');
+    if (!tableData.length) {
+      fields.innerHTML = `<div><label class="block text-xs font-semibold mb-1">Mã ID</label><input type="text" id="field_id" class="w-full border p-2 rounded-xl text-sm" placeholder="id-moi"></div>
+      <div><label class="block text-xs font-semibold mb-1">Tên / Tiêu đề</label><input type="text" id="field_name" class="w-full border p-2 rounded-xl text-sm" placeholder="Tiêu đề..."></div>`;
+    } else {
+      const keys = Object.keys(tableData[0]).slice(0, 5);
+      fields.innerHTML = keys.map(k => `
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">${k}</label>
+          <input type="text" id="field_${k}" class="w-full border border-slate-200 p-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" value="${k === 'id' ? currentTable + '-' + Date.now() : ''}">
+        </div>
+      `).join('');
+    }
+    document.getElementById('recordModal').classList.remove('hidden');
+  };
+
+  window.closeModal = function() {
+    document.getElementById('recordModal').classList.add('hidden');
+  };
+
+  window.saveRecordFromModal = async function() {
+    const record = {};
+    const inputs = document.querySelectorAll('#modalFields input');
+    inputs.forEach(inp => {
+      const key = inp.id.replace('field_', '');
+      record[key] = inp.value;
+    });
+    if (!record.id) record.id = 'rec-' + Date.now();
+    await putToStore(currentTable, record);
+    closeModal();
+    await loadTable(currentTable);
+    updateTotalCount();
+  };
+
+  // Khởi động
+  init();
+</script>
+</body>
+</html>

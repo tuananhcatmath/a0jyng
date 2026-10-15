@@ -228,7 +228,172 @@
       ],
       theorem:{ title:'Định lý: Trong chuyển động thẳng đều, đồ thị (x, t) là một đường thẳng.', proof:'Vì x = x₀ + vt, đây là hàm tuyến tính theo t, nên đồ thị là đường thẳng với hệ số góc v. ∎' },
       summary:['x = x₀ + vt là phương trình vị trí.', 'Vận tốc không đổi về độ lớn và hướng.', 'Đồ thị (v,t) là đường thẳng song song với trục hoành.'],
-      prev: null, next: null,
+      prev: null, next: 'ly-10-c1-b2',
+    },
+    'toan-10-c1-b2': {
+      title:'Bài 2: Tập hợp và các phép toán', meta:'Toán 10 · Chương 1',
+      desc:'Tập hợp, tập con, hợp, giao, hiệu và phần bù.',
+      subjectId:'toan-10', chapterId:'toan-10-c1',
+      theory:`<p><strong>Tập hợp</strong> là khái niệm cơ bản trong toán học, dùng để chỉ một nhóm các đối tượng có chung tính chất.</p>
+              <h3>Các ký hiệu quan trọng:</h3>
+              <ul><li>$a \\in A$: a là phần tử của A</li><li>$\\emptyset$: tập rỗng</li><li>$A \\subseteq B$: A là tập con của B</li></ul>
+              <h3>Các phép toán tập hợp:</h3>
+              <ul><li><strong>Hợp:</strong> $A \\cup B = \\{x : x \\in A$ hoặc $x \\in B\\}$</li>
+              <li><strong>Giao:</strong> $A \\cap B = \\{x : x \\in A$ và $x \\in B\\}$</li>
+              <li><strong>Hiệu:</strong> $A \\setminus B = \\{x : x \\in A$ và $x \\notin B\\}$</li>
+              <li><strong>Phần bù:</strong> $C_U A = U \\setminus A$</li></ul>
+              <h3>Công thức đếm:</h3>
+              <p>$|A \\cup B| = |A| + |B| - |A \\cap B|$ (Nguyên lý bao-loại)</p>`,
+      activities:[
+        { id:'hd1', name:'Hoạt động 1: Phép toán tập hợp',
+          question:`Cho A = {1, 2, 3, 4, 5}, B = {3, 4, 5, 6, 7}.\nTìm: a) A∪B  b) A∩B  c) A\\B  d) B\\A`,
+          answer:`a) $A \\cup B = \\{1,2,3,4,5,6,7\\}$<br>b) $A \\cap B = \\{3,4,5\\}$<br>c) $A \\setminus B = \\{1,2\\}$<br>d) $B \\setminus A = \\{6,7\\}$` },
+        { id:'hd2', name:'Hoạt động 2: Bài toán đếm',
+          question:`Lớp 10A có 40 HS. 25 em học Toán nâng cao, 20 em học Lý nâng cao, 10 em học cả hai.\nHỏi bao nhiêu em không học môn nào?`,
+          answer:`$|T \\cup L| = 25 + 20 - 10 = 35$<br>Không học môn nào: $40 - 35 = \\mathbf{5}$ em` },
+        { id:'hd3', name:'Hoạt động 3: Số tập con',
+          question:`Tập A = {a, b, c} có bao nhiêu tập con? Liệt kê tất cả.`,
+          answer:`Số tập con = $2^3 = \\mathbf{8}$ tập con:<br>$\\emptyset$, {a}, {b}, {c}, {a,b}, {a,c}, {b,c}, {a,b,c}` },
+      ],
+      theorem:{ title:'$|A \\cup B| = |A| + |B| - |A \\cap B|$', proof:'Khi tính |A|+|B|, các phần tử trong A∩B bị đếm 2 lần → trừ đi |A∩B| 1 lần. ∎' },
+      summary:['Tập hợp chứa các phần tử phân biệt.','$A \\subseteq B$: mọi phần tử A đều thuộc B.','Tập n phần tử có $2^n$ tập con.','$|A \\cup B| = |A| + |B| - |A \\cap B|$.'],
+      prev:'toan-10-c1-b1', next:'toan-10-c1-b3',
+    },
+    'ly-10-c1-b2': {
+      title:'Bài 2: Chuyển động thẳng biến đổi đều', meta:'Vật Lý 10 · Chương 1',
+      desc:'Gia tốc, phương trình vận tốc và vị trí trong chuyển động biến đổi đều.',
+      subjectId:'ly-10', chapterId:'ly-10-c1',
+      theory:`<p><strong>Chuyển động thẳng biến đổi đều</strong> có gia tốc không đổi: $a = const$.</p>
+              <h3>Các công thức cơ bản:</h3>
+              <ul><li>Vận tốc: $v = v_0 + at$</li>
+              <li>Quãng đường: $s = v_0 t + \\frac{1}{2}at^2$</li>
+              <li>Phương trình vị trí: $x = x_0 + v_0 t + \\frac{1}{2}at^2$</li>
+              <li>Độc lập thời gian: $v^2 - v_0^2 = 2as$</li></ul>
+              <h3>Phân loại:</h3>
+              <ul><li>a cùng chiều v: <strong>nhanh dần đều</strong></li>
+              <li>a ngược chiều v: <strong>chậm dần đều</strong></li></ul>`,
+      activities:[
+        { id:'hd1', name:'Hoạt động 1: Tính gia tốc',
+          question:'Xe máy tăng tốc từ 0 lên 72 km/h trong 10 giây. Tính gia tốc.',
+          answer:`$v_0 = 0$; $v = 72$ km/h $= 20$ m/s; $t = 10$ s<br>$a = \\frac{v - v_0}{t} = \\frac{20}{10} = \\mathbf{2 \\text{ m/s}^2}$` },
+        { id:'hd2', name:'Hoạt động 2: Quãng đường phanh',
+          question:`Ô tô đang chạy 72 km/h thì hãm phanh, dừng hẳn sau 5 giây.\na) Tính gia tốc\nb) Tính quãng đường phanh`,
+          answer:`$v_0 = 20$ m/s; $v = 0$; $t = 5$ s<br>a) $a = \\frac{0-20}{5} = \\mathbf{-4}$ m/s²<br>b) $s = 20(5) + \\frac{1}{2}(-4)(25) = 100 - 50 = \\mathbf{50 \\text{ m}}$` },
+      ],
+      theorem:{ title:'Công thức $v^2 - v_0^2 = 2as$', proof:'Từ v=v₀+at → t=(v-v₀)/a. Thay vào s=v₀t+½at² ⟹ v²-v₀²=2as. ∎' },
+      summary:['v = v₀ + at','s = v₀t + ½at²','v² - v₀² = 2as','Nhanh dần: a cùng dấu v; Chậm dần: a ngược dấu v.'],
+      prev:'ly-10-c1-b1', next:'ly-10-c1-b3',
+    },
+    'ly-10-c1-b3': {
+      title:'Bài 3: Rơi tự do', meta:'Vật Lý 10 · Chương 1',
+      desc:'Chuyển động rơi tự do: gia tốc g, công thức và bài tập.',
+      subjectId:'ly-10', chapterId:'ly-10-c1',
+      theory:`<p><strong>Rơi tự do</strong> là chuyển động chỉ dưới tác dụng của trọng lực (bỏ qua sức cản không khí).</p>
+              <h3>Đặc điểm:</h3>
+              <ul><li>Chuyển động thẳng đứng, nhanh dần đều từ trên xuống</li>
+              <li>Gia tốc: $g \\approx 9.8 \\approx 10$ m/s²</li>
+              <li>$v_0 = 0$ (nếu thả từ nghỉ)</li></ul>
+              <h3>Công thức:</h3>
+              <ul><li>$v = gt$</li><li>$h = \\frac{1}{2}gt^2$</li><li>$v^2 = 2gh$</li></ul>`,
+      activities:[
+        { id:'hd1', name:'Hoạt động 1: Tính thời gian rơi',
+          question:`Vật rơi tự do từ độ cao 80m (g = 10 m/s²).\na) Tính thời gian rơi\nb) Vận tốc khi chạm đất`,
+          answer:`a) $h = \\frac{1}{2}gt^2 \\Rightarrow 80 = 5t^2 \\Rightarrow t = \\mathbf{4 \\text{ s}}$<br>b) $v = gt = 10 \\times 4 = \\mathbf{40 \\text{ m/s}}$` },
+        { id:'hd2', name:'Hoạt động 2: So sánh quãng đường rơi',
+          question:`Vật rơi tự do (g=10m/s²). Tính quãng đường rơi trong giây thứ 1, thứ 2 và thứ 3. Nhận xét.`,
+          answer:`Giây thứ 1: $s_1 = \\frac{1}{2}(10)(1)^2 = 5$ m<br>
+                  Giây thứ 2: $s_{(0\\to2)} = \\frac{1}{2}(10)(4) = 20$ m → $\\Delta s_2 = 20-5 = 15$ m<br>
+                  Giây thứ 3: $s_{(0\\to3)} = \\frac{1}{2}(10)(9) = 45$ m → $\\Delta s_3 = 45-20 = 25$ m<br>
+                  <strong>Nhận xét:</strong> Quãng đường rơi trong mỗi giây liên tiếp tăng dần: 5, 15, 25... (cấp số cộng, d = g = 10m)` },
+      ],
+      theorem:{ title:'Quãng đường rơi tỉ lệ thuận bình phương thời gian', proof:'h = ½gt² → h₁:h₂ = t₁²:t₂². Sau 1s rơi 5m, sau 2s rơi 20m (gấp 4). ∎' },
+      summary:['Rơi tự do: v₀=0, a=g≈10 m/s²','v=gt','h=½gt²','v²=2gh'],
+      prev:'ly-10-c1-b2', next:null,
+    },
+    'hoa-10-c1-b1': {
+      title:'Bài 1: Thành phần nguyên tử', meta:'Hóa Học 10 · Chương 1',
+      desc:'Cấu tạo nguyên tử: proton, neutron, electron.',
+      subjectId:'hoa-10', chapterId:'hoa-10-c1',
+      theory:`<p>Nguyên tử gồm <strong>hạt nhân</strong> (tích điện dương) và <strong>vỏ electron</strong> (tích điện âm).</p>
+              <h3>Các hạt cơ bản:</h3>
+              <ul><li><strong>Proton (p):</strong> điện tích +1, khối lượng ≈ 1u, trong hạt nhân</li>
+              <li><strong>Neutron (n):</strong> điện tích 0, khối lượng ≈ 1u, trong hạt nhân</li>
+              <li><strong>Electron (e):</strong> điện tích -1, khối lượng rất nhỏ, trên vỏ</li></ul>
+              <h3>Số hiệu nguyên tử (Z):</h3>
+              <p>Z = số proton = số electron (nguyên tử trung hòa)</p>
+              <h3>Số khối (A):</h3>
+              <p>$A = Z + N$ (N = số neutron). Ký hiệu: $^A_Z X$</p>`,
+      activities:[
+        { id:'hd1', name:'Hoạt động 1: Cấu tạo Carbon',
+          question:`Nguyên tử Carbon: Z=6, A=12.\na) Tính số p, n, e\nb) Viết ký hiệu nguyên tử`,
+          answer:`a) Số proton = Z = <strong>6</strong>; Số electron = <strong>6</strong><br>N = 12 - 6 = <strong>6</strong> neutron<br>b) Ký hiệu: $^{12}_6 \\text{C}$` },
+        { id:'hd2', name:'Hoạt động 2: Đồng vị',
+          question:`Carbon có 2 đồng vị: $^{12}_6C$ và $^{14}_6C$.\na) Điểm giống nhau?\nb) $^{14}C$ có bao nhiêu neutron?`,
+          answer:`a) Giống: cùng Z=6, cùng tính chất hóa học<br>b) N = 14 - 6 = <strong>8 neutron</strong>` },
+        { id:'hd3', name:'Hoạt động 3: Bài tập tổng hợp',
+          question:`Nguyên tử X có tổng số hạt (p, n, e) là 34. Số hạt mang điện nhiều hơn số hạt không mang điện là 10.\nTìm Z, A và tên nguyên tố.`,
+          answer:`Gọi p, n, e là số proton, neutron, electron.<br>
+                  Nguyên tử trung hòa: p = e. Gọi p = e = Z<br>
+                  Tổng hạt: 2Z + n = 34 → n = 34 - 2Z<br>
+                  Hạt mang điện (2Z) - hạt không mang điện (n) = 10<br>
+                  2Z - (34 - 2Z) = 10 → 4Z = 44 → <strong>Z = 11</strong><br>
+                  n = 34 - 22 = 12; A = 11 + 12 = <strong>23</strong><br>
+                  Nguyên tố: <strong>Natri (Na)</strong>, ký hiệu $^{23}_{11}Na$` },
+      ],
+      theorem:{ title:'Nguyên tử trung hòa điện: số p = số e', proof:'Điện tích dương (p) = điện tích âm (e). Mỗi p có +1, mỗi e có -1 → số p = số e. ∎' },
+      summary:['Nguyên tử gồm hạt nhân (p, n) và vỏ (e).','Z = số proton = số electron.','A = Z + N (số khối).','Đồng vị: cùng Z, khác N.'],
+      prev:null, next:null,
+    },
+    'van-10-c1-b1': {
+      title:'Bài 1: Sử thi Đăm Săn — Chiến thắng Mtao Mxây', meta:'Ngữ Văn 10 · Chương 1',
+      desc:'Đọc hiểu đoạn trích sử thi Đăm Săn, phân tích nghệ thuật và nội dung tác phẩm.',
+      subjectId:'van-10', chapterId:'van-10-c1',
+      theory:`<p><strong>Sử thi Đăm Săn</strong> là sử thi anh hùng của dân tộc Ê-đê (Tây Nguyên), được lưu truyền qua nhiều thế hệ dưới hình thức truyền miệng.</p>
+              <h3>Đoạn trích "Chiến thắng Mtao Mxây":</h3>
+              <ul>
+                <li><strong>Vị trí:</strong> Thuộc phần giữa của sử thi, kể cuộc chiến giữa Đăm Săn và tù trưởng Mtao Mxây</li>
+                <li><strong>Mục đích:</strong> Đăm Săn đánh Mtao Mxây để cứu vợ (Hơ Nhị) bị bắt cóc</li>
+                <li><strong>Kết quả:</strong> Đăm Săn chiến thắng, đưa dân làng về theo, khẳng định uy danh</li>
+              </ul>
+              <h3>Nhân vật Đăm Săn:</h3>
+              <ul>
+                <li><strong>Ngoại hình:</strong> Khỏe mạnh, oai phong — "Chàng múa trên cao, gió như bão; múa dưới thấp, gió như lốc"</li>
+                <li><strong>Tính cách:</strong> Dũng cảm, quyết đoán, yêu thương buôn làng</li>
+                <li><strong>Ý nghĩa:</strong> Biểu tượng sức mạnh và ý chí cộng đồng Ê-đê</li>
+              </ul>
+              <h3>Đặc điểm nghệ thuật sử thi:</h3>
+              <ul>
+                <li>Ngôn ngữ trang trọng, hình tượng phóng đại</li>
+                <li>Sử dụng nhiều so sánh, điệp ngữ tăng sức biểu cảm</li>
+                <li>Nhịp điệu hào hùng, mang tính cộng đồng cao</li>
+              </ul>`,
+      activities:[
+        {
+          id:'hd1', name:'Hoạt động 1: Phân tích hình tượng Đăm Săn',
+          question:`Phân tích vẻ đẹp nhân vật Đăm Săn qua:\na) Hành động trong trận chiến\nb) Thái độ sau chiến thắng\nc) Mối quan hệ với buôn làng`,
+          answer:`<strong>a) Hành động trong trận chiến:</strong><br>
+Chiến đấu dũng mãnh, không lùi bước. Khi giáo không thủng áo giáp Mtao, hỏi thần Trời → trí thông minh, không ỷ lại sức mạnh.<br><br>
+<strong>b) Thái độ sau chiến thắng:</strong><br>
+Không kiêu ngạo mà kêu gọi dân làng Mtao theo về → bao dung, tầm nhìn của tù trưởng vĩ đại.<br><br>
+<strong>c) Mối quan hệ với buôn làng:</strong><br>
+"Ơi Đăm Săn ơi! Chúng tôi đi với ai?" — Đăm Săn là biểu tượng, chỗ dựa tinh thần của cả cộng đồng.`,
+        },
+        {
+          id:'hd2', name:'Hoạt động 2: Đặc trưng thể loại sử thi',
+          question:`Nêu 3 đặc trưng cơ bản của sử thi và minh họa từ đoạn trích Đăm Săn.`,
+          answer:`<strong>1. Quy mô đồ sộ:</strong> Câu chuyện dài, nhiều nhân vật — kể cả cuộc đời người anh hùng.<br><br>
+<strong>2. Nhân vật anh hùng lý tưởng:</strong> Đăm Săn có ngoại hình, tài năng, phẩm chất vượt trội, đại diện cộng đồng.<br><br>
+<strong>3. Ngôn ngữ hào hùng:</strong> Phóng đại — "múa trên cao gió như bão, múa dưới thấp gió như lốc" → sức mạnh phi thường.`,
+        },
+      ],
+      theorem:{ title:'Sử thi = Lịch sử + Nghệ thuật + Tâm hồn dân tộc', proof:'Qua Đăm Săn, người Ê-đê gửi gắm khát vọng về người lãnh đạo lý tưởng: dũng cảm, nhân ái, đoàn kết buôn làng. ∎' },
+      summary:[
+        'Sử thi Đăm Săn: anh hùng ca của dân tộc Ê-đê, Tây Nguyên.',
+        'Đăm Săn chiến thắng Mtao Mxây, cứu vợ và mang dân làng về.',
+        'Nghệ thuật: phóng đại, so sánh, điệp ngữ, nhịp điệu hào hùng.',
+        'Ý nghĩa: đề cao vẻ đẹp thể chất và tinh thần thời cổ đại.',
+      ],
+      prev:null, next:null,
     },
   };
 
@@ -352,6 +517,12 @@
     if (!completedActivities.has(activityId)) {
       completedActivities.add(activityId);
       const data = LESSON_DATA[lessonId] || LESSON_DATA['toan-10-c1-b1'];
+      updateProgressDisplay(data);
+
+      // Save to localStorage (bộ nhớ offline)
+      const lsData = JSON.parse(localStorage.getItem('a0jyng_progress') || '{}');
+      lsData[`${lessonId}_${activityId}`] = { done: true, ts: Date.now() };
+      localStorage.setItem('a0jyng_progress', JSON.stringify(lsData));
       updateProgressDisplay(data);
 
       // Save to Firestore

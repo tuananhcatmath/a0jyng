@@ -37,10 +37,11 @@
     <a href="index.html" class="font-logo text-3xl font-black text-primary flex items-center gap-2">
       a0<span class="text-accent">jyng</span>
     </a>
-    <ul class="hidden md:flex gap-8 font-medium text-slate-600">
+    <ul class="hidden md:flex gap-7 font-medium text-slate-600">
       <li><a href="#features" class="hover:text-primary transition">Tính năng</a></li>
       <li><a href="#subjects" class="hover:text-primary transition">Môn học</a></li>
       <li><a href="#how" class="hover:text-primary transition">Cách học</a></li>
+      <li><a href="database.html" class="hover:text-primary transition font-semibold text-primary flex items-center gap-1.5">🗄️ Database Hub</a></li>
       <li><a href="news.html" class="hover:text-primary transition">Tin tức</a></li>
       <li><a href="contact.html" class="hover:text-primary transition">Liên hệ</a></li>
     </ul>
@@ -156,41 +157,157 @@
     </div>
     <div class="grid md:grid-cols-3 gap-6">
       <!-- Feature cards -->
-      <div class="bg-white rounded-2xl p-6 card-hover shadow-sm">
+      <div class="bg-white rounded-2xl p-6 motion-card shadow-sm border border-slate-100">
         <div class="feature-icon bg-blue-50 mb-4">🤖</div>
         <h3 class="font-bold text-lg mb-2">AI hỏi đáp 24/7</h3>
         <p class="text-slate-500 text-sm">Hỏi AI bất cứ câu hỏi nào về bài học — được giải thích chi tiết, dễ hiểu.</p>
         <a href="ai-chat.html" class="mt-4 inline-flex items-center text-primary text-sm font-semibold hover:gap-2 transition-all gap-1">Thử ngay →</a>
       </div>
-      <div class="bg-white rounded-2xl p-6 card-hover shadow-sm">
+      <div class="bg-white rounded-2xl p-6 motion-card shadow-sm border border-slate-100">
         <div class="feature-icon bg-orange-50 mb-4">💡</div>
         <h3 class="font-bold text-lg mb-2">AI bôi xanh giải thích</h3>
         <p class="text-slate-500 text-sm">Bôi đen bất kỳ đoạn văn nào → AI giải thích, cho ví dụ, dịch thuật ngay lập tức.</p>
         <span class="mt-4 inline-flex items-center text-accent text-sm font-semibold">🆕 Tính năng mới</span>
       </div>
-      <div class="bg-white rounded-2xl p-6 card-hover shadow-sm">
+      <div class="bg-white rounded-2xl p-6 motion-card shadow-sm border border-slate-100">
+        <div class="feature-icon bg-emerald-50 mb-4">🗄️</div>
+        <h3 class="font-bold text-lg mb-2">Cơ sở Dữ liệu Đa tầng</h3>
+        <p class="text-slate-500 text-sm">Kết hợp Supabase PostgreSQL đám mây + IndexedDB lưu trữ ngoại tuyến an toàn 100%.</p>
+        <a href="database.html" class="mt-4 inline-flex items-center text-primary text-sm font-semibold hover:gap-2 transition-all gap-1">Vào Database Hub →</a>
+      </div>
+      <div class="bg-white rounded-2xl p-6 motion-card shadow-sm border border-slate-100">
         <div class="feature-icon bg-purple-50 mb-4">🧭</div>
         <h3 class="font-bold text-lg mb-2">Lộ trình cá nhân hóa</h3>
         <p class="text-slate-500 text-sm">AI phân tích kiểu học của bạn (Visual/Auditory/Kinesthetic) và tạo lộ trình phù hợp.</p>
         <a href="roadmap.html" class="mt-4 inline-flex items-center text-primary text-sm font-semibold hover:gap-2 transition-all gap-1">Xem lộ trình →</a>
       </div>
-      <div class="bg-white rounded-2xl p-6 card-hover shadow-sm">
+      <div class="bg-white rounded-2xl p-6 motion-card shadow-sm border border-slate-100">
         <div class="feature-icon bg-green-50 mb-4">📐</div>
         <h3 class="font-bold text-lg mb-2">Chứng minh định lý</h3>
         <p class="text-slate-500 text-sm">Xem chứng minh step-by-step của các định lý Toán, Lý, Hóa quan trọng nhất.</p>
         <a href="theorems.html" class="mt-4 inline-flex items-center text-primary text-sm font-semibold hover:gap-2 transition-all gap-1">Xem định lý →</a>
       </div>
-      <div class="bg-white rounded-2xl p-6 card-hover shadow-sm">
+      <div class="bg-white rounded-2xl p-6 motion-card shadow-sm border border-slate-100">
         <div class="feature-icon bg-red-50 mb-4">📖</div>
         <h3 class="font-bold text-lg mb-2">Giải bài tập SGK</h3>
         <p class="text-slate-500 text-sm">Giải chi tiết từng bước bài tập sách giáo khoa — kèm giải thích phương pháp.</p>
         <a href="textbook.html" class="mt-4 inline-flex items-center text-primary text-sm font-semibold hover:gap-2 transition-all gap-1">Giải bài →</a>
       </div>
-      <div class="bg-white rounded-2xl p-6 card-hover shadow-sm">
-        <div class="feature-icon bg-yellow-50 mb-4">⏱️</div>
-        <h3 class="font-bold text-lg mb-2">Pomodoro & Lịch học</h3>
-        <p class="text-slate-500 text-sm">Quản lý thời gian học với đồng hồ Pomodoro và lịch học thông minh hàng tuần.</p>
-        <a href="pomodoro.html" class="mt-4 inline-flex items-center text-primary text-sm font-semibold hover:gap-2 transition-all gap-1">Bắt đầu →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ADVANTAGES ══════════════ -->
+<section id="advantages" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <!-- Heading -->
+    <div class="text-center mb-14">
+      <div class="inline-block bg-orange-100 text-accent text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wide">Ưu điểm</div>
+      <h2 class="text-4xl font-black text-slate-800 mb-4">Tại sao chọn a0jyng?</h2>
+      <p class="text-slate-500 max-w-xl mx-auto">So sánh a0jyng với học truyền thống và các nền tảng khác — để bạn tự quyết định.</p>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="overflow-x-auto mb-16 rounded-2xl shadow-md border border-slate-100">
+      <table class="w-full text-sm text-center">
+        <thead>
+          <tr class="bg-primary text-white">
+            <th class="py-4 px-5 text-left font-semibold rounded-tl-2xl">Tiêu chí</th>
+            <th class="py-4 px-5 font-bold text-accent bg-blue-900">a0jyng</th>
+            <th class="py-4 px-5 font-semibold">Học truyền thống</th>
+            <th class="py-4 px-5 font-semibold rounded-tr-2xl">Nền tảng khác</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">🧠 AI cá nhân hóa</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">💾 Bộ nhớ tiến trình</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-green-500 text-lg">✅</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">📱 Học mọi lúc mọi nơi</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-green-500 text-lg">✅</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">🆓 Miễn phí hoàn toàn</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">🃏 Flashcard &amp; Sơ đồ tư duy</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">⏱️ Pomodoro tích hợp</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700">💬 Diễn đàn cộng đồng</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-green-500 text-lg">✅</td>
+          </tr>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-5 text-left font-medium text-slate-700 rounded-bl-2xl">📊 Báo cáo học tập</td>
+            <td class="py-3.5 px-5 text-green-500 font-bold text-lg">✅</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg">❌</td>
+            <td class="py-3.5 px-5 text-red-400 text-lg rounded-br-2xl">❌</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Advantage Cards -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Card 1 -->
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-3">🧠</div>
+        <h3 class="font-bold text-lg text-slate-800 mb-2">Bộ nhớ thông minh</h3>
+        <p class="text-slate-600 text-sm">Lưu tiến trình tự động, không bao giờ mất dữ liệu — tiếp tục học mọi lúc mọi nơi.</p>
+      </div>
+      <!-- Card 2 -->
+      <div class="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-3">🎯</div>
+        <h3 class="font-bold text-lg text-slate-800 mb-2">AI cá nhân hóa</h3>
+        <p class="text-slate-600 text-sm">Phân tích kiểu học VAK và tạo lộ trình học riêng biệt phù hợp với từng học sinh.</p>
+      </div>
+      <!-- Card 3 -->
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-3">📊</div>
+        <h3 class="font-bold text-lg text-slate-800 mb-2">Báo cáo chi tiết</h3>
+        <p class="text-slate-600 text-sm">Theo dõi thời gian học, nhận diện điểm mạnh yếu từng môn qua dashboard trực quan.</p>
+      </div>
+      <!-- Card 4 -->
+      <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-3">🃏</div>
+        <h3 class="font-bold text-lg text-slate-800 mb-2">Flashcard thông minh</h3>
+        <p class="text-slate-600 text-sm">Lặp lại ngắt quãng (Spaced Repetition) tối ưu hóa việc ghi nhớ kiến thức lâu dài.</p>
+      </div>
+      <!-- Card 5 -->
+      <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 border border-cyan-200 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-3">🔗</div>
+        <h3 class="font-bold text-lg text-slate-800 mb-2">Tổng hợp nguồn học</h3>
+        <p class="text-slate-600 text-sm">Liên kết trực tiếp với VietJack, HocMai, Moon.vn, VuiHoc — một chỗ, đủ mọi tài nguyên.</p>
+      </div>
+      <!-- Card 6 -->
+      <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-3">🏆</div>
+        <h3 class="font-bold text-lg text-slate-800 mb-2">Gamification</h3>
+        <p class="text-slate-600 text-sm">Streak hàng ngày, điểm thưởng và huy hiệu giúp duy trì động lực học tập mỗi ngày.</p>
       </div>
     </div>
   </div>
@@ -376,6 +493,7 @@
       <ul class="space-y-2 text-sm">
         <li><a href="ai-chat.html" class="hover:text-white transition">AI hỏi đáp</a></li>
         <li><a href="forum.html" class="hover:text-white transition">Diễn đàn</a></li>
+        <li><a href="exercises.html" class="hover:text-white transition">Bài tập & Đề thi</a></li>
         <li><a href="pomodoro.html" class="hover:text-white transition">Pomodoro</a></li>
         <li><a href="reports.html" class="hover:text-white transition">Báo cáo</a></li>
       </ul>

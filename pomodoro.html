@@ -154,9 +154,35 @@
   let totalTime    = MODES.work;
   let isRunning    = false;
   let timer        = null;
-  let completedSessions = 0;
-  let totalMinutes      = 0;
-  let sessions          = [];
+
+  // localStorage persistence
+  const today = new Date().toDateString();
+  const saved = JSON.parse(localStorage.getItem('a0jyng_pomodoro') || '{}');
+  let completedSessions, totalMinutes, sessions, streak;
+  if (saved.date === today) {
+    completedSessions = saved.sessions || 0;
+    totalMinutes      = saved.minutes  || 0;
+    sessions          = saved.sessionTimes || [];
+    streak            = saved.streak   || 1;
+  } else {
+    completedSessions = 0; totalMinutes = 0; sessions = [];
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    if (saved.date === yesterday.toDateString()) {
+      streak = (saved.streak || 0) + 1;
+    } else {
+      streak = saved.date ? 1 : 0;
+    }
+  }
+
+  // Restore UI with saved stats immediately
+  document.getElementById('statSessions').textContent = completedSessions;
+  document.getElementById('statMinutes').textContent  = totalMinutes;
+  document.getElementById('statStreak').textContent   = streak;
+  if (sessions.length > 0) {
+    document.getElementById('sessionHistory').innerHTML = sessions.map(t =>
+      `<span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">🍅 ${t}</span>`
+    ).join('');
+  }
 
   const display  = document.getElementById('timerDisplay');
   const ring     = document.getElementById('timerRing');
@@ -227,6 +253,16 @@
       document.getElementById('sessionHistory').innerHTML = sessions.map(t =>
         `<span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">🍅 ${t}</span>`
       ).join('');
+      document.getElementById('statStreak').textContent = streak;
+
+      // Persist to localStorage
+      localStorage.setItem('a0jyng_pomodoro', JSON.stringify({
+        date: today,
+        sessions: completedSessions,
+        minutes: totalMinutes,
+        sessionTimes: sessions,
+        streak: streak
+      }));
 
       // Auto next: short break (every 4 sessions → long break)
       const nextMode = completedSessions % 4 === 0 ? 'long' : 'short';
@@ -285,6 +321,16 @@
   });
 
   updateDisplay();
+
+  // Restore stats UI from saved data
+  document.getElementById('statSessions').textContent = completedSessions;
+  document.getElementById('statMinutes').textContent  = totalMinutes;
+  document.getElementById('statStreak').textContent   = streak;
+  if (sessions.length > 0) {
+    document.getElementById('sessionHistory').innerHTML = sessions.map(t =>
+      `<span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">🍅 ${t}</span>`
+    ).join('');
+  }
 
   window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
   window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };

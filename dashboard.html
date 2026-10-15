@@ -49,6 +49,9 @@
       <span class="text-lg">📊</span> Tiến trình
     </a>
     <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
+    <a href="exercises.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+      <span class="text-lg">📝</span> Bài tập & Đề thi
+    </a>
     <a href="schedule.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
       <span class="text-lg">🗓️</span> Lịch học
     </a>
@@ -71,12 +74,16 @@
       <span class="text-lg">🧮</span> Định lý
     </a>
     <a href="summaries.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
-      <span class="text-lg">📝</span> Tóm tắt
+      <span class="text-lg">📋</span> Tóm tắt
     </a>
     <a href="reports.html"    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
       <span class="text-lg">📈</span> Báo cáo
     </a>
+    <a href="database.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-amber-200">
+      <span class="text-lg">🗄️</span> Quản lý Database
+    </a>
   </nav>
+
   <!-- Logout -->
   <div class="p-4 border-t border-white/10">
     <button id="logoutBtn" class="w-full py-2.5 bg-white/10 hover:bg-red-500/30 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2">
@@ -114,22 +121,22 @@
 
     <!-- STAT CARDS -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-gradient-to-br from-primary to-secondary text-white p-5 rounded-2xl shadow">
+      <div class="motion-card bg-gradient-to-br from-primary to-secondary text-white p-5 rounded-2xl shadow-sm border border-blue-600/30">
         <p class="text-sm text-blue-200 mb-1">⏱ Hôm nay</p>
         <p id="todayMinutes" class="text-3xl font-black">0p</p>
         <p class="text-xs text-blue-200 mt-1">thời gian học</p>
       </div>
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <div class="motion-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
         <p class="text-sm text-slate-500 mb-1">📈 Tuần này</p>
         <p id="weekProgress" class="text-3xl font-black text-accent">0%</p>
         <p class="text-xs text-slate-400 mt-1">mục tiêu tuần</p>
       </div>
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <div class="motion-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
         <p class="text-sm text-slate-500 mb-1">🔥 Streak</p>
         <p id="streak" class="text-3xl font-black text-primary">0</p>
         <p class="text-xs text-slate-400 mt-1">ngày liên tiếp</p>
       </div>
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <div class="motion-card bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
         <p class="text-sm text-slate-500 mb-1">✅ Bài hoàn thành</p>
         <p id="completedLessons" class="text-3xl font-black text-green-500">0</p>
         <p class="text-xs text-slate-400 mt-1">bài học</p>
@@ -157,6 +164,9 @@
       <div>
         <h2 class="text-lg font-bold text-slate-800 mb-4">⚡ Truy cập nhanh</h2>
         <div class="space-y-2">
+          <a href="exercises.html" class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
+            <span class="text-2xl">📝</span><div><p class="font-medium text-sm">Bài tập & Đề thi</p><p class="text-xs text-slate-400">Luyện tập & kiểm tra</p></div>
+          </a>
           <a href="pomodoro.html"  class="flex items-center gap-3 p-3 bg-white rounded-xl border hover:border-secondary hover:shadow-sm transition">
             <span class="text-2xl">⏰</span><div><p class="font-medium text-sm">Pomodoro</p><p class="text-xs text-slate-400">Bắt đầu học tập</p></div>
           </a>
@@ -237,17 +247,30 @@
     document.getElementById('todayDate').textContent =
       new Date().toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
 
-    // Load user profile from Firestore
+    // Load stats from localStorage first (instant, offline-friendly)
+    const _pom  = JSON.parse(localStorage.getItem('a0jyng_pomodoro') || '{}');
+    const _prog = JSON.parse(localStorage.getItem('a0jyng_progress') || '{}');
+    const _today = new Date().toDateString();
+    if (_pom.date === _today) {
+      document.getElementById('todayMinutes').textContent = (_pom.minutes || 0) + 'p';
+      document.getElementById('streak').textContent = _pom.streak || 0;
+    }
+    const _uniqueLessons = new Set(Object.keys(_prog).map(k => k.split('_')[0]));
+    if (_uniqueLessons.size > 0) document.getElementById('completedLessons').textContent = _uniqueLessons.size;
+    const _weekMins = _pom.minutes || 0;
+    document.getElementById('weekProgress').textContent = Math.min(100, Math.round(_weekMins / 3)) + '%';
+
+    // Load user profile from Firestore (supplements LS data)
     try {
       const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
         const data = snap.data();
         document.getElementById('sidebarGrade').textContent = `Lớp ${data.grade || 10}`;
-        document.getElementById('streak').textContent = data.streak || 0;
-        document.getElementById('todayMinutes').textContent = (data.todayMinutes || 0) + 'p';
-        document.getElementById('completedLessons').textContent = data.completedLessons || 0;
+        if (data.streak)         document.getElementById('streak').textContent = data.streak;
+        if (data.todayMinutes)   document.getElementById('todayMinutes').textContent = (data.todayMinutes || 0) + 'p';
+        if (data.completedLessons) document.getElementById('completedLessons').textContent = data.completedLessons;
       }
-    } catch (e) { console.warn('Cannot load profile:', e); }
+    } catch (e) { console.warn('Cannot load profile from Firestore (using localStorage):', e); }
 
     // Load subjects
     try {
