@@ -146,14 +146,7 @@
 </a>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-  import { firebaseConfig } from "./assets/js/firebase-config.js";
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  import { getCurrentUser, signOut as dbSignOut } from "./assets/js/db.js";
 
   const params   = new URLSearchParams(window.location.search);
   const lessonId = params.get('id') || 'toan-10-c1-b1';
@@ -400,20 +393,23 @@ Không kiêu ngạo mà kêu gọi dân làng Mtao theo về → bao dung, tầm
   let completedActivities = new Set();
   let currentUser = null;
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = 'login.html'; return; }
-    currentUser = user;
+  currentUser = await getCurrentUser();
+  if (!currentUser) {
+    currentUser = { name: "Học viên", email: "guest@a0jyng.edu.vn", role: "student" };
+    localStorage.setItem('a0jyng_session', JSON.stringify(currentUser));
+  }
 
-    // Load progress from Firestore
-    try {
-      const pSnap = await getDoc(doc(db, 'progress', `${user.uid}_${lessonId}`));
-      if (pSnap.exists()) {
-        (pSnap.data().completedActivities || []).forEach(id => completedActivities.add(id));
+  // Load progress from localStorage
+  try {
+    const lsData = JSON.parse(localStorage.getItem('a0jyng_progress') || '{}');
+    Object.keys(lsData).forEach(key => {
+      if (key.startsWith(`${lessonId}_`) && lsData[key].done) {
+        completedActivities.add(key.replace(`${lessonId}_`, ''));
       }
-    } catch(e) { /* Firestore not configured yet */ }
+    });
+  } catch(e) {}
 
-    renderLesson();
-  });
+  renderLesson();
 
   function renderLesson() {
     const data = LESSON_DATA[lessonId] || LESSON_DATA['toan-10-c1-b1'];

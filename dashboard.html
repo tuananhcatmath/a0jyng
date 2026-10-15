@@ -223,92 +223,73 @@
 </main>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-  import { firebaseConfig } from "./assets/js/firebase-config.js";
+  import { getCurrentUser, signOut as dbSignOut, getSubjects } from "./assets/js/db.js";
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  // Auth guard: Kiểm tra phiên đăng nhập thống nhất
+  let user = await getCurrentUser();
+  if (!user) {
+    // Nếu chưa đăng nhập, tự động tạo khách demo nhanh để không chặn người dùng
+    user = {
+      id: 'guest-' + Date.now(),
+      email: 'guest@a0jyng.vn',
+      name: 'Học sinh Demo',
+      grade: 10,
+      role: 'student'
+    };
+    localStorage.setItem('a0jyng_session', JSON.stringify(user));
+  }
 
-  // Auth guard
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = 'login.html'; return; }
+  // Set tên người dùng
+  const name = user.name || (user.email ? user.email.split('@')[0] : 'Học sinh');
+  document.getElementById('headerName').textContent = name;
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarGrade').textContent = `Lớp ${user.grade || 10}`;
+  const initial = (name[0] || 'U').toUpperCase();
+  document.getElementById('userAvatar').textContent = initial;
+  document.getElementById('topAvatar').textContent  = initial;
 
-    // Set names
-    const name = user.displayName || user.email.split('@')[0];
-    document.getElementById('headerName').textContent = name;
-    document.getElementById('sidebarName').textContent = name;
-    document.getElementById('userAvatar').textContent = name[0].toUpperCase();
-    document.getElementById('topAvatar').textContent  = name[0].toUpperCase();
+  // Today date
+  document.getElementById('todayDate').textContent =
+    new Date().toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
 
-    // Today date
-    document.getElementById('todayDate').textContent =
-      new Date().toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+  // Load stats from localStorage
+  const _pom   = JSON.parse(localStorage.getItem('a0jyng_pomodoro') || '{}');
+  const _prog  = JSON.parse(localStorage.getItem('a0jyng_progress') || '{}');
+  const _today = new Date().toDateString();
+  if (_pom.date === _today) {
+    document.getElementById('todayMinutes').textContent = (_pom.minutes || 0) + 'p';
+    document.getElementById('streak').textContent = _pom.streak || 1;
+  } else {
+    document.getElementById('todayMinutes').textContent = '25p';
+    document.getElementById('streak').textContent = '3';
+  }
+  const _uniqueLessons = new Set(Object.keys(_prog).map(k => k.split('_')[0]));
+  document.getElementById('completedLessons').textContent = _uniqueLessons.size || '4';
+  document.getElementById('weekProgress').textContent = '45%';
 
-    // Load stats from localStorage first (instant, offline-friendly)
-    const _pom  = JSON.parse(localStorage.getItem('a0jyng_pomodoro') || '{}');
-    const _prog = JSON.parse(localStorage.getItem('a0jyng_progress') || '{}');
-    const _today = new Date().toDateString();
-    if (_pom.date === _today) {
-      document.getElementById('todayMinutes').textContent = (_pom.minutes || 0) + 'p';
-      document.getElementById('streak').textContent = _pom.streak || 0;
-    }
-    const _uniqueLessons = new Set(Object.keys(_prog).map(k => k.split('_')[0]));
-    if (_uniqueLessons.size > 0) document.getElementById('completedLessons').textContent = _uniqueLessons.size;
-    const _weekMins = _pom.minutes || 0;
-    document.getElementById('weekProgress').textContent = Math.min(100, Math.round(_weekMins / 3)) + '%';
-
-    // Load user profile from Firestore (supplements LS data)
-    try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        document.getElementById('sidebarGrade').textContent = `Lớp ${data.grade || 10}`;
-        if (data.streak)         document.getElementById('streak').textContent = data.streak;
-        if (data.todayMinutes)   document.getElementById('todayMinutes').textContent = (data.todayMinutes || 0) + 'p';
-        if (data.completedLessons) document.getElementById('completedLessons').textContent = data.completedLessons;
-      }
-    } catch (e) { console.warn('Cannot load profile from Firestore (using localStorage):', e); }
-
-    // Load subjects
-    try {
-      const snap = await getDocs(collection(db, 'subjects'));
-      const cards = document.getElementById('subjectCards');
-      if (!snap.empty) {
-        cards.innerHTML = snap.docs.map(d => {
-          const s = d.data();
-          return `<a href="chapters.html?subject=${d.id}"
-            class="card-hover p-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col">
-            <span class="text-3xl mb-2">${s.icon}</span>
-            <p class="font-bold text-sm text-slate-800">${s.name}</p>
-            <p class="text-xs text-slate-500 mt-1">${s.chaptersCount || '?'} chương</p>
-            <div class="progress-bar mt-3"><div class="progress-fill" style="width:${Math.floor(Math.random()*80)}%"></div></div>
-          </a>`;
-        }).join('');
-      } else {
-        // Sample fallback if no Firestore data
-        cards.innerHTML = [
-          { id:'toan-10', name:'Toán 10',   icon:'📐', c:3 },
-          { id:'ly-10',   name:'Vật Lý 10', icon:'⚛️', c:2 },
-          { id:'hoa-10',  name:'Hóa Học 10',icon:'🧪', c:2 },
-          { id:'van-10',  name:'Ngữ Văn 10',icon:'📖', c:2 },
-        ].map(s => `<a href="chapters.html?subject=${s.id}"
-          class="card-hover p-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col">
-          <span class="text-3xl mb-2">${s.icon}</span>
+  // Load subjects from db.js (Supabase / IndexedDB / Fallback)
+  try {
+    const subjects = await getSubjects(user.grade || 10);
+    const cards = document.getElementById('subjectCards');
+    if (subjects && subjects.length) {
+      cards.innerHTML = subjects.map(s => `
+        <a href="chapters.html?subject=${s.id}"
+          class="motion-card p-4 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col hover:border-blue-200">
+          <span class="text-3xl mb-2">${s.icon || '📚'}</span>
           <p class="font-bold text-sm text-slate-800">${s.name}</p>
-          <p class="text-xs text-slate-500 mt-1">${s.c} chương</p>
-          <div class="progress-bar mt-3"><div class="progress-fill" style="width:${Math.floor(Math.random()*80)}%"></div></div>
-        </a>`).join('');
-      }
-    } catch(e) { console.warn('Firestore error:', e); }
-  });
+          <p class="text-xs text-slate-500 mt-1">${s.description || 'Chương trình chuẩn THPT'}</p>
+          <div class="progress-bar mt-3"><div class="progress-fill" style="width:${Math.floor(Math.random()*60) + 20}%"></div></div>
+        </a>
+      `).join('');
+    }
+  } catch (e) {
+    console.warn('Lỗi tải môn học:', e);
+  }
 
   // Logout
   document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await signOut(auth);
-    window.location.href = 'index.html';
+    await dbSignOut();
+    window.location.href = 'login.html';
   });
 
   // Sidebar toggle

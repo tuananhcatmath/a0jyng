@@ -152,22 +152,7 @@
 </div>
 
 <script type="module">
-  import { firebaseConfig, DEMO_MODE } from "./assets/js/firebase-config.js";
-
-  let auth, db, createUserWithEmailAndPassword, updateProfile, doc, setDoc, serverTimestamp;
-  if (!DEMO_MODE) {
-    const fbApp  = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-    const fbAuth = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
-    const fbDb   = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-    const app = fbApp.initializeApp(firebaseConfig);
-    auth = fbAuth.getAuth(app);
-    db   = fbDb.getFirestore(app);
-    createUserWithEmailAndPassword = fbAuth.createUserWithEmailAndPassword;
-    updateProfile                  = fbAuth.updateProfile;
-    doc              = fbDb.doc;
-    setDoc           = fbDb.setDoc;
-    serverTimestamp  = fbDb.serverTimestamp;
-  }
+  import { signUp } from "./assets/js/db.js";
 
   // Password strength
   document.getElementById('password').addEventListener('input', (e) => {
@@ -248,49 +233,20 @@
       const name  = document.getElementById('fullName').value.trim();
       const grade = parseInt(document.getElementById('grade').value);
 
-      if (DEMO_MODE) {
-        // ── DEMO MODE: lưu vào localStorage, không cần Firebase ──
-        const existingUsers = JSON.parse(localStorage.getItem('a0jyng_users') || '[]');
-        if (existingUsers.find(u => u.email === email)) {
-          throw { code: 'auth/email-already-in-use' };
-        }
-        const demoUser = {
-          uid: 'demo-' + Date.now(),
-          email, name, grade,
-          phone: document.getElementById('phone').value,
-          learningStyle: selectedStyle,
-          role: 'student',
-          createdAt: new Date().toISOString(),
-          streak: 0, totalMinutes: 0,
-        };
-        existingUsers.push(demoUser);
-        localStorage.setItem('a0jyng_users', JSON.stringify(existingUsers));
-        localStorage.setItem('a0jyng_current_user', JSON.stringify(demoUser));
-      } else {
-        // ── FIREBASE MODE ──
-        const cred = await createUserWithEmailAndPassword(auth, email, pwd);
-        await updateProfile(cred.user, { displayName: name });
-        await setDoc(doc(db, 'users', cred.user.uid), {
-          uid: cred.user.uid, name, email, grade,
-          phone: document.getElementById('phone').value,
-          learningStyle: selectedStyle,
-          role: 'student',
-          createdAt: serverTimestamp(),
-          streak: 0, totalMinutes: 0,
-        });
-        localStorage.setItem('a0jyng_current_user', JSON.stringify({ uid: cred.user.uid, email, name, grade, learningStyle: selectedStyle }));
-      }
+      await signUp({
+        email,
+        password: pwd,
+        name,
+        grade,
+        phone: document.getElementById('phone').value,
+        learningStyle: selectedStyle
+      });
 
       document.getElementById('step2').classList.add('hidden');
       document.getElementById('step3').classList.remove('hidden');
       setIndicator(3);
     } catch (err) {
-      const msgs = {
-        'auth/email-already-in-use': 'Email này đã được đăng ký. Hãy đăng nhập.',
-        'auth/invalid-email': 'Email không hợp lệ.',
-        'auth/weak-password': 'Mật khẩu quá yếu (ít nhất 6 ký tự).',
-      };
-      showError(msgs[err.code] || 'Đăng ký thất bại: ' + (err.message || err.code));
+      showError(err.message || 'Đăng ký thất bại, vui lòng thử lại.');
       btn.disabled = false;
       btn.textContent = 'Hoàn tất đăng ký 🎉';
     }

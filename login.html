@@ -121,10 +121,6 @@
   import { signIn, getCurrentUser } from './assets/js/db.js';
   import { SUPABASE_MODE } from './assets/js/supabase-config.js';
 
-  // Check if already logged in
-  const existing = await getCurrentUser();
-  if (existing) window.location.href = 'dashboard.html';
-
   // Show demo notice if not connected to Supabase
   if (!SUPABASE_MODE) document.getElementById('demoNotice').classList.remove('hidden');
 
