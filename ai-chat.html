@@ -3,36 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI hỏi đáp — a0jyng</title>
+  <title>AI Trợ lý a0jyng — Hệ sinh thái EdTech</title>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="assets/css/style.css">
   <script>
     tailwind.config = {
-      theme: { extend: {
-        colors: { primary:'#1E40AF', secondary:'#3B82F6', accent:'#F97316' },
-        fontFamily: { logo:['Playfair Display','serif'], sans:['Inter','sans-serif'] }
-      }}
-    }
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E40AF',
+            secondary: '#3B82F6',
+            accent: '#F97316'
+          },
+          fontFamily: {
+            logo: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
   </script>
+
+  <!-- Google Fonts & Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- KaTeX CSS & JS for Math / Physics / Chemistry Formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Marked.js for Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Highlight.js for Code Blocks -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
   <style>
-    .chat-bubble-user { background: #1E40AF; color: white; border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; }
-    .chat-bubble-ai   { background: white; border: 1px solid #E2E8F0; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; }
-    .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #94A3B8; animation: pulse-dot 1.2s ease infinite; }
+    .chat-bubble-user {
+      background: #1E40AF;
+      color: white;
+      border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+    }
+    .chat-bubble-ai {
+      background: white;
+      border: 1px solid #E2E8F0;
+      border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+    }
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94A3B8;
+      animation: pulse-dot 1.2s ease infinite;
+    }
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(0.8); opacity: 0.4; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
     #chatContainer { scroll-behavior: smooth; }
+    .markdown-body table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.825rem; }
+    .markdown-body th, .markdown-body td { border: 1px solid #CBD5E1; padding: 0.4rem 0.6rem; }
+    .markdown-body th { background: #F1F5F9; font-weight: 700; }
+    .markdown-body pre { background: #0F172A; color: #F8FAFC; padding: 0.75rem; border-radius: 0.75rem; overflow-x: auto; margin: 0.5rem 0; }
+    .markdown-body code:not(pre code) { background: #EEF2F6; color: #1E40AF; padding: 0.15rem 0.35rem; border-radius: 0.35rem; font-size: 0.85em; font-family: monospace; }
+    .katex-display { margin: 0.5rem 0 !important; overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
   </style>
 </head>
 <body class="font-sans bg-slate-50 flex h-screen overflow-hidden">
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
+<!-- ===== SIDEBAR ===== -->
 <aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
-  <div class="p-5 border-b border-white/10"><a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a></div>
+  <div class="p-5 border-b border-white/10">
+    <a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a>
+  </div>
   <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
     <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🏠</span> Dashboard</a>
+    <a href="ai-studio.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium"><span>✨</span> AI Studio Học tập</a>
     <a href="subjects.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📚</span> Môn học</a>
     <a href="progress.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📊</span> Tiến trình</a>
-    <a href="ai-chat.html"   class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>🤖</span> AI hỏi đáp</a>
+    <a href="ai-chat.html"   class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/15 text-white font-bold text-sm shadow-sm transition"><span>🤖</span> AI hỏi đáp</a>
     <div class="pt-2 pb-1 px-3 text-xs text-blue-300 uppercase tracking-wider font-semibold">Tiện ích</div>
     <a href="exercises.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>📝</span> Bài tập & Đề thi</a>
     <a href="pomodoro.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm"><span>⏰</span> Pomodoro</a>
@@ -45,120 +99,244 @@
   </div>
 </aside>
 
+<!-- ===== MAIN CHAT INTERFACE ===== -->
 <main class="flex-1 flex flex-col overflow-hidden">
-  <!-- Header -->
-  <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0">
+  <!-- Top Header Bar -->
+  <header class="bg-white shadow-sm px-4 sm:px-6 py-3.5 flex items-center justify-between flex-shrink-0 border-b border-slate-100">
     <div class="flex items-center gap-3">
       <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-sm">🤖</div>
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-white text-base shadow-sm">🤖</div>
         <div>
-          <h1 class="font-bold text-slate-800">AI Trợ lý a0jyng</h1>
-          <p class="text-xs text-green-500 font-medium">● Đang hoạt động</p>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-slate-800 text-sm sm:text-base">AI Trợ lý a0jyng</h1>
+            <span id="chatEngineBadge" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300">
+              🧠 Offline Smart AI
+            </span>
+          </div>
+          <p class="text-[11px] text-green-500 font-semibold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Sẵn sàng giải đáp Toán, Lý, Hóa, Tin
+          </p>
         </div>
       </div>
     </div>
-    <button id="clearChat" class="px-3 py-1.5 text-xs bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition">🗑️ Xoá hội thoại</button>
+
+    <!-- Header Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Nút Cài đặt API Key -->
+      <button type="button" id="openApiKeyModalBtn" class="px-3 py-1.5 text-xs bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-primary font-bold rounded-xl border border-slate-200 transition flex items-center gap-1.5 shadow-sm">
+        <span>⚙️</span>
+        <span class="hidden sm:inline">Cài đặt API Key</span>
+        <span class="sm:hidden">API Key</span>
+      </button>
+
+      <!-- Nút Xóa hội thoại -->
+      <button type="button" id="clearChat" class="px-3 py-1.5 text-xs bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition font-semibold" title="Xóa toàn bộ tin nhắn">
+        🗑️ <span class="hidden sm:inline">Xoá hội thoại</span>
+      </button>
+
+      <!-- Chuông thông báo tương tác -->
+      <div class="relative">
+        <button id="notificationBellBtn" class="relative p-2 rounded-full hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-primary/20" title="Thông báo hệ thống">
+          <span class="text-xl">🔔</span>
+          <span class="notification-dot-indicator absolute top-1 right-1 w-2.5 h-2.5 bg-accent rounded-full ring-2 ring-white animate-pulse"></span>
+        </button>
+      </div>
+    </div>
   </header>
 
   <!-- Quick prompt chips -->
-  <div class="bg-white border-b px-6 py-2 flex gap-2 overflow-x-auto flex-shrink-0">
-    <button onclick="insertPrompt('Giải thích khái niệm mệnh đề toán học')"        class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">📐 Mệnh đề là gì?</button>
-    <button onclick="insertPrompt('Giải bài tập: Tìm x để x² - 5x + 6 = 0')"      class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">🧮 Giải phương trình</button>
-    <button onclick="insertPrompt('Chứng minh định lý Pythagore')"                  class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">📏 Pythagore</button>
-    <button onclick="insertPrompt('Tóm tắt kiến thức chương Động học chất điểm')"  class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">⚛️ Động học</button>
-    <button onclick="insertPrompt('Lập lịch học Toán 10 cho 1 tuần')"              class="chip whitespace-nowrap px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-medium hover:bg-blue-100 hover:text-primary transition">📅 Lịch học</button>
+  <div class="bg-white border-b px-4 sm:px-6 py-2.5 flex items-center gap-2 overflow-x-auto flex-shrink-0 text-xs">
+    <span class="font-bold text-slate-400 whitespace-nowrap hidden sm:inline">Gợi ý:</span>
+    <button onclick="insertPrompt('Giải thích khái niệm mệnh đề toán học')"        class="chip whitespace-nowrap px-3.5 py-1.5 bg-slate-100 text-slate-700 rounded-full font-medium hover:bg-blue-100 hover:text-primary transition">📐 Mệnh đề là gì?</button>
+    <button onclick="insertPrompt('Giải bài tập: Tìm x để x² - 5x + 6 = 0')"      class="chip whitespace-nowrap px-3.5 py-1.5 bg-slate-100 text-slate-700 rounded-full font-medium hover:bg-blue-100 hover:text-primary transition">🧮 Giải phương trình</button>
+    <button onclick="insertPrompt('Chứng minh định lý Pythagore')"                  class="chip whitespace-nowrap px-3.5 py-1.5 bg-slate-100 text-slate-700 rounded-full font-medium hover:bg-blue-100 hover:text-primary transition">📏 Pythagore</button>
+    <button onclick="insertPrompt('Tóm tắt kiến thức chương Động học chất điểm')"  class="chip whitespace-nowrap px-3.5 py-1.5 bg-slate-100 text-slate-700 rounded-full font-medium hover:bg-blue-100 hover:text-primary transition">⚛️ Động học</button>
+    <button onclick="insertPrompt('Lập lịch học Toán 10 cho 1 tuần')"              class="chip whitespace-nowrap px-3.5 py-1.5 bg-slate-100 text-slate-700 rounded-full font-medium hover:bg-blue-100 hover:text-primary transition">📅 Lịch học</button>
+    <button onclick="insertPrompt('1 + 1 =')"                                      class="chip whitespace-nowrap px-3.5 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full font-bold hover:bg-blue-100 transition">🔢 1 + 1 =</button>
   </div>
 
-  <!-- Chat area -->
-  <div id="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+  <!-- Chat conversation area -->
+  <div id="chatContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
     <!-- Welcome message -->
     <div class="flex gap-3">
-      <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-1">🤖</div>
-      <div class="chat-bubble-ai p-4 max-w-lg shadow-sm">
-        <p class="text-slate-800 text-sm">Xin chào! Tôi là <strong>AI Trợ lý a0jyng</strong> 🎓</p>
-        <p class="text-slate-600 text-sm mt-2">Tôi có thể giúp bạn:</p>
-        <ul class="text-sm text-slate-600 mt-1 space-y-1">
-          <li>✅ Giải bài tập từng bước</li>
-          <li>✅ Chứng minh định lý, công thức</li>
-          <li>✅ Tóm tắt kiến thức bài học</li>
-          <li>✅ Lập lịch học cá nhân hóa</li>
-          <li>✅ Giải đáp mọi thắc mắc</li>
-        </ul>
-        <p class="text-slate-500 text-xs mt-3">Hãy đặt câu hỏi bất kỳ! ⬇️</p>
+      <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-white text-sm flex-shrink-0 mt-1 shadow-sm">🤖</div>
+      <div class="chat-bubble-ai p-4 sm:p-5 max-w-2xl shadow-sm text-sm">
+        <p class="text-slate-800 font-bold text-base mb-1">Xin chào! Tôi là AI Trợ lý a0jyng 🎓</p>
+        <p class="text-slate-600 leading-relaxed mb-3">Tôi đã được tích hợp <strong>Bộ não Trợ lý Đa nhiệm v3.0</strong>, sẵn sàng giải toán từng bước, giải thích lý thuyết SGK và phản hồi thông minh 100% bằng tiếng Việt:</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 mb-3">
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">🔢 <strong>Tính toán số học:</strong> Gõ trực tiếp biểu thức như <code>1 + 1 =</code>, <code>25 * 4 =</code></div>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">🧮 <strong>Giải phương trình:</strong> Bậc 1, bậc 2 kèm $\Delta$ và nghiệm chi tiết</div>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">📐 <strong>Toán - Lý - Hóa:</strong> Định lý Pythagore, Mệnh đề, Động học, Cấu hình e</div>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">⚡ <strong>Dual-Engine:</strong> Gemini 2.5 Flash Online + Smart Offline Engine</div>
+        </div>
+        <p class="text-slate-500 text-xs">Hãy đặt bất kỳ câu hỏi nào hoặc nhập một biểu thức toán học bên dưới! ⬇️</p>
       </div>
     </div>
   </div>
 
-  <!-- Input area -->
-  <div class="bg-white border-t px-4 py-3 flex-shrink-0">
-    <!-- Subject context -->
-    <div class="flex gap-2 mb-2">
-      <select id="contextSubject" class="text-xs px-2 py-1 border rounded-lg text-slate-600 bg-slate-50 outline-none">
-        <option value="">📚 Ngữ cảnh: Tất cả</option>
-        <option value="toan">📐 Toán học</option>
-        <option value="ly">⚛️ Vật lý</option>
-        <option value="hoa">🧪 Hóa học</option>
-        <option value="van">📖 Ngữ văn</option>
-        <option value="anh">🌍 Tiếng Anh</option>
+  <!-- Chat Input area -->
+  <div class="bg-white border-t px-4 py-3 flex-shrink-0 shadow-lg">
+    <!-- Subject context & Grade -->
+    <div class="flex items-center gap-2 mb-2">
+      <select id="contextSubject" class="text-xs px-2.5 py-1.5 border rounded-xl text-slate-700 bg-slate-50 font-semibold outline-none focus:ring-1 focus:ring-primary">
+        <option value="">📚 Môn học: Tất cả</option>
+        <option value="Toán học">📐 Toán học</option>
+        <option value="Vật lý">⚛️ Vật lý</option>
+        <option value="Hóa học">🧪 Hóa học</option>
+        <option value="Ngữ văn">📖 Ngữ văn</option>
+        <option value="Tiếng Anh">🌍 Tiếng Anh</option>
+        <option value="Tin học">💻 Tin học</option>
       </select>
-      <select id="contextLevel" class="text-xs px-2 py-1 border rounded-lg text-slate-600 bg-slate-50 outline-none">
-        <option value="10">Lớp 10</option>
-        <option value="11">Lớp 11</option>
-        <option value="12">Lớp 12</option>
+      <select id="contextLevel" class="text-xs px-2.5 py-1.5 border rounded-xl text-slate-700 bg-slate-50 font-semibold outline-none focus:ring-1 focus:ring-primary">
+        <option value="Lớp 10">Lớp 10</option>
+        <option value="Lớp 11">Lớp 11</option>
+        <option value="Lớp 12">Lớp 12</option>
       </select>
+      <span class="text-[11px] text-slate-400 hidden sm:inline ml-auto">Nhấn <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-[10px]">Enter</kbd> để gửi, <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-[10px]">Shift+Enter</kbd> xuống dòng</span>
     </div>
-    <div class="flex gap-3 items-end">
-      <textarea id="chatInput" rows="2" placeholder="Hỏi bất cứ điều gì... (Enter để gửi, Shift+Enter xuống dòng)"
-        class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary outline-none resize-none text-sm transition"></textarea>
-      <button id="sendBtn" class="w-12 h-12 bg-primary text-white rounded-xl hover:bg-blue-800 transition flex items-center justify-center flex-shrink-0 shadow">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+
+    <!-- Textarea & Send button -->
+    <div class="flex gap-2 sm:gap-3 items-end">
+      <textarea id="chatInput" rows="2" placeholder="Hỏi bài tập, gõ '1 + 1 =', yêu cầu giải phương trình hoặc giải thích khái niệm..."
+        class="flex-1 px-4 py-2.5 border-2 border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none text-sm leading-relaxed transition"></textarea>
+      <button id="sendBtn" class="w-12 h-12 bg-primary hover:bg-blue-700 text-white rounded-2xl transition flex items-center justify-center flex-shrink-0 shadow-md active:scale-95">
+        <svg class="w-5 h-5 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
         </svg>
       </button>
     </div>
-    <p class="text-xs text-slate-400 mt-1">⚡ AI được cung cấp bởi Gemini · Cài API key trong <code>assets/js/ai-config.js</code></p>
   </div>
 </main>
 
+<!-- ===== MODAL CÀI ĐẶT GEMINI API KEY ===== -->
+<div id="apiKeyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-fade-in">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">⚙️</span>
+        <h3 class="font-bold text-slate-800 text-base">Cài đặt Gemini API Key</h3>
+      </div>
+      <button type="button" id="closeApiKeyModalBtn" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1">✕</button>
+    </div>
+
+    <p class="text-xs text-slate-500 leading-relaxed">
+      Khóa API được lưu an toàn trong <code>localStorage ('a0jyng_gemini_key')</code> và được đồng bộ dùng chung trên toàn bộ hệ sinh thái (AI Studio, AI Trợ lý, AI Vision OCR).
+    </p>
+
+    <div>
+      <label class="block text-xs font-bold text-slate-700 mb-1.5">Gemini API Key (Google AI Studio):</label>
+      <input type="password" id="apiKeyInput" placeholder="Dán khóa API Key bắt đầu bằng AIzaSy..."
+             class="w-full p-3 rounded-xl border border-slate-200 text-xs font-mono outline-none focus:ring-2 focus:ring-primary">
+      <p class="text-[11px] text-slate-400 mt-1">
+        Chưa có khóa? Lấy miễn phí tại: <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-primary hover:underline font-bold">aistudio.google.com ↗</a>
+      </p>
+    </div>
+
+    <div id="apiKeyStatusMsg" class="text-xs min-h-[1.5rem] flex items-center gap-1 font-semibold"></div>
+
+    <div class="flex gap-2 pt-2">
+      <button type="button" id="testApiKeyBtn" class="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-200 transition">
+        🔍 Kiểm tra kết nối
+      </button>
+      <button type="button" id="saveApiKeyBtn" class="flex-1 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-blue-700 shadow-md transition">
+        💾 Lưu cài đặt
+      </button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { getCurrentUser, signOut as dbSignOut } from "./assets/js/db.js";
+  import { initNotificationCenter } from "./assets/js/notifications.js";
+  import { generateSmartOfflineReply } from "./assets/js/assistant-brain.js";
+  import { getApiKey, setApiKey, testApiKey } from "./assets/js/gemini-engine.js";
 
+  // Danh sách model ưu tiên tự động thử lại khi xoay vòng
+  const GEMINI_MODELS = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash'
+  ];
+
+  let chatHistory = [];
+  const chatContainer = document.getElementById('chatContainer');
+  const chatInput     = document.getElementById('chatInput');
+  const sendBtn       = document.getElementById('sendBtn');
+
+  // 1. Khởi tạo phiên người dùng
   let currentUser = await getCurrentUser();
   if (!currentUser) {
     currentUser = { name: "Học viên", email: "guest@a0jyng.edu.vn", role: "student" };
     localStorage.setItem('a0jyng_session', JSON.stringify(currentUser));
   }
-  document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-    await dbSignOut();
-    localStorage.removeItem('a0jyng_session');
-    window.location.href = 'login.html';
-  });
 
-  // ── GEMINI API CONFIG ──
-  const GEMINI_API_KEY = 'AQ.Ab8RN6L7B-4bvUcQUIBW_s2E1QuGRsR73VN1hE5plBUrvRHzmw';
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // 2. Khởi tạo trung tâm thông báo
+  initNotificationCenter({ bellButtonId: 'notificationBellBtn' });
 
-  let chatHistory = [];
+  // 3. Khởi tạo trạng thái API Key
+  updateEngineBadge();
 
-  const chatContainer = document.getElementById('chatContainer');
-  const chatInput     = document.getElementById('chatInput');
-  const sendBtn       = document.getElementById('sendBtn');
+  // ── RENDER MARKDOWN & KATEX MATH CHUẨN XÁC ────────────────────
+  function typesetMath(element) {
+    if (!element) return;
+    if (window.renderMathInElement) {
+      try {
+        window.renderMathInElement(element, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      } catch (e) {
+        console.warn('[KaTeX Render Warn]:', e);
+      }
+    }
+
+    if (window.hljs) {
+      element.querySelectorAll('pre code').forEach((block) => {
+        window.hljs.highlightElement(block);
+      });
+    }
+  }
+
+  function parseMarkdown(text) {
+    if (!text) return '';
+    if (window.marked) {
+      try {
+        return window.marked.parse(text, { breaks: true, gfm: true });
+      } catch (e) {
+        console.warn('[Marked.js Warn]:', e);
+      }
+    }
+    // Fallback nếu chưa tải xong Marked
+    return text.replace(/\n/g, '<br>')
+               .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+               .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1 rounded text-xs">$1</code>');
+  }
 
   function addMessage(role, text) {
     const isUser = role === 'user';
     const div = document.createElement('div');
     div.className = `flex gap-3 animate-fade-in ${isUser ? 'flex-row-reverse' : ''}`;
+    
     div.innerHTML = `
-      <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-1 ${isUser ? 'bg-accent' : 'bg-gradient-to-br from-primary to-secondary'}">
+      <div class="w-8 h-8 rounded-2xl flex items-center justify-center text-white text-sm flex-shrink-0 mt-1 shadow-sm ${isUser ? 'bg-accent' : 'bg-gradient-to-br from-primary to-secondary'}">
         ${isUser ? '👤' : '🤖'}
       </div>
-      <div class="${isUser ? 'chat-bubble-user' : 'chat-bubble-ai'} p-4 max-w-lg shadow-sm text-sm leading-relaxed">
-        ${text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1 rounded text-xs">$1</code>')}
+      <div class="${isUser ? 'chat-bubble-user text-white' : 'chat-bubble-ai text-slate-800'} p-4 sm:p-5 max-w-2xl shadow-sm text-sm leading-relaxed overflow-x-auto">
+        <div class="markdown-body">
+          ${parseMarkdown(text)}
+        </div>
       </div>`;
+    
     chatContainer.appendChild(div);
+    typesetMath(div);
     chatContainer.scrollTop = chatContainer.scrollHeight;
     return div;
   }
@@ -168,100 +346,258 @@
     div.id = 'typingIndicator';
     div.className = 'flex gap-3 animate-fade-in';
     div.innerHTML = `
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm flex-shrink-0">🤖</div>
-      <div class="chat-bubble-ai p-4 flex items-center gap-1.5">
+      <div class="w-8 h-8 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm flex-shrink-0 shadow-sm">🤖</div>
+      <div class="chat-bubble-ai p-4 flex items-center gap-1.5 shadow-sm">
         <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
       </div>`;
     chatContainer.appendChild(div);
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 
+  // ── GỌI GEMINI API VỚI CƠ CHẾ XOAY VÒNG MODEL TỰ ĐỘNG ─────────
+  async function callGeminiWithAutoFallback(userQuestion, sysPrompt) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      return {
+        ok: false,
+        errorType: 'NO_KEY',
+        errorMessage: 'Chưa cài đặt Gemini API Key'
+      };
+    }
+
+    // Chuẩn hóa chat history để gửi lên API (chỉ lấy role hợp lệ: user / model)
+    const formattedContents = chatHistory.slice(-10).map(item => ({
+      role: item.role === 'user' ? 'user' : 'model',
+      parts: [{ text: item.text || '' }]
+    }));
+
+    // Bổ sung câu hỏi hiện tại
+    formattedContents.push({
+      role: 'user',
+      parts: [{ text: userQuestion }]
+    });
+
+    let lastError = null;
+
+    for (const model of GEMINI_MODELS) {
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: sysPrompt }]
+            },
+            contents: formattedContents,
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 2048
+            }
+          })
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+          const answerText = data.candidates[0].content.parts[0].text;
+          return {
+            ok: true,
+            model,
+            reply: answerText
+          };
+        }
+
+        // Nếu trả về lỗi HTTP 400, 403, 404, 429
+        const errDetail = data?.error?.message || `HTTP ${res.status}`;
+        console.warn(`[Gemini Engine] Model ${model} không phản hồi (${errDetail}), thử model tiếp theo...`);
+        lastError = { status: res.status, message: errDetail };
+
+        // Nếu API Key sai hoàn toàn (400 INVALID_ARGUMENT do key hoặc 403 PERMISSION_DENIED), không cần thử thêm model khác
+        if (res.status === 400 && errDetail.toLowerCase().includes('api key')) {
+          return {
+            ok: false,
+            errorType: 'INVALID_KEY',
+            errorMessage: 'API Key không hợp lệ hoặc đã hết hạn'
+          };
+        }
+      } catch (networkErr) {
+        console.warn(`[Gemini Engine] Lỗi mạng khi gọi ${model}:`, networkErr);
+        lastError = { status: 0, message: networkErr.message || 'Mất kết nối mạng' };
+      }
+    }
+
+    return {
+      ok: false,
+      errorType: 'ALL_MODELS_FAILED',
+      errorMessage: lastError?.message || 'Không thể kết nối đến máy chủ Gemini'
+    };
+  }
+
+  // ── XỬ LÝ GỬI TIN NHẮN (CONTROLLER TRUNG TÂM) ──────────────────
   async function sendMessage() {
-    const text    = chatInput.value.trim();
+    const text = chatInput.value.trim();
     if (!text) return;
     const subject = document.getElementById('contextSubject').value;
     const grade   = document.getElementById('contextLevel').value;
 
     chatInput.value = '';
     sendBtn.disabled = true;
+
+    // 1. Hiển thị tin nhắn người dùng lên giao diện
     addMessage('user', text);
-
-    // Build prompt with context
-    const sysPrompt = `Bạn là trợ lý học tập thông minh của nền tảng a0jyng, chuyên hỗ trợ học sinh Việt Nam lớp ${grade}${subject ? ' môn ' + subject : ''}.
-Hãy:
-- Giải thích rõ ràng, từng bước một
-- Dùng tiếng Việt, thân thiện với học sinh
-- Nếu là bài toán, trình bày đẹp với ký hiệu toán học
-- Nếu là định lý, cung cấp chứng minh đầy đủ
-- Kết thúc bằng một câu khuyến khích`;
-
-    chatHistory.push({ role: 'user', parts: [{ text }] });
+    chatHistory.push({ role: 'user', text });
     addTypingIndicator();
 
-    try {
-      // If no API key, use mock response
-      if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
-        throw new Error('NO_API_KEY');
+    // 2. Chuẩn bị prompt sư phạm
+    const sysPrompt = `Bạn là AI Trợ lý Học tập xuất sắc của nền tảng a0jyng, chuyên hỗ trợ học sinh Việt Nam ${grade}${subject ? ' môn ' + subject : ''}.
+Hãy luôn:
+- Giải thích rõ ràng, mạch lạc, từng bước một.
+- Trình bày công thức Toán, Lý, Hóa bằng KaTeX ($...$ và $$...$$).
+- Format đẹp bằng Markdown, đóng khung các lưu ý quan trọng.
+- Luôn thân thiện, sư phạm và khuyến khích học sinh tư duy sáng tạo.`;
+
+    // 3. Thử gọi Gemini API với cơ chế xoay vòng model
+    const apiResult = await callGeminiWithAutoFallback(text, sysPrompt);
+    document.getElementById('typingIndicator')?.remove();
+
+    if (apiResult.ok) {
+      // Thành công từ Gemini API
+      addMessage('ai', apiResult.reply);
+      chatHistory.push({ role: 'model', text: apiResult.reply });
+      updateEngineBadge(`⚡ ${apiResult.model} Active`, 'success');
+    } else {
+      // 4. Khi API thất bại hoặc chưa có key:
+      // Tự động phân tích nguyên nhân lỗi và chuyển sang Bộ não Trợ lý Nội bộ (Offline Engine)
+      const offlineAnswer = generateSmartOfflineReply(text);
+
+      let noticeHeader = '';
+      if (apiResult.errorType === 'NO_KEY') {
+        noticeHeader = `> 💡 **[Chế độ Trợ lý Nội bộ]:** *Chưa cài đặt Gemini API Key. Bạn có thể bấm nút **⚙️ Cài đặt API Key** ở góc trên để kích hoạt mô hình trực tuyến. Trợ lý a0jyng đã tự động giải đáp chi tiết cho bạn bên dưới:*`;
+      } else if (apiResult.errorType === 'INVALID_KEY') {
+        noticeHeader = `> ⚠️ **[Lưu ý kỹ thuật]:** *Gemini API Key hiện tại không hợp lệ hoặc đã hết hạn. Hệ thống tự động chuyển sang **Bộ não Trợ lý Nội bộ (Offline Smart AI)** để giải đáp cho bạn:*`;
+      } else {
+        noticeHeader = `> ⚡ **[Tự động Chuyển vùng]:** *Máy chủ Gemini tạm thời bận (${apiResult.errorMessage || 'Mạng gián đoạn'}). Hệ thống đã kích hoạt **Bộ não Trợ lý Nội bộ** để phục vụ việc học không gián đoạn:*`;
       }
 
-      const res = await fetch(GEMINI_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: sysPrompt }] },
-          contents: chatHistory,
-          generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
-        }),
-      });
-      const data = await res.json();
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Xin lỗi, tôi không thể trả lời lúc này.';
-
-      document.getElementById('typingIndicator')?.remove();
-      addMessage('ai', reply);
-      chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-
-    } catch(e) {
-      document.getElementById('typingIndicator')?.remove();
-      // Demo fallback response
-      const demoReply = generateDemoReply(text);
-      addMessage('ai', demoReply);
-      chatHistory.push({ role: 'model', parts: [{ text: demoReply }] });
+      const fullReply = `${noticeHeader}\n\n${offlineAnswer}`;
+      addMessage('ai', fullReply);
+      chatHistory.push({ role: 'model', text: fullReply });
+      updateEngineBadge('🧠 Offline Smart AI', 'warning');
     }
+
     sendBtn.disabled = false;
+    chatInput.focus();
   }
 
-  // Demo responses when no API key
-  function generateDemoReply(question) {
-    const q = question.toLowerCase();
-    if (q.includes('mệnh đề'))
-      return `**Mệnh đề** là một câu khẳng định có tính đúng hoặc sai xác định.\n\n**Ví dụ về mệnh đề:**\n- "2 + 2 = 4" → Mệnh đề ĐÚNG ✅\n- "1 > 5" → Mệnh đề SAI ❌\n- "Hà Nội là thủ đô của Việt Nam" → Mệnh đề ĐÚNG ✅\n\n**Không phải mệnh đề:**\n- "Bạn có khỏe không?" (câu hỏi)\n- "Hãy học bài!" (câu mệnh lệnh)\n- "x + 1 = 2" (chứa biến x)\n\n💡 Để hiểu sâu hơn, hãy làm các hoạt động trong bài học nhé!`;
+  // ── CẬP NHẬT HUY HIỆU MODEL / ENGINE ─────────────────────────
+  function updateEngineBadge(customText, status = 'default') {
+    const badge = document.getElementById('chatEngineBadge');
+    if (!badge) return;
 
-    if (q.includes('pythagore') || q.includes('pythagor'))
-      return `**Định lý Pythagore:**\n\nTrong tam giác vuông, bình phương của cạnh huyền bằng tổng bình phương hai cạnh góc vuông:\n\n**a² + b² = c²** (c là cạnh huyền)\n\n**Chứng minh (dùng diện tích):**\n1. Dựng hình vuông cạnh (a+b)\n2. Bên trong đặt 4 tam giác vuông\n3. Diện tích hình vuông lớn = 4 × ½ab + c²\n4. Mặt khác = (a+b)² = a² + 2ab + b²\n5. Suy ra: a² + b² = c² ∎\n\n💪 Bạn đã hiểu chứng minh này chưa?`;
-
-    if (q.includes('lịch học') || q.includes('thời khóa biểu'))
-      return `**Gợi ý lịch học tuần cho Toán 10:**\n\n| Thứ | Ca sáng | Ca chiều |\n|------|---------|----------|\n| 2 | Lý thuyết (30p) + BT (30p) | Ôn tập |\n| 3 | Bài tập SGK | Hoạt động online |\n| 4 | Nghỉ hoặc đọc thêm | - |\n| 5 | Lý thuyết mới | BT nâng cao |\n| 6 | Ôn tổng hợp | Kiểm tra mini |\n| 7 | Giải đề | Sửa lỗi |\n| CN | Nghỉ | Nghỉ |\n\n⏱️ Dùng Pomodoro: 25 phút học + 5 phút nghỉ để hiệu quả nhất!`;
-
-    return `Cảm ơn bạn đã đặt câu hỏi về: **"${question}"**\n\nĐây là phản hồi demo (chưa kết nối Gemini API).\n\nĐể kích hoạt AI thực sự:\n1. Lấy API key tại **https://aistudio.google.com/**\n2. Thay \`YOUR_GEMINI_API_KEY\` trong file \`ai-chat.html\`\n3. Tải lại trang và hỏi đáp tự do!\n\n💡 Trong lúc đó, hãy thử các hoạt động học tập trong phần Môn học nhé!`;
+    const key = getApiKey();
+    if (customText) {
+      badge.textContent = customText;
+    } else if (key && key.startsWith('AIzaSy')) {
+      badge.textContent = '⚡ Gemini 2.5 Active';
+      badge.className = 'hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+    } else {
+      badge.textContent = '🧠 Offline Smart AI';
+      badge.className = 'hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300';
+    }
   }
 
-  // Event listeners
+  // ── SỰ KIỆN GIAO DIỆN & MODAL API KEY ─────────────────────────
   sendBtn.addEventListener('click', sendMessage);
   chatInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   });
 
-  window.insertPrompt = (text) => { chatInput.value = text; chatInput.focus(); };
+  window.insertPrompt = (text) => {
+    chatInput.value = text;
+    chatInput.focus();
+  };
 
   document.getElementById('clearChat').addEventListener('click', () => {
-    if (!confirm('Xoá toàn bộ hội thoại?')) return;
+    if (!confirm('Xoá toàn bộ lịch sử cuộc trò chuyện hiện tại?')) return;
     chatHistory = [];
     chatContainer.innerHTML = '';
-    addMessage('ai', 'Hội thoại đã được xoá. Tôi sẵn sàng giúp bạn! 🚀');
+    addMessage('ai', 'Đã xoá lịch sử hội thoại. Tôi luôn sẵn sàng hỗ trợ bạn câu hỏi tiếp theo! 🚀');
   });
 
-  window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('active'); };
-  window.closeSidebar  = () => { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.remove('active'); };
+  // Modal API Key
+  const apiKeyModal = document.getElementById('apiKeyModal');
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const apiKeyStatusMsg = document.getElementById('apiKeyStatusMsg');
+
+  document.getElementById('openApiKeyModalBtn')?.addEventListener('click', () => {
+    apiKeyInput.value = getApiKey() || '';
+    apiKeyStatusMsg.textContent = '';
+    apiKeyModal.classList.remove('hidden');
+    apiKeyInput.focus();
+  });
+
+  document.getElementById('closeApiKeyModalBtn')?.addEventListener('click', () => {
+    apiKeyModal.classList.add('hidden');
+  });
+
+  document.getElementById('saveApiKeyBtn')?.addEventListener('click', () => {
+    const val = apiKeyInput.value.trim();
+    if (!val) {
+      setApiKey('');
+      apiKeyStatusMsg.textContent = 'Đã xoá API Key. Hệ thống sử dụng Bộ não Offline.';
+      apiKeyStatusMsg.className = 'text-xs text-amber-600 font-semibold';
+    } else {
+      setApiKey(val);
+      apiKeyStatusMsg.textContent = '✓ Đã lưu API Key thành công!';
+      apiKeyStatusMsg.className = 'text-xs text-emerald-600 font-semibold';
+    }
+    updateEngineBadge();
+    setTimeout(() => {
+      apiKeyModal.classList.add('hidden');
+    }, 800);
+  });
+
+  document.getElementById('testApiKeyBtn')?.addEventListener('click', async () => {
+    const val = apiKeyInput.value.trim();
+    if (!val) {
+      apiKeyStatusMsg.textContent = '⚠️ Vui lòng nhập khóa API Key để kiểm tra.';
+      apiKeyStatusMsg.className = 'text-xs text-amber-600 font-semibold';
+      return;
+    }
+    apiKeyStatusMsg.textContent = '⏳ Đang kiểm tra kết nối với Google Gemini...';
+    apiKeyStatusMsg.className = 'text-xs text-blue-600 font-semibold animate-pulse';
+
+    try {
+      await testApiKey(val);
+      apiKeyStatusMsg.textContent = '🎉 Tuyệt vời! Kết nối Gemini 2.5 Flash thành công 100%.';
+      apiKeyStatusMsg.className = 'text-xs text-emerald-600 font-semibold';
+    } catch (err) {
+      apiKeyStatusMsg.textContent = '❌ Lỗi kết nối: ' + (err.message || 'Khóa không hợp lệ');
+      apiKeyStatusMsg.className = 'text-xs text-red-600 font-semibold';
+    }
+  });
+
+  // Logout
+  document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+    await dbSignOut();
+    localStorage.removeItem('a0jyng_session');
+    window.location.href = 'login.html';
+  });
+
+  // Sidebar toggle trên mobile
+  window.toggleSidebar = () => {
+    document.getElementById('sidebar')?.classList.toggle('-translate-x-full');
+    document.getElementById('sidebar-overlay')?.classList.toggle('active');
+  };
+  window.closeSidebar = () => {
+    document.getElementById('sidebar')?.classList.add('-translate-x-full');
+    document.getElementById('sidebar-overlay')?.classList.remove('active');
+  };
 </script>
 </body>
 </html>

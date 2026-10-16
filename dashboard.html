@@ -42,6 +42,9 @@
     <a href="dashboard.html"  class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
       <span class="text-lg">🏠</span> Dashboard
     </a>
+    <a href="ai-studio.html"  class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/15 hover:bg-white/20 text-white font-bold text-sm shadow-sm transition">
+      <span class="text-lg">✨</span> AI Studio Học tập
+    </a>
     <a href="subjects.html"   class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium">
       <span class="text-lg">📚</span> Môn học
     </a>
@@ -107,17 +110,74 @@
         <p class="text-xs text-slate-500" id="todayDate"></p>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <button class="relative p-2 rounded-full hover:bg-slate-100">
-        <span class="text-xl">🔔</span>
-        <span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
-      </button>
-      <div id="topAvatar" class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm cursor-pointer">A</div>
+    <div class="flex items-center gap-3 relative">
+      <!-- Notification Bell -->
+      <div class="relative">
+        <button id="notificationBellBtn" class="relative p-2 rounded-full hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-primary/20" title="Thông báo hệ thống">
+          <span class="text-xl">🔔</span>
+          <span class="notification-dot-indicator absolute top-1 right-1 w-2.5 h-2.5 bg-accent rounded-full ring-2 ring-white animate-pulse"></span>
+        </button>
+      </div>
+
+      <!-- User Top Avatar with Dropdown -->
+      <div class="relative">
+        <div id="topAvatar" class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:ring-2 hover:ring-primary/40 transition select-none shadow-sm" title="Tài khoản cá nhân">A</div>
+        
+        <!-- User Menu Popover -->
+        <div id="userMenuPopover" class="hidden absolute right-0 top-12 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 p-2 animate-fade-in">
+          <div class="p-3 border-b border-slate-100 flex items-center gap-3">
+            <div id="menuAvatar" class="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-base flex-shrink-0">A</div>
+            <div class="min-w-0">
+              <p id="menuUserName" class="font-bold text-sm text-slate-800 truncate">Học sinh</p>
+              <p id="menuUserEmail" class="text-xs text-slate-500 truncate">student@a0jyng.vn</p>
+            </div>
+          </div>
+          <div class="py-1 text-xs">
+            <a href="dashboard.html" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition font-medium">
+              <span>🏠</span> Tổng quan bảng điều khiển
+            </a>
+            <a href="ai-studio.html" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-primary hover:bg-blue-50 transition font-bold">
+              <span>✨</span> AI Studio Học tập
+            </a>
+            <a href="progress.html" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition font-medium">
+              <span>📊</span> Tiến trình & Mục tiêu
+            </a>
+            <a href="reports.html" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition font-medium">
+              <span>📝</span> Lịch sử làm bài thi
+            </a>
+          </div>
+          <div class="pt-1 border-t border-slate-100">
+            <button type="button" id="menuLogoutBtn" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-red-600 hover:bg-red-50 transition font-semibold text-xs text-left">
+              <span>🚪</span> Đăng xuất
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
   <!-- Scrollable content -->
   <div class="flex-1 overflow-y-auto p-6">
+
+    <!-- AI STUDIO HERO BANNER -->
+    <div class="mb-6 p-6 rounded-3xl bg-gradient-to-r from-primary via-blue-700 to-indigo-900 text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 motion-card">
+      <div class="relative z-10 max-w-xl">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-blue-100 text-xs font-bold mb-2">
+          <span>✨</span> Mới: Gemini 2.5 Flash EdTech Engine
+        </div>
+        <h2 class="text-xl md:text-2xl font-black mb-1">AI Learning Studio — Học Tập Đa Chiều</h2>
+        <p class="text-xs md:text-sm text-blue-200 leading-relaxed">
+          Biên soạn giáo trình chuyên sâu, Flashcards 3D, 10 bài tập phân hóa Bloom, phòng thi tính giờ và chấm bài tự luận chuẩn sư phạm quốc gia.
+        </p>
+      </div>
+      <div class="relative z-10 flex-shrink-0">
+        <a href="ai-studio.html" class="px-6 py-3.5 bg-accent hover:bg-orange-600 text-white font-bold text-sm rounded-2xl shadow-md transition flex items-center gap-2">
+          <span>Vào AI Studio Ngay</span>
+          <span>→</span>
+        </a>
+      </div>
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-accent/20 rounded-full blur-2xl pointer-events-none"></div>
+    </div>
 
     <!-- STAT CARDS -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -224,6 +284,7 @@
 
 <script type="module">
   import { getCurrentUser, signOut as dbSignOut, getSubjects } from "./assets/js/db.js";
+  import { initNotificationCenter } from "./assets/js/notifications.js";
 
   // Auth guard: Kiểm tra phiên đăng nhập thống nhất
   let user = await getCurrentUser();
@@ -247,6 +308,38 @@
   const initial = (name[0] || 'U').toUpperCase();
   document.getElementById('userAvatar').textContent = initial;
   document.getElementById('topAvatar').textContent  = initial;
+
+  // Cập nhật User Profile Dropdown
+  const menuUserName = document.getElementById('menuUserName');
+  const menuUserEmail = document.getElementById('menuUserEmail');
+  const menuAvatar = document.getElementById('menuAvatar');
+  if (menuUserName) menuUserName.textContent = name;
+  if (menuUserEmail) menuUserEmail.textContent = user.email || 'student@a0jyng.vn';
+  if (menuAvatar) menuAvatar.textContent = initial;
+
+  // Khởi tạo Trung tâm thông báo
+  initNotificationCenter({ bellButtonId: 'notificationBellBtn' });
+
+  // Khởi tạo User Menu Popover
+  const topAvatar = document.getElementById('topAvatar');
+  const userMenuPopover = document.getElementById('userMenuPopover');
+  if (topAvatar && userMenuPopover) {
+    topAvatar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userMenuPopover.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!userMenuPopover.contains(e.target) && !topAvatar.contains(e.target)) {
+        userMenuPopover.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('menuLogoutBtn')?.addEventListener('click', async () => {
+      await dbSignOut();
+      window.location.href = 'login.html';
+    });
+  }
 
   // Today date
   document.getElementById('todayDate').textContent =

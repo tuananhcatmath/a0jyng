@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate EdTech Platform — a0jyng AI Studio</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E40AF',
+            secondary: '#3B82F6',
+            accent: '#F97316'
+          },
+          fontFamily: {
+            logo: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts & Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- KaTeX CSS & JS for Math / Physics / Chemistry Formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Marked.js for Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Highlight.js for Computer Science Code Blocks -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- Mermaid.js for Mindmaps and Flowcharts -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+
+  <!-- Canvas Confetti for Exam Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 flex h-screen overflow-hidden">
+
+  <!-- ===== MOBILE SIDEBAR OVERLAY ===== -->
+  <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- ===== SIDEBAR NAVIGATION ===== -->
+  <aside id="sidebar" class="w-64 bg-primary text-white flex flex-col fixed md:relative top-0 bottom-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+    <div class="p-5 border-b border-white/10 flex items-center justify-between">
+      <a href="index.html" class="font-logo text-2xl font-black">a0<span class="text-accent">jyng</span></a>
+      <span class="text-[10px] bg-accent/90 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Ultimate</span>
+    </div>
+
+    <div class="p-4 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <div id="userAvatar" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center font-bold text-white text-sm shadow-sm">A</div>
+        <div class="min-w-0">
+          <p id="sidebarName" class="font-semibold text-sm truncate">Học viên</p>
+          <p id="sidebarGrade" class="text-xs text-blue-200">Lớp 10</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+      <a href="ai-studio.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/20 text-white font-bold text-sm shadow-sm">
+        <span class="text-lg">✨</span> AI Learning Studio
+      </a>
+      <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">🏠</span> Dashboard
+      </a>
+      <a href="subjects.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">📚</span> Môn học
+      </a>
+      <a href="exercises.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">📝</span> Bài tập & Đề thi
+      </a>
+      <a href="theorems.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">🧮</span> Định lý & Công thức
+      </a>
+      <a href="database.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">🗄️</span> Quản lý Database
+      </a>
+      <a href="reports.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">📈</span> Báo cáo năng lực
+      </a>
+      <a href="pomodoro.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 transition text-sm font-medium text-blue-100">
+        <span class="text-lg">⏰</span> Pomodoro
+      </a>
+    </nav>
+
+    <div class="p-3 border-t border-white/10 space-y-2">
+      <button id="openLibraryBtn" class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white flex items-center justify-center gap-2 transition">
+        📂 Thư viện bài học
+      </button>
+      <button id="openSettingsBtn" class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white flex items-center justify-center gap-2 transition">
+        ⚙️ Cài đặt API Key
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT CONTAINER ===== -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <!-- TOP HEADER BAR -->
+    <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-4">
+        <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg md:text-xl font-bold text-slate-800">Ultimate AI Learning Studio</h1>
+            <span id="apiKeyBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-700 border border-emerald-300">
+              ⚡ Gemini 2.5 Active
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block">Đề thi 3 phần Bộ GD&ĐT · AI Vision OCR · Sổ tay câu sai · Lab Code & Đồ thị · TTS & Lo-Fi</p>
+        </div>
+      </div>
+
+      <!-- Action Tools at Topbar (Phân hệ 11 & 12) -->
+      <div class="flex items-center gap-2">
+        <button id="ambientSoundBtn" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5" title="Bật âm thanh mưa Lo-fi giúp tập trung">
+          🌧️ Tiếng mưa Focus
+        </button>
+        <button id="openPrintModalBtn" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-primary text-white hover:bg-blue-700 shadow-sm transition flex items-center gap-1.5" title="Xuất đề thi và giáo án ra file in ấn / PDF">
+          🖨️ Xuất PDF / In đề thi
+        </button>
+        <button id="exportBackupBtn" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition hidden lg:flex items-center gap-1" title="Xuất JSON sao lưu">
+          💾 Sao lưu
+        </button>
+        <button id="importBackupBtn" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition hidden lg:flex items-center gap-1" title="Nhập JSON sao lưu">
+          📥 Phục hồi
+        </button>
+        <input type="file" id="backupFileInput" accept=".json" class="hidden">
+
+        <!-- Notification Bell -->
+        <div class="relative ml-1">
+          <button id="notificationBellBtn" class="relative p-2 rounded-full hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-primary/20" title="Thông báo hệ thống">
+            <span class="text-lg">🔔</span>
+            <span class="notification-dot-indicator absolute top-1 right-1 w-2.5 h-2.5 bg-accent rounded-full ring-2 ring-white animate-pulse"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- SCROLLABLE PAGE BODY -->
+    <div class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6">
+
+      <!-- ============================================================
+           PHÂN HỆ 1 & 8: BẢNG KHỞI TẠO BÀI HỌC KÈM AI VISION OCR
+           ============================================================ -->
+      <section class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm motion-card glow-border">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center font-bold text-lg shadow-sm">
+              ✨
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-slate-800">Khởi tạo Bài học Đa chiều & AI Vision OCR</h2>
+              <p class="text-xs text-slate-500">Nhập đề bài, dán SGK hoặc chụp ảnh đề cương để AI biên soạn bài giảng chuẩn 100%</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="createLessonForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Môn học *</label>
+              <select id="inputSubject" class="w-full p-3 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition">
+                <option value="Toán học">📐 Toán học</option>
+                <option value="Vật lý">⚛️ Vật lý</option>
+                <option value="Hóa học">🧪 Hóa học</option>
+                <option value="Sinh học">🧬 Sinh học</option>
+                <option value="Ngữ văn">📖 Ngữ văn</option>
+                <option value="Tiếng Anh">🌍 Tiếng Anh</option>
+                <option value="Tin học">💻 Tin học / Lập trình</option>
+                <option value="Lịch sử">🏛️ Lịch sử</option>
+                <option value="Địa lý">🗺️ Địa lý</option>
+                <option value="Kinh tế & Pháp luật">⚖️ Kinh tế & Pháp luật</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Cấp độ / Lớp *</label>
+              <select id="inputGrade" class="w-full p-3 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition">
+                <option value="Lớp 10">Lớp 10</option>
+                <option value="Lớp 11">Lớp 11</option>
+                <option value="Lớp 12">Lớp 12</option>
+                <option value="Ôn thi Tốt nghiệp & ĐGNL">Ôn thi Tốt nghiệp & ĐGNL</option>
+                <option value="Bồi dưỡng Học sinh giỏi (HSG)">Bồi dưỡng HSG</option>
+                <option value="Đại học / Chuyên sâu">Đại học / Chuyên sâu</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Mục tiêu học tập *</label>
+              <select id="inputGoal" class="w-full p-3 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition">
+                <option value="Học mới từ đầu (Chi tiết bản chất)">Học mới từ đầu (Chi tiết bản chất)</option>
+                <option value="Ôn tập tổng hợp & củng cố">Ôn tập tổng hợp & củng cố</option>
+                <option value="Luyện đề 3 phần chuẩn Bộ GD&ĐT">Luyện đề 3 phần chuẩn Bộ GD&ĐT</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Chủ đề chi tiết *</label>
+              <input type="text" id="inputTopic" placeholder="VD: Hàm số bậc hai, Định luật Newton..." value="Hàm số bậc hai và đồ thị" required
+                     class="w-full p-3 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition">
+            </div>
+          </div>
+
+          <!-- Dán văn bản SGK & Nút tải ảnh Vision OCR (Phân hệ 8) -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-600">
+                📄 Ngữ cảnh văn bản SGK / Đề cương:
+              </label>
+              <div class="flex items-center gap-2">
+                <button type="button" id="uploadCreationImageBtn" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                  📷 Tải ảnh tài liệu / Trang sách (AI OCR)
+                </button>
+                <input type="file" id="creationImageInput" accept="image/*" class="hidden">
+              </div>
+            </div>
+            <textarea id="inputContext" rows="3"
+                      class="w-full p-3 rounded-xl border border-slate-200 text-xs md:text-sm text-slate-700 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition"
+                      placeholder="Dán nội dung SGK hoặc tải ảnh trang sách bên trên để AI bám sát 100% tài liệu đó..."></textarea>
+          </div>
+
+          <!-- Preview ảnh tài liệu tải lên -->
+          <div id="creationImagePreviewContainer" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs font-semibold text-blue-900">
+              <span>📷 Ảnh tài liệu đã đính kèm:</span>
+              <span id="creationImageName" class="font-bold">image.png</span>
+            </div>
+            <button type="button" id="removeCreationImageBtn" class="text-xs text-red-600 font-bold hover:underline">Xoá ảnh</button>
+          </div>
+
+          <!-- Quick Preset Pills -->
+          <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <span class="font-bold text-slate-500">Chủ đề mẫu:</span>
+            <button type="button" class="quick-preset-btn px-3 py-1.5 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 transition font-medium"
+                    data-subject="Toán học" data-grade="Lớp 10" data-topic="Hàm số bậc hai và đồ thị">
+              📐 Toán 10: Hàm bậc hai
+            </button>
+            <button type="button" class="quick-preset-btn px-3 py-1.5 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 transition font-medium"
+                    data-subject="Vật lý" data-grade="Lớp 10" data-topic="Định luật II Newton và lực ma sát">
+              ⚛️ Vật lý 10: Định luật II Newton
+            </button>
+            <button type="button" class="quick-preset-btn px-3 py-1.5 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 transition font-medium"
+                    data-subject="Hóa học" data-grade="Lớp 10" data-topic="Cấu hình electron và Bảng tuần hoàn">
+              🧪 Hóa 10: Cấu hình electron
+            </button>
+            <button type="button" class="quick-preset-btn px-3 py-1.5 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 transition font-medium"
+                    data-subject="Tin học" data-grade="Lớp 10" data-topic="Thuật toán đệ quy và cấu trúc dữ liệu mảng">
+              💻 Tin 10: Đệ quy & Lab Code
+            </button>
+          </div>
+
+          <div class="pt-2 flex justify-end">
+            <button type="submit" id="submitCreateBtn" class="px-8 py-3.5 bg-gradient-to-r from-primary via-secondary to-accent text-white font-bold text-sm rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center gap-2">
+              <span>🚀 Bắt đầu Biên soạn Học liệu Ultimate</span>
+              <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono">Gemini 2.5</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============================================================
+           BANNER BÀI HỌC & BỘ 6 TABS CHUYÊN SÂU
+           ============================================================ -->
+      <section class="space-y-4">
+        <!-- Banner Tiêu đề -->
+        <div class="bg-gradient-to-r from-blue-900 via-primary to-blue-800 text-white rounded-3xl p-6 md:p-8 shadow-md relative overflow-hidden">
+          <div class="relative z-10">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span id="lessonDisplayMeta" class="text-xs px-3 py-1 rounded-full bg-white/20 text-blue-100 font-semibold backdrop-blur-sm">
+                Toán học · Lớp 10 · 45 phút
+              </span>
+              <span class="text-xs px-3 py-1 rounded-full bg-accent text-white font-bold">
+                Chuẩn Đề Thi Mới Bộ GD&ĐT
+              </span>
+            </div>
+            <h2 id="lessonDisplayTitle" class="text-2xl md:text-3xl font-black mb-2 tracking-tight">
+              Hàm số bậc hai và đồ thị
+            </h2>
+            <p id="lessonDisplayGoal" class="text-xs md:text-sm text-blue-200 max-w-3xl leading-relaxed">
+              Mục tiêu: Nắm vững bản chất lý thuyết, sơ đồ tư duy Mermaid, 3 phần thi theo cấu trúc đề mới và phòng Lab Code.
+            </p>
+          </div>
+          <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+        </div>
+
+        <!-- BỘ CHUYỂN ĐỔI 6 TABS CHUYÊN SÂU -->
+        <div class="flex bg-slate-200/80 p-1.5 rounded-2xl gap-1.5 overflow-x-auto">
+          <button class="tab-btn flex-1 py-3 px-3 rounded-xl font-bold text-xs md:text-sm bg-white text-primary shadow-sm border border-slate-200 transition" data-tab="theory">
+            📖 1. Lý thuyết & Đồ thị
+          </button>
+          <button class="tab-btn flex-1 py-3 px-3 rounded-xl font-medium text-xs md:text-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 transition" data-tab="practice">
+            📝 2. Luyện tập có hướng dẫn
+          </button>
+          <button class="tab-btn flex-1 py-3 px-3 rounded-xl font-medium text-xs md:text-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 transition" data-tab="exam">
+            ⏱️ 3. Phòng thi 3 Phần MOET
+          </button>
+          <button class="tab-btn flex-1 py-3 px-3 rounded-xl font-medium text-xs md:text-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 transition" data-tab="mistakes">
+            📓 4. Sổ tay câu sai <span id="mistakesCountBadge" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200">0</span>
+          </button>
+          <button class="tab-btn flex-1 py-3 px-3 rounded-xl font-medium text-xs md:text-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 transition" data-tab="lab">
+            💻 5. Lab Code & Playground
+          </button>
+          <button class="tab-btn flex-1 py-3 px-3 rounded-xl font-medium text-xs md:text-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 transition" data-tab="analytics">
+            📊 6. Lịch sử & Năng lực
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           TAB 1: LÝ THUYẾT, MERMAID, ĐỒ THỊ CANVAS & FLASHCARD
+           ============================================================ -->
+      <div id="tab-theory" class="tab-content-panel space-y-6">
+
+        <!-- Header Công cụ Voice TTS -->
+        <div class="flex items-center justify-between bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🔊</span>
+            <span class="text-xs font-bold text-slate-700">Trợ lý Giọng nói Sư phạm:</span>
+          </div>
+          <button id="playTtsBtn" class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-primary border border-blue-200 rounded-xl font-bold text-xs transition flex items-center gap-1.5">
+            🔊 Nghe giảng bài
+          </button>
+        </div>
+
+        <!-- 1. Đặt vấn đề thực tế -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">🌍</span>
+            <h3 class="text-lg font-bold text-slate-800">1. Đặt vấn đề thực tế & Dẫn nhập</h3>
+          </div>
+          <div id="theoryHookContent" class="markdown-body text-slate-700 text-sm md:text-base leading-relaxed"></div>
+        </div>
+
+        <!-- 2. Định nghĩa & Khái niệm gốc -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">💡</span>
+            <h3 class="text-lg font-bold text-slate-800">2. Định nghĩa & Khái niệm nền tảng</h3>
+          </div>
+          <div id="theoryConceptsContent" class="markdown-body text-slate-700 text-sm md:text-base leading-relaxed"></div>
+        </div>
+
+        <!-- 3. Công thức cốt lõi đóng khung -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">📐</span>
+            <h3 class="text-lg font-bold text-slate-800">3. Công thức & Quy tắc Đóng khung Ghi nhớ</h3>
+          </div>
+          <div id="theoryFormulasList" class="space-y-3"></div>
+        </div>
+
+        <!-- PHÂN HỆ 9: TRÌNH VẼ ĐỒ THỊ TƯƠNG TÁC (INTERACTIVE GRAPH) -->
+        <div id="graphPlotWrapper" class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">📊</span>
+              <div>
+                <h3 id="graphPlotTitle" class="text-lg font-bold text-slate-800">Đồ thị Hàm số / Quỹ đạo Trực quan</h3>
+                <p class="text-xs text-slate-500">Mô phỏng đồ thị tự động theo hệ số toán học của bài học</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-center bg-slate-50 border border-slate-200 rounded-2xl p-4 overflow-x-auto">
+            <canvas id="interactiveGraphCanvas" width="600" height="340" class="max-w-full bg-white rounded-xl shadow-inner border border-slate-100"></canvas>
+          </div>
+        </div>
+
+        <!-- PHÂN HỆ 9: SƠ ĐỒ TƯ DUY MERMAID.JS -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">🧠</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">Sơ Đồ Tư Duy Kiến Thức (Mermaid Mindmap)</h3>
+              <p class="text-xs text-slate-500">Biểu diễn mối liên hệ logic của bài học dưới dạng sơ đồ cây phân nhánh</p>
+            </div>
+          </div>
+          <div id="mermaidDiagramContainer" class="mermaid-container"></div>
+        </div>
+
+        <!-- 4. Phân tích bản chất -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">🔬</span>
+            <h3 class="text-lg font-bold text-slate-800">4. Phân tích Bản chất & Cơ chế Hoạt động</h3>
+          </div>
+          <div id="theoryMechanismContent" class="markdown-body text-slate-700 text-sm md:text-base leading-relaxed"></div>
+        </div>
+
+        <!-- 5. 3 Ví dụ minh họa phân cấp -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-2xl">📌</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">5. Ví dụ Minh họa Phân cấp (Dễ → Trung bình → Nâng cao)</h3>
+              <p class="text-xs text-slate-500">Lời giải chi tiết từng bước kèm lưu ý phương pháp</p>
+            </div>
+          </div>
+          <div id="theoryExamplesList" class="space-y-6"></div>
+        </div>
+
+        <!-- 6. Các bẫy thường gặp -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">⚠️</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">6. Các Bẫy Thường Gặp & Sai Lầm Kinh Điển</h3>
+              <p class="text-xs text-slate-500">Phân tích nguyên nhân và cách khắc phục để không bị mất điểm oan</p>
+            </div>
+          </div>
+          <div id="theoryTrapsList" class="space-y-4"></div>
+        </div>
+
+        <!-- 7. Sơ đồ tư duy dạng bảng -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">🗺️</span>
+            <h3 class="text-lg font-bold text-slate-800">7. Bảng Tóm Tắt Hệ Thống</h3>
+          </div>
+          <div id="theoryMindmapContent" class="markdown-body text-slate-700 text-sm md:text-base leading-relaxed overflow-x-auto"></div>
+        </div>
+
+        <!-- FLASHCARD 3D STAGE -->
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">🎴</span>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800">Bộ Thẻ Ghi Nhớ Thông Minh (Flashcards 3D)</h3>
+                <p class="text-xs text-slate-500">Chạm vào thẻ để lật 3D xem giải nghĩa & mẹo ghi nhớ</p>
+              </div>
+            </div>
+            <button id="shuffleCardsBtn" class="text-xs px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">
+              🔀 Xáo thẻ
+            </button>
+          </div>
+
+          <div class="max-w-xl mx-auto py-4">
+            <div id="flashcardContainer" class="flip-card-container">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <div class="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
+                    <span id="fcCategory">Công thức</span>
+                    <span id="fcCounter">Thẻ 1/6</span>
+                  </div>
+                  <div class="flex-1 flex items-center justify-center my-4">
+                    <div id="fcFrontText" class="text-xl md:text-2xl font-black text-slate-800 text-center leading-snug">
+                      Toạ độ đỉnh parabol
+                    </div>
+                  </div>
+                  <div class="text-center text-xs text-slate-400 font-medium">👆 Chạm để lật xem đáp án</div>
+                </div>
+
+                <div class="flip-card-back">
+                  <div class="flex items-center justify-between text-xs text-blue-200 font-bold uppercase tracking-wider">
+                    <span id="fcBackCategory">Ý nghĩa</span>
+                    <span id="fcBackCounter">Thẻ 1/6</span>
+                  </div>
+                  <div class="flex-1 flex flex-col items-center justify-center my-4 overflow-y-auto">
+                    <div id="fcBackText" class="text-base md:text-lg font-bold text-white text-center leading-relaxed mb-3"></div>
+                    <div id="fcTipText" class="text-xs text-amber-300 font-medium bg-black/20 p-2.5 rounded-xl text-center max-w-md"></div>
+                  </div>
+                  <div class="text-center text-xs text-blue-200 font-medium">👆 Chạm để quay lại mặt trước</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-4 mt-6">
+              <button id="prevCardBtn" class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm shadow-sm transition">
+                ← Thẻ trước
+              </button>
+              <button id="flipCardBtn" class="px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-blue-700 shadow-md transition">
+                🔄 Lật thẻ
+              </button>
+              <button id="nextCardBtn" class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm shadow-sm transition">
+                Thẻ tiếp →
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+           TAB 2: LUYỆN TẬP CÓ HƯỚNG DẪN & CHẤM VỞ VIẾT TAY
+           ============================================================ -->
+      <div id="tab-practice" class="tab-content-panel hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-bold text-slate-800">10 Câu Trắc Nghiệm Phân Hóa Bloom</h3>
+            <p class="text-xs text-slate-500">Làm từng câu, xem gợi ý tư duy và đối chiếu phân tích sai lầm</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button class="bloom-filter-btn px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-white shadow-sm transition" data-filter="all">Tất cả (10)</button>
+            <button class="bloom-filter-btn px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-filter="Nhận biết">Nhận biết (4)</button>
+            <button class="bloom-filter-btn px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-filter="Thông hiểu">Thông hiểu (3)</button>
+            <button class="bloom-filter-btn px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-filter="Vận dụng">Vận dụng (3)</button>
+          </div>
+        </div>
+
+        <div id="practiceQuestionList" class="space-y-4"></div>
+
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm mt-8">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-2xl">✍️</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">2 Câu Tự Luận Vận Dụng Cao (Chấm Bằng AI Vision)</h3>
+              <p class="text-xs text-slate-500">Gõ lời giải hoặc tải ảnh chụp vở viết tay để AI đối chiếu bareme và chỉ rõ dòng sai</p>
+            </div>
+          </div>
+          <input type="file" id="essayImageInput" accept="image/*" class="hidden">
+          
+          <div class="mb-5 p-4 bg-slate-50 border border-dashed border-slate-300 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <button type="button" id="uploadEssayImageBtn" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <span>📷</span>
+                <span>Tải ảnh chụp vở viết tay / bài làm</span>
+              </button>
+              <span class="text-xs text-slate-500">Hỗ trợ JPG, PNG, WEBP (AI OCR công thức & chấm tự động)</span>
+            </div>
+            <div id="essayImagePreviewContainer" class="hidden flex items-center gap-2 p-1.5 px-3 bg-blue-50 border border-blue-200 rounded-xl">
+              <span class="text-base">📷</span>
+              <span id="essayImageName" class="text-xs text-blue-900 font-bold max-w-xs truncate">Ảnh đã chọn</span>
+              <button type="button" id="removeEssayImageBtn" class="text-xs text-red-600 hover:text-red-800 font-bold ml-2">✕ Xóa</button>
+            </div>
+          </div>
+
+          <div id="practiceEssayList" class="space-y-6"></div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           PHÂN HỆ 7 & 4: TAB 3 PHÒNG THI 3 PHẦN CHUẨN BỘ GIÁO DỤC
+           ============================================================ -->
+      <div id="tab-exam" class="tab-content-panel hidden space-y-6">
+        <!-- 1. Start Screen -->
+        <div id="examStartScreen" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm text-center max-w-2xl mx-auto py-12">
+          <div class="w-20 h-20 bg-blue-100 text-primary rounded-3xl flex items-center justify-center text-4xl mx-auto mb-5 shadow-sm">
+            ⏱️
+          </div>
+          <h3 id="examTitleDisplay" class="text-2xl font-black text-slate-800 mb-2">Đề Thi Chuẩn Hóa Cấu Trúc Mới Bộ GD&ĐT</h3>
+          <p class="text-slate-500 text-sm mb-6 leading-relaxed">
+            Áp dụng chuẩn 3 phần thi: Phần I (Trắc nghiệm 4 lựa chọn), Phần II (Đúng/Sai quy tắc bậc thang 0.1 - 0.25 - 0.5 - 1.0đ), Phần III (Trả lời ngắn số học).
+          </p>
+          <div class="flex flex-wrap justify-center gap-3 mb-8 text-xs font-bold">
+            <span id="examDurationBadge" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700">⏱️ 25 phút</span>
+            <span class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700">Phần I: 12 câu (3.0đ)</span>
+            <span class="px-4 py-2 rounded-xl bg-amber-50 text-amber-700">Phần II: 4 câu Đ/S (4.0đ)</span>
+            <span class="px-4 py-2 rounded-xl bg-purple-50 text-purple-700">Phần III: 6 câu số học (3.0đ)</span>
+          </div>
+          <button id="startExamBtn" class="px-10 py-4 bg-primary text-white rounded-2xl font-bold text-base shadow-lg hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all">
+            🚀 Bắt đầu làm bài thi ngay
+          </button>
+        </div>
+
+        <!-- 2. Active Screen 3 phần -->
+        <div id="examActiveScreen" class="hidden space-y-6">
+          <div class="sticky top-0 z-30 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-md flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Thời gian còn lại:</span>
+              <div id="examTimer" class="px-4 py-1.5 rounded-full font-mono font-bold text-base bg-slate-900 text-amber-400 shadow-sm">25:00</div>
+            </div>
+            <button id="submitExamBtn" class="px-6 py-2.5 bg-accent text-white rounded-xl font-bold text-sm hover:bg-orange-600 shadow-md transition">
+              🚀 Nộp bài thi
+            </button>
+          </div>
+
+          <!-- PHẦN I: 12 CÂU TRẮC NGHIỆM -->
+          <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+            <div class="border-b pb-3 mb-4">
+              <h3 class="font-bold text-base text-primary uppercase">PHẦN I. Câu trắc nghiệm nhiều phương án lựa chọn (3.0 điểm)</h3>
+              <p class="text-xs text-slate-500">Mỗi câu hỏi chỉ chọn một phương án đúng (0.25đ/câu)</p>
+            </div>
+            <div id="examPart1Container" class="space-y-4"></div>
+          </div>
+
+          <!-- PHẦN II: 4 CÂU ĐÚNG / SAI BẬC THANG -->
+          <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+            <div class="border-b pb-3 mb-4">
+              <h3 class="font-bold text-base text-accent uppercase">PHẦN II. Câu trắc nghiệm Đúng/Sai (4.0 điểm)</h3>
+              <p class="text-xs text-slate-500">Trong mỗi ý a), b), c), d), chọn Đúng hoặc Sai. (Đúng 1 ý: 0.1đ | 2 ý: 0.25đ | 3 ý: 0.5đ | 4 ý: 1.0đ)</p>
+            </div>
+            <div id="examPart2Container" class="space-y-4"></div>
+          </div>
+
+          <!-- PHẦN III: 6 CÂU TRẢ LỜI NGẮN SỐ HỌC -->
+          <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+            <div class="border-b pb-3 mb-4">
+              <h3 class="font-bold text-base text-purple-700 uppercase">PHẦN III. Câu trắc nghiệm trả lời ngắn (3.0 điểm)</h3>
+              <p class="text-xs text-slate-500">Học sinh tự giải toán và điền con số kết quả vào ô trống (0.5đ/câu)</p>
+            </div>
+            <div id="examPart3Container" class="space-y-4"></div>
+          </div>
+        </div>
+
+        <!-- 3. Result Screen -->
+        <div id="examResultScreen" class="hidden space-y-6">
+          <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm text-center">
+            <h3 class="text-2xl font-black text-slate-800 mb-2">Kết Quả Đề Thi Chuẩn Bộ GD&ĐT</h3>
+            <div class="flex justify-center items-center gap-8 my-6">
+              <div>
+                <span class="text-xs text-slate-400 font-bold block mb-1">TỔNG ĐIỂM</span>
+                <span id="examFinalScore" class="text-5xl font-black text-primary">8.75</span>
+                <span class="text-sm text-slate-400">/10</span>
+              </div>
+              <div class="h-14 w-px bg-slate-200"></div>
+              <div class="text-left text-xs space-y-1 font-semibold text-slate-600">
+                <div>Phần I (Trắc nghiệm): <strong id="examP1ScoreDisplay" class="text-blue-600">2.5/3.0đ</strong></div>
+                <div>Phần II (Đúng/Sai): <strong id="examP2ScoreDisplay" class="text-accent">3.25/4.0đ</strong></div>
+                <div>Phần III (Điền số): <strong id="examP3ScoreDisplay" class="text-purple-600">3.0/3.0đ</strong></div>
+                <div>Thời gian làm bài: <strong id="examTimeSpent">18p 45s</strong></div>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-600 font-bold">✓ Các câu làm sai đã được tự động lưu vào Tab "📓 Sổ tay câu sai" để bạn luyện thêm câu nhân bản!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           PHÂN HỆ 10: TAB 4 SỔ TAY CÂU SAI & CLONE GENERATOR
+           ============================================================ -->
+      <div id="tab-mistakes" class="tab-content-panel hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">📓</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">Sổ Tay Khắc Phục Lỗi Sai (Mistake Notebook)</h3>
+              <p class="text-xs text-slate-500">Tự động thu thập các câu bạn từng làm sai. Nhấn "Tạo 3 câu tương tự" để AI nhân bản đề luyện lại</p>
+            </div>
+          </div>
+        </div>
+        <div id="mistakeNotebookList" class="space-y-4"></div>
+      </div>
+
+      <!-- ============================================================
+           PHÂN HỆ 9: TAB 5 PHÒNG LAB CODE & PLAYGROUND
+           ============================================================ -->
+      <div id="tab-lab" class="tab-content-panel hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">💻</span>
+              <div>
+                <h3 id="labProblemTitle" class="text-lg font-bold text-slate-800">Phòng Thực Hành Lập Trình (Code Playground)</h3>
+                <p id="labProblemDesc" class="text-xs text-slate-500">Gõ code thuật toán và bấm nút để AI biên dịch, kiểm tra qua các test cases</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <select id="labLanguageSelect" class="p-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 outline-none">
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+                <option value="javascript">JavaScript</option>
+              </select>
+              <button id="runCodeBtn" class="px-5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-sm transition flex items-center gap-1.5">
+                ▶ Chạy thử Code
+              </button>
+            </div>
+          </div>
+
+          <div id="codeLabContainer" class="space-y-4">
+            <textarea id="labCodeEditor" rows="12"
+                      class="code-editor-area w-full p-4 rounded-2xl bg-slate-900 text-emerald-400 font-mono text-xs md:text-sm outline-none border border-slate-800 shadow-inner"
+                      placeholder="# Nhập code thuật toán của bạn vào đây..."></textarea>
+            <div>
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">CONSOLE OUTPUT & TEST CASES EVALUATION:</span>
+              <div id="labConsoleOutput" class="console-output">Nhấn nút "▶ Chạy thử Code" để AI dry-run và kiểm tra test cases...</div>
+            </div>
+          </div>
+
+          <div id="noCodeLabNotice" class="hidden text-center py-12 text-slate-400 text-xs">
+            Chủ đề hiện tại không yêu cầu bài tập lập trình máy tính.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           TAB 6: LỊCH SỬ & PHÂN TÍCH NĂNG LỰC
+           ============================================================ -->
+      <div id="tab-analytics" class="tab-content-panel hidden space-y-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Bài học đã tạo</span>
+            <span id="statTotalLessons" class="text-3xl font-black text-primary mt-1 block">0</span>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Lượt thi chuẩn</span>
+            <span id="statTotalExams" class="text-3xl font-black text-accent mt-1 block">0</span>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Điểm thi TB</span>
+            <span id="statAvgScore" class="text-3xl font-black text-emerald-600 mt-1 block">0.0</span>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Độ chính xác</span>
+            <span id="statAccuracy" class="text-3xl font-black text-purple-600 mt-1 block">0%</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm space-y-4">
+          <h3 class="text-lg font-bold text-slate-800">Thang Đo Năng Lực Tư Duy Bloom</h3>
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>Mức 1: Nhận biết (Remembering)</span>
+              <span id="bloomNhanBietVal">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="bloomNhanBietBar" class="h-full bg-blue-600 rounded-full transition-all duration-700" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>Mức 2: Thông hiểu (Understanding)</span>
+              <span id="bloomThongHieuVal">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="bloomThongHieuBar" class="h-full bg-emerald-500 rounded-full transition-all duration-700" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>Mức 3: Vận dụng (Applying)</span>
+              <span id="bloomVanDungVal">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="bloomVanDungBar" class="h-full bg-purple-600 rounded-full transition-all duration-700" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4">Lịch Sử Các Bài Thi Chuẩn Gần Nhất</h3>
+          <div id="recentExamHistoryList" class="space-y-2"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       PHÂN HỆ 5, 8 & 11: GIA SƯ ẢO AI TUTOR (MIC & ẢNH VISION)
+       ============================================================ -->
+  <button id="toggleTutorBtn" class="ai-tutor-bubble w-14 h-14 bg-gradient-to-br from-primary to-secondary text-white rounded-full shadow-2xl flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all">
+    🤖
+  </button>
+
+  <div id="aiTutorWindow" class="ai-tutor-window hidden bg-white border border-slate-200 flex flex-col glass-panel">
+    <div class="p-4 bg-primary text-white flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-base">🤖</div>
+        <div>
+          <h4 class="font-bold text-sm">Gia sư AI Đa phương thức</h4>
+          <span class="text-[10px] text-emerald-300 flex items-center gap-1">● Hỗ trợ Giọng nói & Vision OCR</span>
+        </div>
+      </div>
+      <button id="closeTutorBtn" class="p-1 text-white text-lg hover:opacity-75">×</button>
+    </div>
+
+    <div id="tutorMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/50 text-xs"></div>
+
+    <!-- Preview ảnh đính kèm trong tutor -->
+    <div id="tutorImagePreviewBadge" class="hidden px-3 py-1 bg-amber-50 border-t border-amber-200 flex items-center justify-between text-[11px] text-amber-900">
+      <span id="tutorImageNameBadge">📷 Ảnh bài tập</span>
+      <button type="button" id="removeTutorImageBtn" class="text-red-600 font-bold hover:underline">Huỷ</button>
+    </div>
+
+    <!-- Ô nhập liệu có Mic & Camera -->
+    <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2 flex-shrink-0">
+      <button id="uploadTutorImageBtn" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:text-primary transition" title="Gửi ảnh bài tập">
+        📷
+      </button>
+      <input type="file" id="tutorImageInput" accept="image/*" class="hidden">
+
+      <button id="voiceInputBtn" class="p-2 rounded-xl border border-slate-200 text-slate-500 hover:text-primary transition" title="Nói để gõ bằng giọng nói">
+        🎤
+      </button>
+
+      <input type="text" id="tutorInput" placeholder="Gõ câu hỏi hoặc nói vào micro..."
+             class="flex-1 p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:ring-2 focus:ring-primary outline-none">
+
+      <button id="sendTutorBtn" class="p-2.5 bg-primary text-white rounded-xl hover:bg-blue-700 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PHÂN HỆ 12: MODAL XUẤT BẢN ĐỀ THI & GIÁO ÁN RA FILE IN ẤN / PDF
+       ============================================================ -->
+  <div id="printModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🖨️</span>
+          <h3 class="font-bold text-slate-800 text-base">Xem Trước Bản In & Xuất Đề Thi Chuẩn MOET (PDF)</h3>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="executePrintBtn" class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition flex items-center gap-1.5 shadow-md">
+            🖨️ In ra giấy / Lưu PDF (Ctrl + P)
+          </button>
+          <button id="closePrintModalBtn" class="p-1.5 text-slate-400 hover:text-slate-700 text-lg">×</button>
+        </div>
+      </div>
+      <div id="printPreviewContent" class="p-8 overflow-y-auto flex-1 bg-white"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CHẤM BÀI TỰ LUẬN -->
+  <div id="essayModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-slate-800 text-base">Kết Quả Đánh Giá Tự Luận (Gemini 2.5 Vision)</h3>
+        <button id="closeEssayModalBtn" class="p-1.5 text-slate-400 hover:text-slate-700 text-lg">×</button>
+      </div>
+      <div id="essayModalLoading" class="p-12 text-center space-y-3">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p class="font-bold text-slate-800 text-sm">Chuyên gia AI đang chấm bài & đọc chữ viết tay...</p>
+      </div>
+      <div id="essayModalResult" class="hidden p-6 overflow-y-auto space-y-4 text-sm">
+        <div class="flex items-center gap-6 p-4 rounded-2xl bg-blue-50 border border-blue-200">
+          <div class="text-center">
+            <span class="text-xs text-blue-700 font-bold block">ĐIỂM SỐ</span>
+            <span id="essayScoreDisplay" class="text-4xl font-black text-primary">8.5/10</span>
+          </div>
+          <div class="flex-1 text-xs text-slate-700 leading-relaxed" id="essayGeneralFeedback"></div>
+        </div>
+        <div>
+          <h4 class="font-bold text-emerald-800 text-xs uppercase mb-1">✓ Các ý đã đạt được:</h4>
+          <ul id="essayPointsAchieved" class="space-y-1 text-xs text-emerald-900 bg-emerald-50/70 p-3 rounded-xl border border-emerald-200"></ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-red-800 text-xs uppercase mb-1">✗ Các ý còn thiếu hoặc sai:</h4>
+          <ul id="essayPointsMissing" class="space-y-1 text-xs text-red-900 bg-red-50/70 p-3 rounded-xl border border-red-200"></ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-amber-800 text-xs uppercase mb-1">⚠️ Lỗi diễn đạt & logic:</h4>
+          <ul id="essayLogicMistakes" class="space-y-1 text-xs text-amber-900 bg-amber-50/70 p-3 rounded-xl border border-amber-200"></ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-800 text-xs uppercase mb-1">📖 Lời giải mẫu hoàn chỉnh:</h4>
+          <div id="essayCorrectedModel" class="markdown-body p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
+        </div>
+        <div>
+          <h4 class="font-bold text-blue-800 text-xs uppercase mb-1">💡 Lời khuyên phát triển:</h4>
+          <div id="essayAdvice" class="markdown-body p-3.5 bg-blue-50/50 border border-blue-100 rounded-xl text-xs text-blue-900"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL LOADING TIẾN TRÌNH TẠO BÀI HỌC -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-8 border border-slate-200 shadow-2xl text-center space-y-6">
+      <div class="w-16 h-16 bg-blue-100 text-primary rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-sm">✨</div>
+      <div>
+        <h3 class="text-xl font-bold text-slate-800 mb-1">AI Đang Biên Soạn Giáo Trình Ultimate</h3>
+        <p id="loadingStepText" class="text-xs text-slate-500 font-medium">Đang khởi động hệ thống sư phạm...</p>
+      </div>
+      <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+        <div id="loadingProgressFill" class="h-full bg-gradient-to-r from-primary via-secondary to-accent rounded-full transition-all duration-500" style="width: 15%"></div>
+      </div>
+      <div class="space-y-2 text-left">
+        <div class="step-item active" data-step="1">
+          <span class="step-badge w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">1</span>
+          <span class="text-xs font-semibold text-slate-700">Đọc tài liệu đa phương thức (Vision/OCR) & chuẩn kiến thức</span>
+        </div>
+        <div class="step-item pending" data-step="2">
+          <span class="step-badge w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">2</span>
+          <span class="text-xs font-semibold text-slate-700">Biên soạn lý thuyết chuyên sâu & cơ chế bản chất</span>
+        </div>
+        <div class="step-item pending" data-step="3">
+          <span class="step-badge w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">3</span>
+          <span class="text-xs font-semibold text-slate-700">Tạo sơ đồ Mermaid, đồ thị Canvas & bài tập Lab Code</span>
+        </div>
+        <div class="step-item pending" data-step="4">
+          <span class="step-badge w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">4</span>
+          <span class="text-xs font-semibold text-slate-700">Xây dựng đề thi 3 phần chuẩn đổi mới Bộ GD&ĐT</span>
+        </div>
+        <div class="step-item pending" data-step="5">
+          <span class="step-badge w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">5</span>
+          <span class="text-xs font-semibold text-slate-700">Kiểm tra tính toàn vẹn cú pháp & công thức LaTeX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL THƯ VIỆN BÀI HỌC -->
+  <div id="libraryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-slate-800 text-base">Thư Viện Bài Học Đã Biên Soạn</h3>
+        <button onclick="document.getElementById('libraryModal').classList.add('hidden')" class="p-1.5 text-slate-400 hover:text-slate-700 text-lg">×</button>
+      </div>
+      <div id="libraryLessonList" class="p-6 overflow-y-auto flex-1 space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CÀI ĐẶT API KEY -->
+  <div id="apiKeyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 text-base">⚙️ Cài đặt Gemini API Key</h3>
+        <button onclick="document.getElementById('apiKeyModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 text-lg">×</button>
+      </div>
+      <p class="text-xs text-slate-500">Khóa được lưu bảo mật trong LocalStorage trình duyệt.</p>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1">Gemini API Key (model gemini-2.5-flash):</label>
+        <input type="password" id="apiKeyInput" placeholder="Dán khóa API Key bắt đầu bằng AIzaSy..."
+               class="w-full p-3 rounded-xl border border-slate-200 text-xs font-mono outline-none">
+      </div>
+      <div id="apiKeyStatusMsg" class="text-xs min-h-[1.5rem]"></div>
+      <div class="flex gap-2 pt-2">
+        <button id="testApiKeyBtn" class="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-200 transition">
+          🔍 Kiểm tra kết nối
+        </button>
+        <button id="saveApiKeyBtn" class="flex-1 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition">
+          💾 Lưu cài đặt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="appToast" class="fixed bottom-6 right-6 px-5 py-3 rounded-2xl text-white font-bold text-sm shadow-xl z-50 hidden transition-all"></div>
+
+  <script type="module" src="assets/js/ai-studio.js"></script>
+</body>
+</html>
